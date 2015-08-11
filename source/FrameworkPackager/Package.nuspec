@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Embedded-IOT</id>
+    <version>1.0.0</version>
+    <title>Embedded IOT framework for the .NET Micro Framework</title>
+    <authors>Jason Field</authors>
+    <owners>Igniteous Limited</owners>
+    <description>
+      Brings a set of common capabilities to the .NET Micro Framework that would be commonly found in IoT projects for embedded devices. It brings thread-safe services, AMQP connections, 
+      assertions, error management and logging capabilities. Its primary focus is to support integration from an embedded platform to a SOA framework.
+    </description>
+    <releaseNotes>
+    </releaseNotes>
+    <summary>
+      Brings a set of common capabilities to the .NET Micro Framework that would be commonly found in IoT projects for embedded devices.
+    </summary>
+    <language>en-US</language>
+    <projectUrl>https://nuget.org/packages/FrameworkPackager</projectUrl>
+    <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+    <copyright>Copyright Igniteous Ltd 2015</copyright>
+    <dependencies>
+        <group targetFramework="netmf43">
+          <dependency id="NetMf.CommonExtensions" version="1.1.2" />
+          <dependency id="MicroLinq" version="" />
+          <dependency id="AMQPNetLite" version="" />
+          <dependency id="Json.NetMF" version="1.3.0.0" />
+        </group>
+    </dependencies>
+    <references></references>
+    <tags></tags>
+  </metadata>
+  <files>
+    <file src="lib\" target="lib" />
+    <file src="tools\" target="tools" />
+    <file src="content\" target="content" />
+  </files>
+</package>

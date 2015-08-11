@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{055EAADB-DCCD-43E0-A923-1A5EAF8305A4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solutionitems", "solutionitems", "{AD0A425E-B6BA-480F-A0F2-09C1AA12465F}"
@@ -24,13 +26,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "codespikes", "codespikes", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMqLogger", "..\..\..\codespikes\MicroFramework\RabbitMq\RabbitMqLogger\RabbitMqLogger.csproj", "{E238AC34-0584-4404-AEBC-8E9266346EEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.IO.Networking", "Common.Networking\Common.IO.Networking.csproj", "{12EC6CE9-D302-4F07-B9B8-0D01E8070610}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Networking", "Common.Networking\Common.Networking.csproj", "{12EC6CE9-D302-4F07-B9B8-0D01E8070610}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.IO.Networking.Messaging", "Common.Networking.Messaging\Common.IO.Networking.Messaging.csproj", "{00BCCAFF-91E1-4D8F-A796-A2C7A6701AC3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Messaging", "Common.Networking.Messaging\Common.Messaging.csproj", "{00BCCAFF-91E1-4D8F-A796-A2C7A6701AC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.IO.FileManagement", "Common.IO.File\Common.IO.FileManagement.csproj", "{81CAD237-E881-42B4-AC8B-4D4B2D19EE5B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.FileManagement", "Common.IO.File\Common.FileManagement.csproj", "{81CAD237-E881-42B4-AC8B-4D4B2D19EE5B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Helpers", "Common.Collections\Common.Helpers.csproj", "{3AC11F52-F852-42AA-B5DA-E5D671C20ADF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameworkPackager", "FrameworkPackager\FrameworkPackager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployment", "deployment", "{07ABF418-4E2A-4B9D-B4B3-817CD5FE302E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -156,6 +162,18 @@ Global
 		{3AC11F52-F852-42AA-B5DA-E5D671C20ADF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{3AC11F52-F852-42AA-B5DA-E5D671C20ADF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{3AC11F52-F852-42AA-B5DA-E5D671C20ADF}.Release|x86.ActiveCfg = Release|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|x86.Build.0 = Debug|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|x86.ActiveCfg = Release|Any CPU
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -167,10 +185,11 @@ Global
 		{485F690B-5965-485F-9092-3D19F3B6274F} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{31A3F165-4E77-4B88-988B-39EBF30C531A} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{83923E10-73A7-48F8-B6D6-06A14AE8887B} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
+		{E238AC34-0584-4404-AEBC-8E9266346EEF} = {BF86F6DF-AE94-45C2-B2A4-8452BF805BB7}
 		{12EC6CE9-D302-4F07-B9B8-0D01E8070610} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{00BCCAFF-91E1-4D8F-A796-A2C7A6701AC3} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{81CAD237-E881-42B4-AC8B-4D4B2D19EE5B} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{3AC11F52-F852-42AA-B5DA-E5D671C20ADF} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
-		{E238AC34-0584-4404-AEBC-8E9266346EEF} = {BF86F6DF-AE94-45C2-B2A4-8452BF805BB7}
+		{0451BAEF-DF2E-4B98-8644-94EE9415E389} = {07ABF418-4E2A-4B9D-B4B3-817CD5FE302E}
 	EndGlobalSection
 EndGlobal
