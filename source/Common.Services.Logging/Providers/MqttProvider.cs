@@ -7,7 +7,7 @@ namespace Ignite.Infrastructure.Micro.Common.Services.Logging.Providers
     using Ignite.Infrastructure.Micro.Common.IO.Networking;
     using Ignite.Infrastructure.Micro.Common.IO.Networking.Messaging;
     using Ignite.Infrastructure.Micro.Common.Logging;
-
+    using Ignite.Infrastructure.Micro.Common.Networking;
     using Json.NETMF;
 
     using uPLibrary.Networking.M2Mqtt;

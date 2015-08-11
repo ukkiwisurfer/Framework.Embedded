@@ -5,7 +5,7 @@ namespace Ignite.Infrastructure.Micro.Common.Services.Logging
     using System.IO;
 
     using Ignite.Infrastructure.Micro.Common.Assertions;
-    using Ignite.Infrastructure.Micro.Common.IO.FileManagement;
+    using Ignite.Infrastructure.Micro.Common.FileManagement;
     using Ignite.Infrastructure.Micro.Common.Logging;
 
     using Json.NETMF;

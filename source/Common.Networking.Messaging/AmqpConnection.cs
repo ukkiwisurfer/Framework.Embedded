@@ -2,14 +2,11 @@
 {
     using System;
 
-    using Ignite.Infrastructure.Micro.Common.IO.Networking;
-
-    using Microsoft.SPOT;
-
     using Amqp.Framing;
     using Amqp;
 
-    using Json.NETMF;
+    using Ignite.Infrastructure.Micro.Common.Assertions;
+    using Ignite.Infrastructure.Micro.Common.Messaging;
 
     using Trace = Amqp.Trace;
 
@@ -17,7 +14,7 @@
     /// Processes incoming messages and dispatches them via an
     /// AMQP endpoint.
     /// </summary>
-    public class AmqpMessageHandler : IMessageHandler
+    public class AmqpConnection : IQueuedConnection
     {
         private readonly QueueEndpointAddress m_Address;
         private readonly string m_ServiceName;
@@ -26,6 +23,13 @@
         private SenderLink m_Sender;
 
         private bool m_IsOpen;
+        /// <summary>
+        /// See <see cref="IQueuedConnection.IsOpen"/> for more details.
+        /// </summary>
+        public bool IsOpen
+        {
+            get { return m_IsOpen; }
+        }
 
         private string m_ClientId;
         /// <summary>
@@ -37,18 +41,17 @@
         }
 
         /// <summary>
-        /// Initialises an instance of the <see cref="AmqpMessageHandler"/> class.
+        /// Initialises an instance of the <see cref="AmqpConnection"/> class.
         /// </summary>
-        /// <param name="serviceName">
-        /// The name of the service to associated with this message handler.
+        /// <param name="registration">
+        /// Details required to connect to the queued message server.
         /// </param>
-        /// <param name="address">
-        /// Thw AMQP endpoint connection details.
-        /// </param>
-        public AmqpMessageHandler(string serviceName, QueueEndpointAddress address)
+        public AmqpConnection(RegistrationData registration)
         {
-            m_ServiceName = serviceName;
-            m_Address = address;
+            registration.ShouldNotBeNull();
+
+            m_ServiceName = registration.ServiceName;
+            m_Address = registration.Address;
 
             Trace.TraceLevel = TraceLevel.Frame;
             Trace.TraceListener = WriteTrace;
@@ -93,12 +96,12 @@
         }
 
         /// <summary>
-        /// See <see cref="IMessageHandler.HandleMessage"/> for more details.
+        /// See <see cref="IQueuedConnection.SendMessage"/> for more details.
         /// </summary>
         /// <param name="payload">
         /// The raw payload to be processed.
         /// </param>
-        public void HandleMessage(byte[] payload)
+        public void SendMessage(byte[] payload)
         {
             var message = new Message(payload);
             message.Properties = new Properties() { GroupId = m_ServiceName };
@@ -119,21 +122,7 @@
         static void WriteTrace(string format, params object[] args)
         {
             string message = args == null ? format : Fx.Format(format, args);
-            Debug.Print(message);
-        }
-
-        /// <summary>
-        /// Serializes an object to JSON.
-        /// </summary>
-        /// <param name="logEntry">
-        /// The log entry to seralize.
-        /// </param>
-        /// <returns>
-        /// Json representation of the log entry.
-        /// </returns>
-        private static string SerializeLogEntry(object logEntry)
-        {
-            return JsonSerializer.SerializeObject(logEntry);
+            //Debug.Print(message);
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace Ignite.Infrastructure.Micro.Common.IO.FileManagement
+namespace Ignite.Infrastructure.Micro.Common.FileManagement
 {
     using System;
     using System.IO;

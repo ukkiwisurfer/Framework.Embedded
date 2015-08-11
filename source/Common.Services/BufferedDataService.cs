@@ -6,7 +6,7 @@ namespace Ignite.Infrastructure.Micro.Common.Services
     using System.IO;
 
     using Ignite.Infrastructure.Micro.Common.Assertions;
-    using Ignite.Infrastructure.Micro.Common.IO.FileManagement;
+    using Ignite.Infrastructure.Micro.Common.FileManagement;
 
     /// <summary>
     /// Captures data packets and buffers them before writing them to disk.

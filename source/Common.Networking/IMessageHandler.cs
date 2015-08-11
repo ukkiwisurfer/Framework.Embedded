@@ -1,5 +1,5 @@
 ﻿
-namespace Ignite.Infrastructure.Micro.Common.IO.Networking
+namespace Ignite.Infrastructure.Micro.Common.Networking
 {
     /// <summary>
     /// Message handler for processing raw sensor readings
