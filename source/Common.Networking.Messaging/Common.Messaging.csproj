@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <AssemblyName>Ignite.Infrastructure.Micro.Common.Exceptions</AssemblyName>
+    <AssemblyName>Ignite.Infrastructure.Micro.Common.Messaging</AssemblyName>
     <OutputType>Library</OutputType>
-    <RootNamespace>Ignite.Infrastructure.Micro.Common.Exceptions</RootNamespace>
+    <RootNamespace>Ignite.Infrastructure.Micro.Common.Messaging</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0C9780A3-B68C-4BAE-AFF9-ECC2A3860F4E}</ProjectGuid>
+    <ProjectGuid>{00BCCAFF-91E1-4D8F-A796-A2C7A6701AC3}</ProjectGuid>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
     <TargetFrameworkProfile />
@@ -34,25 +34,30 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="BaseException.cs" />
-    <Compile Include="InterceptedException.cs" />
+    <Compile Include="IQueuedConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropogatedException.cs" />
-    <Compile Include="ValidationException.cs" />
+    <Compile Include="AmqpConnection.cs" />
+    <Compile Include="QueueEndpointAddress.cs" />
+    <Compile Include="RegistrationData.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SPOT.Native">
+    <Reference Include="Amqp.NetMF">
+      <HintPath>..\packages\AMQPNetLite.0.1.1-beta\lib\netmf43\Amqp.NetMF.dll</HintPath>
     </Reference>
     <Reference Include="NetMf.CommonExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\libs\Micro.net\CommonExtensions\NetMF.CommonExtensions.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common.ErrorCodes\Common.Errors.csproj">
-      <Project>{485F690B-5965-485F-9092-3D19F3B6274F}</Project>
-      <Name>Common.Errors</Name>
+    <ProjectReference Include="..\Common.Assertions\Common.Assertions.csproj">
+      <Project>{E166C9CA-FE3B-4C73-AEE1-D3DA4A240174}</Project>
+      <Name>Common.Assertions</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>

@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\build\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -43,21 +43,21 @@
     <Compile Include="TypeAssertions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SPOT.Native">
-    </Reference>
     <Reference Include="NetMf.CommonExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\libs\Micro.net\CommonExtensions\NetMF.CommonExtensions.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\packages\NetMf.CommonExtensions.1.1.2\lib\netmf41\NetMf.CommonExtensions.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="VikingErik.NetMF.MicroLinq">
-      <HintPath>..\..\..\..\libs\Micro.net\MicroLinq\VikingErik.NetMF.MicroLinq.dll</HintPath>
-    </Reference>
-    <Reference Include="VikingErik.NetMF.MicroLinq.PrebuiltDelegates">
-      <HintPath>..\..\..\..\libs\Micro.net\MicroLinq\VikingErik.NetMF.MicroLinq.PrebuiltDelegates.dll</HintPath>
+    <Reference Include="VikingErik.NetMF.MicroLinq, Version=0.4.4190.24479, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MicroLinq.0.4.0\lib\netmf41\VikingErik.NetMF.MicroLinq.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

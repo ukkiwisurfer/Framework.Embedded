@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\build\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -51,8 +51,7 @@
     <Reference Include="M2Mqtt">
       <HintPath>..\packages\M2Mqtt.4.0\lib\netmf43\M2Mqtt.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.SPOT.Native">
-    </Reference>
+    <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="NetMf.CommonExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\libs\Micro.net\CommonExtensions\NetMF.CommonExtensions.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -65,21 +64,21 @@
       <Project>{E166C9CA-FE3B-4C73-AEE1-D3DA4A240174}</Project>
       <Name>Common.Assertions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common.IO.File\Common.IO.FileManagement.csproj">
+    <ProjectReference Include="..\Common.IO.File\Common.FileManagement.csproj">
       <Project>{81CAD237-E881-42B4-AC8B-4D4B2D19EE5B}</Project>
-      <Name>Common.IO.FileManagement</Name>
+      <Name>Common.FileManagement</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common.Logging\Common.Logging.csproj">
       <Project>{A72001AF-A51E-4906-B060-588C9D569728}</Project>
       <Name>Common.Logging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common.Networking.Messaging\Common.IO.Networking.Messaging.csproj">
+    <ProjectReference Include="..\Common.Networking.Messaging\Common.Messaging.csproj">
       <Project>{00BCCAFF-91E1-4D8F-A796-A2C7A6701AC3}</Project>
-      <Name>Common.IO.Networking.Messaging</Name>
+      <Name>Common.Messaging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common.Networking\Common.IO.Networking.csproj">
+    <ProjectReference Include="..\Common.Networking\Common.Networking.csproj">
       <Project>{12EC6CE9-D302-4F07-B9B8-0D01E8070610}</Project>
-      <Name>Common.IO.Networking</Name>
+      <Name>Common.Networking</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common.Services\Common.Services.csproj">
       <Project>{83923E10-73A7-48F8-B6D6-06A14AE8887B}</Project>
@@ -91,4 +90,8 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

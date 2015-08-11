@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\build\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -59,17 +59,17 @@
       <Project>{0C9780A3-B68C-4BAE-AFF9-ECC2A3860F4E}</Project>
       <Name>Common.Exceptions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common.IO.File\Common.IO.FileManagement.csproj">
+    <ProjectReference Include="..\Common.IO.File\Common.FileManagement.csproj">
       <Project>{81CAD237-E881-42B4-AC8B-4D4B2D19EE5B}</Project>
-      <Name>Common.IO.FileManagement</Name>
+      <Name>Common.FileManagement</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common.Logging\Common.Logging.csproj">
       <Project>{A72001AF-A51E-4906-B060-588C9D569728}</Project>
       <Name>Common.Logging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common.Networking\Common.IO.Networking.csproj">
+    <ProjectReference Include="..\Common.Networking\Common.Networking.csproj">
       <Project>{12EC6CE9-D302-4F07-B9B8-0D01E8070610}</Project>
-      <Name>Common.IO.Networking</Name>
+      <Name>Common.Networking</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
