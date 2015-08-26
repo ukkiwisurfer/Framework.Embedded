@@ -7,6 +7,7 @@ namespace Ignite.Infrastructure.Micro.Common.Services
 
     using Ignite.Infrastructure.Micro.Common.Assertions;
     using Ignite.Infrastructure.Micro.Common.FileManagement;
+    using Ignite.Infrastructure.Micro.Contract.Services;
 
     /// <summary>
     /// Captures data packets and buffers them before writing them to disk.
@@ -15,7 +16,7 @@ namespace Ignite.Infrastructure.Micro.Common.Services
     /// The batch size determines how many are packets are buffered before 
     /// being written to disk.
     /// </remarks>
-    public abstract class BufferedDataService : ThreadedService
+    public abstract class BufferedDataService : ThreadedService, IBufferConfiguration, IBatchConfiguration
     {
         private readonly IFileHelper m_FileHelper;
         private readonly BufferedConfiguration m_Configuration;

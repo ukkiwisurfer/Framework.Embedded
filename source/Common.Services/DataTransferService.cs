@@ -8,6 +8,7 @@ namespace Ignite.Infrastructure.Micro.Common.Services
     using Ignite.Infrastructure.Micro.Common.Assertions;
     using Ignite.Infrastructure.Micro.Common.FileManagement;
     using Ignite.Infrastructure.Micro.Common.Networking;
+    using Ignite.Infrastructure.Micro.Contract.Services;
 
     /// <summary>
     /// Transfers data that has been persisted locally to a remote machine.
@@ -16,7 +17,7 @@ namespace Ignite.Infrastructure.Micro.Common.Services
     /// Finds any unsent local data files and sends them via a remote message 
     /// broker for processing.
     /// </remarks>
-    public class DataTransferService : ThreadedService
+    public class DataTransferService : ThreadedService, IBatchConfiguration
     {
         private readonly IMessageBrokerClient m_Client;
         private readonly int m_BufferSize;
@@ -30,7 +31,7 @@ namespace Ignite.Infrastructure.Micro.Common.Services
         /// <summary>
         /// The number of log messages to batch up before attempting to send.
         /// </summary>
-        public int MessageBatchSize
+        public int BatchSize
         {
             get
             {

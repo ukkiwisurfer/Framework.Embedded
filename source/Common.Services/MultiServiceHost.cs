@@ -6,11 +6,12 @@ namespace Ignite.Infrastructure.Micro.Common.Services
 
     using Ignite.Infrastructure.Micro.Common.Assertions;
     using Ignite.Infrastructure.Micro.Common.Logging;
+    using Ignite.Infrastructure.Micro.Contract.Services;
 
     /// <summary>
     /// Service host that supports multiple threaded services. 
     /// </summary>
-    public class MultiServiceHost : IDisposable
+    public class MultiServiceHost : IServiceHost
     {
         private readonly ArrayList m_Hosts;
         private readonly ILogger m_Logger;
@@ -47,7 +48,7 @@ namespace Ignite.Infrastructure.Micro.Common.Services
             m_Logger.Info("Starting {0} host(s).", m_Hosts.Count);
             foreach (var host in m_Hosts)
             {
-                var cast = host as ThreadedService;
+                var cast = host as IThreadedService;
                 if (cast != null)
                 {
                     cast.Start();
@@ -63,7 +64,7 @@ namespace Ignite.Infrastructure.Micro.Common.Services
             m_Logger.Info("Stopping {0} host(s).", m_Hosts.Count);
             foreach (var host in m_Hosts)
             {
-                var cast = host as ThreadedService;
+                var cast = host as IThreadedService;
                 if (cast != null)
                 {
                     cast.Stop();
@@ -77,7 +78,7 @@ namespace Ignite.Infrastructure.Micro.Common.Services
         /// <param name="service">
         /// The service instance to add.
         /// </param>
-        public void AddService(ThreadedService service)
+        public void AddService(IThreadedService service)
         {
             service.ShouldNotBeNull();
 
@@ -94,7 +95,7 @@ namespace Ignite.Infrastructure.Micro.Common.Services
 
             foreach (var host in m_Hosts)
             {
-                var cast = host as ThreadedService;
+                var cast = host as IThreadedService;
                 if (cast != null)
                 {
                     try

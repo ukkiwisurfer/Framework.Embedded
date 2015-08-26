@@ -55,6 +55,10 @@
       <Project>{E166C9CA-FE3B-4C73-AEE1-D3DA4A240174}</Project>
       <Name>Common.Assertions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common.Contract.Services\Common.Contract.Services.csproj">
+      <Project>{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}</Project>
+      <Name>Common.Contract.Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common.Exceptions\Common.Exceptions.csproj">
       <Project>{0C9780A3-B68C-4BAE-AFF9-ECC2A3860F4E}</Project>
       <Name>Common.Exceptions</Name>
