@@ -38,6 +38,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameworkPackager", "Framew
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployment", "deployment", "{07ABF418-4E2A-4B9D-B4B3-817CD5FE302E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Contract.Services", "Common.Contract.Services\Common.Contract.Services.csproj", "{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -174,6 +176,18 @@ Global
 		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|x86.ActiveCfg = Release|Any CPU
 		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|x86.Build.0 = Release|Any CPU
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}.Debug|x86.Build.0 = Debug|Any CPU
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}.Release|x86.ActiveCfg = Release|Any CPU
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -191,5 +205,6 @@ Global
 		{81CAD237-E881-42B4-AC8B-4D4B2D19EE5B} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{3AC11F52-F852-42AA-B5DA-E5D671C20ADF} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{0451BAEF-DF2E-4B98-8644-94EE9415E389} = {07ABF418-4E2A-4B9D-B4B3-817CD5FE302E}
+		{43ABBA59-12CF-4FFC-BC92-7B0A7268C794} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 	EndGlobalSection
 EndGlobal
