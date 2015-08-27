@@ -5,6 +5,7 @@
 
     using Ignite.Infrastructure.Micro.Common.Assertions;
     using Ignite.Infrastructure.Micro.Common.Logging;
+    using Ignite.Infrastructure.Micro.Contract.Services;
 
     using NetMf.CommonExtensions;
 
@@ -15,12 +16,13 @@
     /// Supports graceful termination, and thread safe property management to
     /// alter the behaviour of the internal threading logic. 
     /// </remarks>
-    public abstract class ThreadedService : IDisposable
+    public abstract class ThreadedService : IThreadedService
     {
-        private readonly ManualResetEvent m_CancellationRequestEvent;
-        private readonly ManualResetEvent m_CancellationCompleteEvent;
-        private readonly ManualResetEvent m_WorkDetectedEvent;
-        private readonly ILogger m_Logger;
+        protected readonly ManualResetEvent m_CancellationRequestEvent;
+        protected readonly ManualResetEvent m_CancellationCompleteEvent;
+        protected readonly ManualResetEvent m_WorkDetectedEvent;
+
+        protected readonly ILogger m_Logger;
         private Thread m_WorkerThread;
         private readonly object m_SyncLock;
         private bool m_IsDisposed;
@@ -274,18 +276,7 @@
                     {
                         this.CheckIfWorkExists();
 
-                        signalled = WaitHandle.WaitAny(new WaitHandle[] { m_CancellationRequestEvent, m_WorkDetectedEvent }, SleepPeriodInMilliseconds, false);
-                        if (signalled == WaitHandle.WaitTimeout)
-                        {
-                            LogDebug("Waited for event - no event detected. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
-                        }
-
-                        // If the work detected event has been signalled, perform the task.
-                        if (signalled == 1)
-                        {
-                            this.DoWork();
-                        }
-
+                        signalled = WaitForEvent();
                     }
 
                     LogDebug("Cancellation requested. About to start controlled shutdown of service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
@@ -299,6 +290,29 @@
 
             // Signal that all cancellation processing logic complete. 
             this.m_CancellationCompleteEvent.Set();
+        }
+
+        /// <summary>
+        /// Waits for an event to signal or a timeout event to occur.
+        /// </summary>
+        /// <returns>
+        /// The integer position  of the event that signalled from the array of supplied <see cref="WaitHandle"/> instances.
+        /// </returns>
+        protected virtual int WaitForEvent()
+        {
+            int signalled = WaitHandle.WaitAny(new WaitHandle[] { m_CancellationRequestEvent, m_WorkDetectedEvent }, SleepPeriodInMilliseconds, false);
+            if (signalled == WaitHandle.WaitTimeout)
+            {
+                LogDebug("Waited for event - no event detected. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+            }
+
+            // If the work detected event has been signalled, perform the task.
+            if (signalled == 1)
+            {
+                this.DoWork();
+            }
+
+            return signalled;
         }
 
         /// <summary>

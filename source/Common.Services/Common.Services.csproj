@@ -34,7 +34,6 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="BufferedConfiguration.cs" />
     <Compile Include="BufferedDataService.cs" />
     <Compile Include="DataTransferService.cs" />
     <Compile Include="MultiServiceHost.cs" />
