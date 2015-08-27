@@ -45,6 +45,7 @@
     <Compile Include="LoggingFactory.cs" />
     <Compile Include="LogHelper.cs" />
     <Compile Include="LogMessage.cs" />
+    <Compile Include="NullLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TraceEventType.cs" />
   </ItemGroup>
