@@ -1,5 +1,5 @@
 
-namespace Ignite.Infrastructure.Micro.Common.IO.Networking.Messaging
+namespace Ignite.Framework.Micro.Common.Messaging
 {
     using NetMf.CommonExtensions;
 
@@ -12,6 +12,8 @@ namespace Ignite.Infrastructure.Micro.Common.IO.Networking.Messaging
         /// The name of the host for the AMQP server.
         /// </summary>
         public string HostName { get; set; }
+
+        public string IPAddress { get; set; }
 
         /// <summary>
         /// The port address for the AQMP server.

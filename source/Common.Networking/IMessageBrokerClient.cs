@@ -1,4 +1,4 @@
-namespace Ignite.Infrastructure.Micro.Common.Networking
+namespace Ignite.Framework.Micro.Common.Networking
 {
     /// <summary>
     /// Message broker client interface definition.

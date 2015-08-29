@@ -1,9 +1,5 @@
-using System;
-
-namespace Ignite.Infrastructure.Micro.Common.Messaging
+namespace Ignite.Framework.Micro.Common.Messaging
 {
-    using Ignite.Infrastructure.Micro.Common.IO.Networking.Messaging;
-
     /// <summary>
     /// Describes registraton details to connect to a message queue server. 
     /// </summary>

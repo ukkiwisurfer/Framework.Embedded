@@ -1,7 +1,6 @@
-﻿namespace Ignite.Infrastructure.Micro.Common.Errors
+﻿namespace Ignite.Framework.Micro.Common.Errors
 {
     using System;
-
     using NetMf.CommonExtensions;
 
     /// <summary>

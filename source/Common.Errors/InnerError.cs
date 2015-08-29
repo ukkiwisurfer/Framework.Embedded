@@ -1,4 +1,4 @@
-﻿namespace Ignite.Infrastructure.Micro.Common.Errors
+﻿namespace Ignite.Framework.Micro.Common.Errors
 {
     /// <summary>
     /// Repesents an error that occured within the context of a larger group of operations or activities.

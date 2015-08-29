@@ -1,7 +1,5 @@
-namespace Ignite.Infrastructure.Micro.Contract.Services
+namespace Ignite.Framework.Micro.Common.Contract.Services
 {
-    using System;
-
     public interface IServiceHost : IService
     {
         

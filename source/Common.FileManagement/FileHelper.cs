@@ -1,5 +1,5 @@
 ﻿
-namespace Ignite.Infrastructure.Micro.Common.FileManagement
+namespace Ignite.Framework.Micro.Common.FileManagement
 {
     using System;
     using System.Collections;

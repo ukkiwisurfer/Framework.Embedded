@@ -1,14 +1,12 @@
 ﻿
-namespace Ignite.Infrastructure.Micro.Common.Services
+namespace Ignite.Framework.Micro.Common.Services
 {
     using System;
     using System.IO;
-    using System.Threading;
-
-    using Ignite.Infrastructure.Micro.Common.Assertions;
-    using Ignite.Infrastructure.Micro.Common.FileManagement;
-    using Ignite.Infrastructure.Micro.Common.Networking;
-    using Ignite.Infrastructure.Micro.Contract.Services;
+    using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Services;
+    using Ignite.Framework.Micro.Common.FileManagement;
+    using Ignite.Framework.Micro.Common.Networking;
 
     /// <summary>
     /// Transfers data that has been persisted locally to a remote machine.

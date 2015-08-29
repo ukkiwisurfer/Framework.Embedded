@@ -1,14 +1,13 @@
 
-namespace Ignite.Infrastructure.Micro.Common.Services.Logging
+namespace Ignite.Framework.Micro.Common.Services.Logging
 {
     using System;
     using System.IO;
-
-    using Ignite.Infrastructure.Micro.Common.Assertions;
-    using Ignite.Infrastructure.Micro.Common.FileManagement;
-    using Ignite.Infrastructure.Micro.Common.Logging;
-    using Ignite.Infrastructure.Micro.Contract.Services;
-
+    using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Services;
+    using Ignite.Framework.Micro.Common.FileManagement;
+    using Ignite.Framework.Micro.Common.Logging;
+    using Ignite.Framework.Micro.Common.Services;
     using Json.NETMF;
 
     /// <summary>

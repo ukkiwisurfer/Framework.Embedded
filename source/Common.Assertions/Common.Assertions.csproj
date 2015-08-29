@@ -1,16 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
-    <AssemblyName>Ignite.Infrastructure.Micro.Common.Assertions</AssemblyName>
+    <AssemblyName>Ignite.Framework.Micro.Common.Assertions</AssemblyName>
     <OutputType>Library</OutputType>
-    <RootNamespace>Ignite.Infrastructure.Micro.Common.Assertions</RootNamespace>
+    <RootNamespace>Ignite.Framework.Micro.Common.Assertions</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E166C9CA-FE3B-4C73-AEE1-D3DA4A240174}</ProjectGuid>
+    <ProjectGuid>{5FF19D7E-0827-4297-8FB1-2B51791F89D8}</ProjectGuid>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,7 +28,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
@@ -43,21 +41,23 @@
     <Compile Include="TypeAssertions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="NetMf.CommonExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NetMf.CommonExtensions.1.1.2\lib\netmf41\NetMf.CommonExtensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System" />
     <Reference Include="VikingErik.NetMF.MicroLinq, Version=0.4.4190.24479, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MicroLinq.0.4.0\lib\netmf41\VikingErik.NetMF.MicroLinq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VikingErik.NetMF.MicroLinq.PrebuiltDelegates, Version=0.4.4190.24479, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MicroLinq.0.4.0\lib\netmf41\VikingErik.NetMF.MicroLinq.PrebuiltDelegates.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
+  <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
+  <Import Condition="!EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

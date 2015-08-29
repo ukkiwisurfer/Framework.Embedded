@@ -1,13 +1,9 @@
-﻿namespace Ignite.Infrastructure.Micro.Common.IO.Networking.Messaging
+﻿namespace Ignite.Framework.Micro.Common.Messaging
 {
     using System;
-
-    using Amqp.Framing;
     using Amqp;
-
-    using Ignite.Infrastructure.Micro.Common.Assertions;
-    using Ignite.Infrastructure.Micro.Common.Messaging;
-
+    using Amqp.Framing;
+    using Ignite.Framework.Micro.Common.Assertions;
     using Trace = Amqp.Trace;
 
     /// <summary>

@@ -1,12 +1,10 @@
-﻿namespace Ignite.Infrastructure.Micro.Common.Services
+﻿namespace Ignite.Framework.Micro.Common.Services
 {
     using System;
     using System.Threading;
-
-    using Ignite.Infrastructure.Micro.Common.Assertions;
-    using Ignite.Infrastructure.Micro.Common.Logging;
-    using Ignite.Infrastructure.Micro.Contract.Services;
-
+    using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Services;
+    using Ignite.Framework.Micro.Common.Logging;
     using NetMf.CommonExtensions;
 
     /// <summary>
@@ -18,14 +16,46 @@
     /// </remarks>
     public abstract class ThreadedService : IThreadedService
     {
-        protected readonly ManualResetEvent m_CancellationRequestEvent;
-        protected readonly ManualResetEvent m_CancellationCompleteEvent;
-        protected readonly ManualResetEvent m_WorkDetectedEvent;
-
-        protected readonly ILogger m_Logger;
+        
         private Thread m_WorkerThread;
         private readonly object m_SyncLock;
         private bool m_IsDisposed;
+
+        private readonly ILogger m_Logger;
+        /// <summary>
+        /// Provides the ability to log messages.
+        /// </summary>
+        protected ILogger Logger
+        {
+            get {  return m_Logger;}
+        }
+
+        private readonly ManualResetEvent m_CancellationRequestEvent;
+        /// <summary>
+        /// Provides the synchronisation context for detecting and requesting the cancellation of a request.
+        /// </summary>
+        protected ManualResetEvent CancellationRequestEvent
+        {
+            get {  return m_CancellationRequestEvent;}
+        }
+
+        private readonly ManualResetEvent m_CancellationCompleteEvent;
+        /// <summary>
+        /// Provides the synchronisation context for detecting (and indicating) the completion of a request.
+        /// </summary>
+        protected ManualResetEvent CancellationCompleteEvent
+        {
+            get {  return m_CancellationCompleteEvent;}
+        }
+
+        private readonly ManualResetEvent m_WorkDetectedEvent;
+        /// <summary>
+        /// Provides the synchronisation context for detecting (and indicating) the detection of work to be performed.
+        /// </summary>
+        protected ManualResetEvent WorkDetectedEvent
+        {
+            get {  return m_WorkDetectedEvent;}
+        }
 
         private bool m_IsLoggingEnabled;
         /// <summary>

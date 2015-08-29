@@ -1,10 +1,8 @@
-﻿namespace Ignite.Infrastructure.Micro.Common.Assertions
+﻿namespace Ignite.Framework.Micro.Common.Assertions
 {
     using System;
     using System.Collections;
-
     using NetMf.CommonExtensions;
-
     using VikingErik.NetMF.MicroLinq;
 
     /// <summary>

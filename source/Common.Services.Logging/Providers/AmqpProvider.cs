@@ -1,20 +1,15 @@
 
 
-namespace Ignite.Infrastructure.Micro.Common.Services.Logging.Providers
+namespace Ignite.Framework.Micro.Common.Services.Logging.Providers
 {
     using System;
-
-    using Microsoft.SPOT;
-
     using Amqp;
     using Amqp.Framing;
-
+    using Ignite.Framework.Micro.Common.Logging;
+    using Ignite.Framework.Micro.Common.Messaging;
+    using Ignite.Framework.Micro.Common.Networking;
     using Json.NETMF;
-
-    using Ignite.Infrastructure.Micro.Common.Logging;
-    using Ignite.Infrastructure.Micro.Common.IO.Networking;
-    using Ignite.Infrastructure.Micro.Common.IO.Networking.Messaging;
-    using Ignite.Infrastructure.Micro.Common.Networking;
+    using Microsoft.SPOT;
     using Trace = Amqp.Trace;
 
     /// <summary>

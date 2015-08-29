@@ -1,4 +1,4 @@
-﻿namespace Ignite.Infrastructure.Micro.Common.Assertions
+﻿namespace Ignite.Framework.Micro.Common.Assertions
 {
     using System;
 

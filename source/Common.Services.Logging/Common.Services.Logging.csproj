@@ -1,16 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
-    <AssemblyName>Ignite.Infrastructure.Micro.Common.Services.Logging</AssemblyName>
+    <AssemblyName>Ignite.Framework.Micro.Common.Services.Logging</AssemblyName>
     <OutputType>Library</OutputType>
-    <RootNamespace>Ignite.Infrastructure.Micro.Common.Services.Logging</RootNamespace>
+    <RootNamespace>Ignite.Framework.Micro.Common.Services.Logging</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{31A3F165-4E77-4B88-988B-39EBF30C531A}</ProjectGuid>
+    <ProjectGuid>{F903B514-15F6-4297-9300-97D8B2D3A39F}</ProjectGuid>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,73 +28,66 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="BufferedLoggingService.cs" />
+    <Compile Include="LoggingProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\AmqpProvider.cs" />
     <Compile Include="Providers\MqttProvider.cs" />
-    <Compile Include="BufferedLoggingService.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LoggingProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Amqp.NetMF, Version=0.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AMQPNetLite.0.1.1-beta\lib\netmf43\Amqp.NetMF.dll</HintPath>
+    <Reference Include="Amqp.NetMF, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AMQPNetLite.1.1.0\lib\netmf43\Amqp.NetMF.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Json.NetMF">
+    <Reference Include="Json.NetMF, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Json.NetMF.1.3.0.0\lib\netmf43\Json.NetMF.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="M2Mqtt">
-      <HintPath>..\packages\M2Mqtt.4.0\lib\netmf43\M2Mqtt.dll</HintPath>
+    <Reference Include="M2Mqtt.NetMf, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\M2Mqtt.4.2.0.1\lib\netmf43\M2Mqtt.NetMf.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.SPOT.Native" />
-    <Reference Include="NetMf.CommonExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\libs\Micro.net\CommonExtensions\NetMF.CommonExtensions.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.IO" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common.Assertions\Common.Assertions.csproj">
-      <Project>{E166C9CA-FE3B-4C73-AEE1-D3DA4A240174}</Project>
+      <Project>{5FF19D7E-0827-4297-8FB1-2B51791F89D8}</Project>
       <Name>Common.Assertions</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common.Contract.Services\Common.Contract.Services.csproj">
-      <Project>{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}</Project>
+      <Project>{9DEBF422-3666-446C-8D0B-FA60CCF8EC54}</Project>
       <Name>Common.Contract.Services</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common.IO.File\Common.FileManagement.csproj">
-      <Project>{81CAD237-E881-42B4-AC8B-4D4B2D19EE5B}</Project>
+    <ProjectReference Include="..\Common.FileManagement\Common.FileManagement.csproj">
+      <Project>{31443F08-D806-4B27-80A5-6CD116B8123D}</Project>
       <Name>Common.FileManagement</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common.Logging\Common.Logging.csproj">
-      <Project>{A72001AF-A51E-4906-B060-588C9D569728}</Project>
+      <Project>{5BBF275D-57F6-41EE-9626-1250E0BEAE46}</Project>
       <Name>Common.Logging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common.Networking.Messaging\Common.Messaging.csproj">
-      <Project>{00BCCAFF-91E1-4D8F-A796-A2C7A6701AC3}</Project>
+    <ProjectReference Include="..\Common.Messaging\Common.Messaging.csproj">
+      <Project>{B492B7F3-EED3-49AC-B6E7-0EA57BA77A94}</Project>
       <Name>Common.Messaging</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common.Networking\Common.Networking.csproj">
-      <Project>{12EC6CE9-D302-4F07-B9B8-0D01E8070610}</Project>
+      <Project>{2C84C718-3E0F-4765-9C3C-4FC6A9A032D2}</Project>
       <Name>Common.Networking</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common.Services\Common.Services.csproj">
-      <Project>{83923E10-73A7-48F8-B6D6-06A14AE8887B}</Project>
+      <Project>{22CD62C7-1D35-444F-86E2-FBB206828E5B}</Project>
       <Name>Common.Services</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
+  <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
+  <Import Condition="!EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

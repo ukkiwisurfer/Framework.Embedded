@@ -1,4 +1,4 @@
-﻿namespace Ignite.Infrastructure.Micro.Contract.Services
+﻿namespace Ignite.Framework.Micro.Common.Contract.Services
 {
     public interface IBufferConfiguration
     {

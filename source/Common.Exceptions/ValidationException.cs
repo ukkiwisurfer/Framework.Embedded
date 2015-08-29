@@ -1,9 +1,8 @@
 ﻿
-namespace Ignite.Infrastructure.Micro.Common.Exceptions
+namespace Ignite.Framework.Micro.Common.Exceptions
 {
     using System;
-
-    using Ignite.Infrastructure.Micro.Common.Errors;
+    using Ignite.Framework.Micro.Common.Errors;
 
     /// <summary>
     /// The parent class for all Validation Exception types. 

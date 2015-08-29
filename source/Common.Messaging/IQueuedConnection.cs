@@ -1,4 +1,4 @@
-﻿namespace Ignite.Infrastructure.Micro.Common.IO.Networking.Messaging
+﻿namespace Ignite.Framework.Micro.Common.Messaging
 {
     /// <summary>
     /// Provides support for connection to a server application via message queuing technology.

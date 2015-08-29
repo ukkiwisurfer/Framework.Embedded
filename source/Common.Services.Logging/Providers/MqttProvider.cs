@@ -1,15 +1,12 @@
 
-namespace Ignite.Infrastructure.Micro.Common.Services.Logging.Providers
+namespace Ignite.Framework.Micro.Common.Services.Logging.Providers
 {
     using System;
     using System.Text;
-
-    using Ignite.Infrastructure.Micro.Common.IO.Networking;
-    using Ignite.Infrastructure.Micro.Common.IO.Networking.Messaging;
-    using Ignite.Infrastructure.Micro.Common.Logging;
-    using Ignite.Infrastructure.Micro.Common.Networking;
+    using Ignite.Framework.Micro.Common.Logging;
+    using Ignite.Framework.Micro.Common.Messaging;
+    using Ignite.Framework.Micro.Common.Networking;
     using Json.NETMF;
-
     using uPLibrary.Networking.M2Mqtt;
     using uPLibrary.Networking.M2Mqtt.Messages;
 
@@ -63,7 +60,8 @@ namespace Ignite.Infrastructure.Micro.Common.Services.Logging.Providers
 
             try
             {
-                m_Client = new MqttClient(m_Address.HostName, m_Address.Port, false, null);
+                m_Client = new MqttClient(System.Net.IPAddress.Parse(m_Address.IPAddress));
+                //m_Client = new MqttClient(m_Address.HostName, m_Address.Port, false, null);
                 m_Client.Connect(m_ClientId, m_Address.Username, m_Address.Password);
 
                 m_IsOpen = true;

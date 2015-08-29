@@ -1,7 +1,6 @@
-﻿namespace Ignite.Infrastructure.Micro.Common.Errors
+﻿namespace Ignite.Framework.Micro.Common.Errors
 {
     using System.Collections;
-
     using VikingErik.NetMF.MicroLinq;
 
     /// <summary>

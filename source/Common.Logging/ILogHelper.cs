@@ -1,7 +1,7 @@
-namespace Ignite.Infrastructure.Micro.Common.Logging
+namespace Ignite.Framework.Micro.Common.Logging
 {
-    using Ignite.Infrastructure.Micro.Common.Errors;
-    using Ignite.Infrastructure.Micro.Common.Exceptions;
+    using Ignite.Framework.Micro.Common.Errors;
+    using Ignite.Framework.Micro.Common.Exceptions;
 
     /// <summary>
     /// Helper for logging errors.

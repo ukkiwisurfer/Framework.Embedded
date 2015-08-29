@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
-    <AssemblyName>Ignite.Infrastructure.Micro.Contract.Services</AssemblyName>
+    <AssemblyName>Ignite.Framework.Micro.Common.Contract.Services</AssemblyName>
     <OutputType>Library</OutputType>
-    <RootNamespace>Ignite.Infrastructure.Micro.Contract.Services</RootNamespace>
+    <RootNamespace>Ignite.Framework.Micro.Common.Contract.Services</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{43ABBA59-12CF-4FFC-BC92-7B0A7268C794}</ProjectGuid>
+    <ProjectGuid>{9DEBF422-3666-446C-8D0B-FA60CCF8EC54}</ProjectGuid>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
   </PropertyGroup>
@@ -29,16 +29,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="BufferedConfiguration.cs" />
     <Compile Include="IBatchConfiguration.cs" />
     <Compile Include="IBufferConfiguration.cs" />
     <Compile Include="IService.cs" />
+    <Compile Include="IServiceHost.cs" />
     <Compile Include="IThreadedService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IServiceHost.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.SPOT.Native" />
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <Import Condition="!EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

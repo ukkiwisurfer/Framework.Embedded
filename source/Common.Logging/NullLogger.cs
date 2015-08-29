@@ -1,8 +1,6 @@
 
-namespace Ignite.Infrastructure.Micro.Common.Logging
+namespace Ignite.Framework.Micro.Common.Logging
 {
-    using System;
-
     /// <summary>
     /// A log provider that does nothing.
     /// </summary>

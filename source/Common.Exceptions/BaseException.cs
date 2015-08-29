@@ -1,9 +1,8 @@
 ﻿
-namespace Ignite.Infrastructure.Micro.Common.Exceptions
+namespace Ignite.Framework.Micro.Common.Exceptions
 {
     using System;
-
-    using Ignite.Infrastructure.Micro.Common.Errors;
+    using Ignite.Framework.Micro.Common.Errors;
 
     /// <summary>
     /// The parent class for all exceptions raised within the system. If a BaseException is raised we probably want to wrap it at the 
@@ -53,7 +52,7 @@ namespace Ignite.Infrastructure.Micro.Common.Exceptions
         }
 
         /// <summary>
-        /// The <seealso cref="Micro.Common.Errors.ErrorCode">ErrorCode</seealso> for this message.
+        /// The <seealso cref="Framework.Micro.Common.Errors.ErrorCode">ErrorCode</seealso> for this message.
         /// </summary>
         public ErrorCode ErrorCode { get; set; }
 

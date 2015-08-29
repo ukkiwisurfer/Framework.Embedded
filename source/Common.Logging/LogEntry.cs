@@ -1,11 +1,10 @@
 ﻿
-namespace Ignite.Infrastructure.Micro.Common.Logging
+namespace Ignite.Framework.Micro.Common.Logging
 {
     using System;
     using System.Collections;
-
-    using Ignite.Infrastructure.Micro.Common.Errors;
-    using Ignite.Infrastructure.Micro.Common.Exceptions;
+    using Ignite.Framework.Micro.Common.Errors;
+    using Ignite.Framework.Micro.Common.Exceptions;
 
     /// <summary>
     /// Wraps the common information to capture and log.
