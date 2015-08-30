@@ -1,7 +1,8 @@
 ﻿namespace Ignite.Framework.Micro.Common.Errors
 {
     using System.Collections;
-    using VikingErik.NetMF.MicroLinq;
+
+    using Ignite.Framework.Micro.Common.Core.Extensions;
 
     /// <summary>
     /// An error definition.

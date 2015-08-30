@@ -2,8 +2,10 @@
 {
     using System;
     using System.Collections;
-    using NetMf.CommonExtensions;
-    using VikingErik.NetMF.MicroLinq;
+
+    using Ignite.Framework.Micro.Common.Core;
+    using Ignite.Framework.Micro.Common.Core.Extensions;
+
 
     /// <summary>
     /// Extension methods for assertions.
@@ -64,8 +66,10 @@
         /// </param>
         public static void ShouldContainAll(this IEnumerable source, IEnumerable expected)
         {
-            bool matches = source.All(x => expected.Contains(x));            
+            bool matches = source.All(expected.Contains);            
             if (!matches) throw new ArgumentException("Not all items in the source collection were found in the expected collection.");
         }
+
+       
     }
 }

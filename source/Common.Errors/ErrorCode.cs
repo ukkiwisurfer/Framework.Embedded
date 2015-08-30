@@ -1,7 +1,7 @@
 ﻿namespace Ignite.Framework.Micro.Common.Errors
 {
     using System;
-    using NetMf.CommonExtensions;
+    using Ignite.Framework.Micro.Common.Core;
 
     /// <summary>
     /// Indicates the Error severity.

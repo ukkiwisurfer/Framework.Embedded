@@ -40,10 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SPOT.Native" />
-    <Reference Include="NetMf.CommonExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NetMf.CommonExtensions.1.1.2\lib\netmf41\NetMf.CommonExtensions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.IO" />
   </ItemGroup>
@@ -74,6 +70,10 @@
     <ProjectReference Include="..\Common.Networking\Common.Networking.csproj">
       <Project>{2C84C718-3E0F-4765-9C3C-4FC6A9A032D2}</Project>
       <Name>Common.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\Common.Core.csproj">
+      <Project>{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}</Project>
+      <Name>Common.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />

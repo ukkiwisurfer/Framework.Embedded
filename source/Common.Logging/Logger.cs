@@ -1,8 +1,8 @@
 ﻿namespace Ignite.Framework.Micro.Common.Logging
 {
+    using Ignite.Framework.Micro.Common.Core;
     using Ignite.Framework.Micro.Common.Errors;
     using Ignite.Framework.Micro.Common.Exceptions;
-    using NetMf.CommonExtensions;
 
     /// <summary>
     /// Logging provider.
@@ -50,7 +50,7 @@
         }
 
         /// <summary>
-        /// See <see cref="ILogger.Debug"/> for more details.
+        /// See <see cref="Microsoft.SPOT.Debug"/> for more details.
         /// </summary>
         /// <param name="message">
         /// The message to output.
@@ -62,7 +62,7 @@
         }
 
         /// <summary>
-        /// See <see cref="ILogger.Debug"/> for more details.
+        /// See <see cref="Microsoft.SPOT.Debug"/> for more details.
         /// </summary>
         /// <param name="message">
         /// The message to output including formatting placeholders.
@@ -77,7 +77,7 @@
         }       
 
         /// <summary>
-        /// See <see cref="ILogger.Error"/> for more details.
+        /// See <see cref="Errors.Error"/> for more details.
         /// </summary>
         /// <param name="message">
         /// The message to output.
@@ -89,7 +89,7 @@
         }
 
         /// <summary>
-        /// See <see cref="ILogger.Error"/> for more details.
+        /// See <see cref="Errors.Error"/> for more details.
         /// </summary>
         /// <param name="message">
         /// The message to output.
@@ -104,7 +104,7 @@
         }
 
         /// <summary>
-        /// See <see cref="ILogger.Error"/> for more details.
+        /// See <see cref="Errors.Error"/> for more details.
         /// </summary>
         /// <param name="message">
         /// The message to output including formatting placeholders.

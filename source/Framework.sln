@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Services.Logging", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Services.Networking", "Common.Services.Networking\Common.Services.Networking.csproj", "{154BE737-20C2-479A-ABC3-36D4C3502898}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Core", "Common\Common.Core.csproj", "{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -168,6 +170,16 @@ Global
 		{154BE737-20C2-479A-ABC3-36D4C3502898}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{154BE737-20C2-479A-ABC3-36D4C3502898}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{154BE737-20C2-479A-ABC3-36D4C3502898}.Release|x86.ActiveCfg = Release|Any CPU
+		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -185,5 +197,6 @@ Global
 		{22CD62C7-1D35-444F-86E2-FBB206828E5B} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{F903B514-15F6-4297-9300-97D8B2D3A39F} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{154BE737-20C2-479A-ABC3-36D4C3502898} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
+		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 	EndGlobalSection
 EndGlobal

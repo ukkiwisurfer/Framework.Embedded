@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections;
-    using VikingErik.NetMF.MicroLinq;
+    using Ignite.Framework.Micro.Common.Core.Extensions;
 
     /// <summary>
     /// Defines extension methods for IEnumerable that assert if conditions are not met. 

@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
-    <AssemblyName>Ignite.Framework.Micro.Common.Messaging</AssemblyName>
+    <AssemblyName>Ignite.Framework.Micro.Common.Core</AssemblyName>
     <OutputType>Library</OutputType>
-    <RootNamespace>Ignite.Framework.Micro.Common.Messaging</RootNamespace>
+    <RootNamespace>Ignite.Framework.Micro.Common.Core</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B492B7F3-EED3-49AC-B6E7-0EA57BA77A94}</ProjectGuid>
+    <ProjectGuid>{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}</ProjectGuid>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
   </PropertyGroup>
@@ -29,35 +29,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\SolutionInfo.cs">
-      <Link>Properties\SolutionInfo.cs</Link>
-    </Compile>
-    <Compile Include="AmqpConnection.cs" />
-    <Compile Include="IQueuedConnection.cs" />
+    <Compile Include="Extensions\Filter.cs" />
+    <Compile Include="Extensions\Enumerator.cs" />
+    <Compile Include="FormatException.cs" />
+    <Compile Include="Parse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueueEndpointAddress.cs" />
-    <Compile Include="RegistrationData.cs" />
+    <Compile Include="Extensions\EnumerableExtension.cs" />
+    <Compile Include="StringBuilder.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="StringUtility.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Amqp.NetMF, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AMQPNetLite.1.1.0\lib\netmf43\Amqp.NetMF.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.SPOT.Native" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common.Assertions\Common.Assertions.csproj">
-      <Project>{5FF19D7E-0827-4297-8FB1-2B51791F89D8}</Project>
-      <Name>Common.Assertions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common\Common.Core.csproj">
-      <Project>{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}</Project>
-      <Name>Common.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <Import Condition="!EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

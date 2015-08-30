@@ -4,8 +4,8 @@
     using System.Threading;
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Services;
+    using Ignite.Framework.Micro.Common.Core;
     using Ignite.Framework.Micro.Common.Logging;
-    using NetMf.CommonExtensions;
 
     /// <summary>
     /// A service that supports threaded operations.

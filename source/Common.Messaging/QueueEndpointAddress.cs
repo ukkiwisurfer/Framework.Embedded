@@ -1,7 +1,7 @@
 
 namespace Ignite.Framework.Micro.Common.Messaging
 {
-    using NetMf.CommonExtensions;
+    using Ignite.Framework.Micro.Common.Core;
 
     /// <summary>
     /// Connection details for connecting to an AMQP endpoint.
