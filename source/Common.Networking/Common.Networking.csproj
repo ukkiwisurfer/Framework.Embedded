@@ -35,12 +35,15 @@
     <Compile Include="ConnectionState.cs" />
     <Compile Include="IMessageBrokerClient.cs" />
     <Compile Include="IMessageHandler.cs" />
+    <Compile Include="NetworkHelper.cs" />
+    <Compile Include="NetworkInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TcpSocket.cs" />
     <Compile Include="UdpSocket.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SPOT.Native" />
+    <Reference Include="Microsoft.SPOT.Net" />
     <Reference Include="System" />
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
