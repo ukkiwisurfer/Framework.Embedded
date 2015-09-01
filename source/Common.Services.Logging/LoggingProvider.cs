@@ -1,7 +1,7 @@
 
 namespace Ignite.Framework.Micro.Common.Services.Logging
 {
-    using Ignite.Framework.Micro.Common.Logging;
+    using Ignite.Framework.Micro.Common.Contract.Logging;
 
     /// <summary>
     /// Provides the support to persist logging messages to a queued logging provider.

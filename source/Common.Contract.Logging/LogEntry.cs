@@ -1,5 +1,5 @@
 ﻿
-namespace Ignite.Framework.Micro.Common.Logging
+namespace Ignite.Framework.Micro.Common.Contract.Logging
 {
     using System;
     using System.Collections;

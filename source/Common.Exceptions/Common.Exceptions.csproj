@@ -33,6 +33,8 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="BaseException.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
+    <Compile Include="ApplicationException.cs" />
     <Compile Include="InterceptedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropogatedException.cs" />

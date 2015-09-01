@@ -4,6 +4,8 @@ namespace Ignite.Framework.Micro.Common.Logging
     using System;
     using System.Text;
     using System.Threading;
+
+    using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Errors;
     using Ignite.Framework.Micro.Common.Exceptions;
 

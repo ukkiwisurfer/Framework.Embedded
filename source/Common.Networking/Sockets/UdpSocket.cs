@@ -4,6 +4,8 @@
     using System.Net;
     using System.Net.Sockets;
 
+    using Ignite.Framework.Micro.Common.Contract.Messaging;
+
     public delegate void OnDataReceivedEvent();
 
     /// <summary>
@@ -110,25 +112,8 @@
             m_IsOpen = false;
             lock (m_SyncLock)
             {
-                IPAddress multicastIPAddress = m_Endpoint.Address;
-
-                //m_Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastInterface, multicastIPAddress.GetAddressBytes());
-                //byte[] multicastOptions = 
-
-                //m_Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, )
-                //m_Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 1);
-
- 
                 m_Client.Bind(new IPEndPoint(IPAddress.Any, m_Endpoint.Port));
 
-                //var multicastOpt = new byte[] { 224, 192, 32, 19, 0, 0, 0, 0 };
-                //m_Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 0);
-                //m_Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multicastOpt);
-
-
-
-                //m_Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.PacketInformation, true);
-                
                 m_IsOpen = true;
             }
         }

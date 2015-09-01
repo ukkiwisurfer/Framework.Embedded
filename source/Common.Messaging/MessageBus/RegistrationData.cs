@@ -1,4 +1,4 @@
-namespace Ignite.Framework.Micro.Common.Messaging
+namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
 {
     /// <summary>
     /// Describes registraton details to connect to a message queue server. 

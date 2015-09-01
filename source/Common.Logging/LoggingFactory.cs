@@ -3,6 +3,8 @@ namespace Ignite.Framework.Micro.Common.Logging
 {
     using System;
 
+    using Ignite.Framework.Micro.Common.Contract.Logging;
+
     public delegate ILogger CreateLogger(Type type);
 
     /// <summary>

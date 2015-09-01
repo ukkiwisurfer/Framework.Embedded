@@ -4,6 +4,7 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
     using System;
     using System.IO;
     using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.FileManagement;
     using Ignite.Framework.Micro.Common.Logging;

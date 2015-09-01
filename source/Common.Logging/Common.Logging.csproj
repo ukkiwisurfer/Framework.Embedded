@@ -32,20 +32,12 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="ILogAdapter.cs" />
-    <Compile Include="ILogFactory.cs" />
-    <Compile Include="ILogger.cs" />
-    <Compile Include="ILogHelper.cs" />
-    <Compile Include="ILogProvider.cs" />
     <Compile Include="LogContainer.cs" />
-    <Compile Include="LogEntry.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="LoggingFactory.cs" />
     <Compile Include="LogHelper.cs" />
-    <Compile Include="LogMessage.cs" />
     <Compile Include="NullLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TraceEventType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SPOT.Native" />
@@ -57,6 +49,10 @@
     <ProjectReference Include="..\Common.Assertions\Common.Assertions.csproj">
       <Project>{5FF19D7E-0827-4297-8FB1-2B51791F89D8}</Project>
       <Name>Common.Assertions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common.Contract.Logging\Common.Contract.Logging.csproj">
+      <Project>{98C02320-FBEE-4F0D-B3B4-F3D8D0318643}</Project>
+      <Name>Common.Contract.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common.Errors\Common.Errors.csproj">
       <Project>{EBE7390D-27FB-491E-939F-2E31B79A23C4}</Project>

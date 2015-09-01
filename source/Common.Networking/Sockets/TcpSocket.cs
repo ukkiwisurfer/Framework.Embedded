@@ -6,6 +6,8 @@ namespace Ignite.Framework.Micro.Common.Networking
     using System.Net.Sockets;
     using System.Threading;
 
+    using Ignite.Framework.Micro.Common.Contract.Messaging;
+
     /// <summary>
     /// Wraps a TCP socket.
     /// </summary>
@@ -13,7 +15,7 @@ namespace Ignite.Framework.Micro.Common.Networking
     /// Captures TCP packets and passes the received data to a <see cref="IMessageHandler"/> 
     /// instance for processing.
     /// </remarks>
-    public class TcpSocket
+    public class TcpSocket : IDisposable
     {
         private Thread m_ConnectThead;
         private readonly Socket m_Socket;
@@ -23,6 +25,7 @@ namespace Ignite.Framework.Micro.Common.Networking
         private readonly string m_HostName;
         private readonly int m_Port;
         private bool m_IsOpen;
+        private bool m_IsDisposed;
 
 
         /// <summary>
@@ -78,6 +81,40 @@ namespace Ignite.Framework.Micro.Common.Networking
             m_SyncLock = new object();
             m_Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             m_ConnectedEvent = new ManualResetEvent(false);
+        }
+
+        /// <summary>
+        /// See <see cref="IDisposable.Dispose"/> for more details.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases any unamanaged resources.
+        /// </summary>
+        /// <param name="isDisposing">
+        /// Indicates whether the disposal is deterministic or not.
+        /// </param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (!m_IsDisposed)
+            {
+                if (isDisposing)
+                {
+                    m_Socket.Close();
+
+                    var disposable = m_Socket as IDisposable;
+                    if (disposable != null)
+                    {
+                        disposable.Dispose();
+                    }
+                }
+
+                m_IsDisposed = true;
+            }
         }
 
         /// <summary>

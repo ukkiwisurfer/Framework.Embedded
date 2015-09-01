@@ -3,9 +3,10 @@ namespace Ignite.Framework.Micro.Common.Services
 {
     using System;
     using System.Collections;
+
     using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
-    using Ignite.Framework.Micro.Common.Logging;
 
     /// <summary>
     /// Service host that supports multiple threaded services. 

@@ -1,30 +1,38 @@
-﻿namespace Ignite.Framework.Micro.Common.Messaging
+﻿namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
 {
     using System;
     using Amqp;
     using Amqp.Framing;
+
     using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Messaging;
     using Trace = Amqp.Trace;
 
     /// <summary>
     /// Processes incoming messages and dispatches them via an
     /// AMQP endpoint.
     /// </summary>
-    public class AmqpConnection : IQueuedConnection
+    public class AmqpConnection : IQueuedConnection, IDisposable
     {
         private readonly QueueEndpointAddress m_Address;
         private readonly string m_ServiceName;
         private Connection m_Connection;
         private Session m_Session;
-        private SenderLink m_Sender;
+        //private SenderLink m_Sender;
+        private bool m_IsDisposed;
 
-        private bool m_IsOpen;
-        /// <summary>
-        /// See <see cref="IQueuedConnection.IsOpen"/> for more details.
-        /// </summary>
-        public bool IsOpen
+        internal Session Session
         {
-            get { return m_IsOpen; }
+            get {  return m_Session; }
+        }
+
+        private bool _mIsConnected;
+        /// <summary>
+        /// See <see cref="IQueuedConnection.IsConnected"/> for more details.
+        /// </summary>
+        public bool IsConnected
+        {
+            get { return _mIsConnected; }
         }
 
         private string m_ClientId;
@@ -56,55 +64,70 @@
         }
 
         /// <summary>
+        /// See <see cref="IDisposable.Dispose"/> for more details.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases any unamanaged resources.
+        /// </summary>
+        /// <param name="isDisposing">
+        /// Indicates whether the disposal is deterministic or not.
+        /// </param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (!m_IsDisposed)
+            {
+                if (isDisposing)
+                {
+                   Disconnect();
+                }
+
+                m_IsDisposed = true;
+            }
+        }
+
+        /// <summary>
         /// Opens a connection to the AMQP server.
         /// </summary>
-        public void Open()
+        public void Connect()
         {
             var address = new Address(m_Address.GetUrl());
 
             m_ClientId = Guid.NewGuid().ToString();
             m_Connection = new Connection(address);
             m_Session = new Session(m_Connection);
-            m_Sender = new SenderLink(m_Session, "messages", m_Address.TargetName);
+            //m_Sender = new SenderLink(m_Session, "messages", m_Address.TargetName);
 
-            m_IsOpen = true;
+            _mIsConnected = true;
         }
 
         /// <summary>
         /// Closes the connection to the AMQP server.
         /// </summary>
-        public void Close()
+        public void Disconnect()
         {
             try
             {
                 m_Connection.Close();
                 m_Session.Close();
-                m_Sender.Close();
+                //m_Sender.Close();
             }
             finally
             {
-                m_Sender = null;
+                //m_Sender = null;
                 m_Session = null;
                 m_Connection = null;
 
-                m_IsOpen = false;
+                _mIsConnected = false;
             }
         }
 
-        /// <summary>
-        /// See <see cref="IQueuedConnection.SendMessage"/> for more details.
-        /// </summary>
-        /// <param name="payload">
-        /// The raw payload to be processed.
-        /// </param>
-        public void SendMessage(byte[] payload)
-        {
-            var message = new Message(payload);
-            message.Properties = new Properties() { GroupId = m_ServiceName };
-            message.ApplicationProperties = new ApplicationProperties();
-
-            m_Sender.Send(message);
-        }
+        
 
         /// <summary>
         /// Amqp tracing to console method.

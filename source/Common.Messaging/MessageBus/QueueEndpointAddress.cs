@@ -1,5 +1,5 @@
 
-namespace Ignite.Framework.Micro.Common.Messaging
+namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
 {
     using Ignite.Framework.Micro.Common.Core;
 
@@ -9,29 +9,32 @@ namespace Ignite.Framework.Micro.Common.Messaging
     public class QueueEndpointAddress
     {
         /// <summary>
-        /// The name of the host for the AMQP server.
+        /// The name of the host for the MQ server.
         /// </summary>
         public string HostName { get; set; }
 
+        /// <summary>
+        /// The IP address of the MQ server.
+        /// </summary>
         public string IPAddress { get; set; }
 
         /// <summary>
-        /// The port address for the AQMP server.
+        /// The port address for the MQ server.
         /// </summary>
         public int Port { get; set; }
 
         /// <summary>
-        /// The username to connect to the AMQP server.
+        /// The username to connect to the MQ server.
         /// </summary>
         public string Username { get; set; }
 
         /// <summary>
-        /// The password to connect to the AMQP server.
+        /// The password to connect to the MQ server.
         /// </summary>
         public string Password { get; set; }
 
         /// <summary>
-        /// The AMQP queue name.
+        /// The MQ queue name.
         /// </summary>
         public string TargetName { get; set; }
 

@@ -1,6 +1,8 @@
 
 namespace Ignite.Framework.Micro.Common.Logging
 {
+    using Ignite.Framework.Micro.Common.Contract.Logging;
+
     /// <summary>
     /// A log provider that does nothing.
     /// </summary>

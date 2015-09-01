@@ -3,10 +3,13 @@ namespace Ignite.Framework.Micro.Common.Services.Logging.Providers
 {
     using System;
     using System.Text;
+    using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Logging;
-    using Ignite.Framework.Micro.Common.Messaging;
+    using Ignite.Framework.Micro.Common.Messaging.MessageBus;
     using Ignite.Framework.Micro.Common.Networking;
+
     using Json.NETMF;
+    
     using uPLibrary.Networking.M2Mqtt;
     using uPLibrary.Networking.M2Mqtt.Messages;
 

@@ -2,10 +2,12 @@
 {
     using System;
     using System.Threading;
+
     using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.Core;
-    using Ignite.Framework.Micro.Common.Logging;
+
 
     /// <summary>
     /// A service that supports threaded operations.

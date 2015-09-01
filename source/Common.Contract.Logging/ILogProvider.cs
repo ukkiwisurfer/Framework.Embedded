@@ -1,4 +1,4 @@
-﻿namespace Ignite.Framework.Micro.Common.Logging
+﻿namespace Ignite.Framework.Micro.Common.Contract.Logging
 {
     /// <summary>
     /// Common logging provider.

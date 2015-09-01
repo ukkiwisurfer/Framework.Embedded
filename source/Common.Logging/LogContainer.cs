@@ -2,7 +2,9 @@
 namespace Ignite.Framework.Micro.Common.Logging
 {
     using System.Collections;
+
     using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Logging;
 
     /// <summary>
     /// Container for multiple <see cref="LogEntry"/> elements.

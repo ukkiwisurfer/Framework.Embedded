@@ -1,4 +1,4 @@
-﻿namespace Ignite.Framework.Micro.Common.Messaging
+﻿namespace Ignite.Framework.Micro.Common.Contract.Messaging
 {
     /// <summary>
     /// Provides support for connection to a server application via message queuing technology.
@@ -10,22 +10,16 @@
         /// <summary>
         /// Indicates whether the connection to the AMQP server is open.
         /// </summary>
-        bool IsOpen { get; }
+        bool IsConnected { get; }
 
         /// <summary>
         /// Opens the connection to the queue,
         /// </summary>
-        void Open();
+        void Connect();
 
         /// <summary>
         /// Closes the connection to the queue.
         /// </summary>
-        void Close();
-
-        /// <summary>
-        /// Sends a message via a queue.
-        /// </summary>
-        /// <param name="payload"></param>
-        void SendMessage(byte[] payload);
+        void Disconnect();
     }
 }

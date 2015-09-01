@@ -1,4 +1,4 @@
-namespace Ignite.Framework.Micro.Common.Logging
+namespace Ignite.Framework.Micro.Common.Contract.Logging
 {
     using Ignite.Framework.Micro.Common.Errors;
     using Ignite.Framework.Micro.Common.Exceptions;
