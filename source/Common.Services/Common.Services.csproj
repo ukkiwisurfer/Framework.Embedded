@@ -39,7 +39,6 @@
     <Compile Include="ThreadedService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="System" />
     <Reference Include="System.IO" />
   </ItemGroup>
@@ -66,10 +65,6 @@
     <ProjectReference Include="..\Common.FileManagement\Common.FileManagement.csproj">
       <Project>{31443F08-D806-4B27-80A5-6CD116B8123D}</Project>
       <Name>Common.FileManagement</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common.Logging\Common.Logging.csproj">
-      <Project>{5BBF275D-57F6-41EE-9626-1250E0BEAE46}</Project>
-      <Name>Common.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common.Networking\Common.Networking.csproj">
       <Project>{2C84C718-3E0F-4765-9C3C-4FC6A9A032D2}</Project>

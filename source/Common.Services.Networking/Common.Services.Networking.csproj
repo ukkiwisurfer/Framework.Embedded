@@ -37,9 +37,6 @@
     <Compile Include="UdpListenerService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SPOT.Native" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Common.Assertions\Common.Assertions.csproj">
       <Project>{5FF19D7E-0827-4297-8FB1-2B51791F89D8}</Project>
       <Name>Common.Assertions</Name>

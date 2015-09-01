@@ -41,9 +41,6 @@
     <Compile Include="TypeAssertions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SPOT.Native" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

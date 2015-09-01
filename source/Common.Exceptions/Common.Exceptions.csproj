@@ -41,7 +41,6 @@
     <Compile Include="ValidationException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>

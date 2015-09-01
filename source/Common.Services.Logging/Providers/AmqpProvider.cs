@@ -5,7 +5,7 @@ namespace Ignite.Framework.Micro.Common.Services.Logging.Providers
     using System;
     using Amqp;
     using Amqp.Framing;
-
+    using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Messaging.MessageBus;
     using Ignite.Framework.Micro.Common.Networking;
@@ -16,7 +16,7 @@ namespace Ignite.Framework.Micro.Common.Services.Logging.Providers
     using Trace = Amqp.Trace;
 
     /// <summary>
-    /// AMQP client.
+    /// AN AMQP client.
     /// </summary>
     public class AmqpProvider : IMessageBrokerClient
     {
@@ -37,7 +37,7 @@ namespace Ignite.Framework.Micro.Common.Services.Logging.Providers
 
         private string m_ClientId;
         /// <summary>
-        /// The identifier for the MQTT client.
+        /// The identifier for the AMQP client.
         /// </summary>
         public string ClientId
         {
@@ -51,6 +51,9 @@ namespace Ignite.Framework.Micro.Common.Services.Logging.Providers
         /// <param name="address"></param>
         public AmqpProvider(string serviceName, QueueEndpointAddress address)
         {
+            serviceName.ShouldNotBeEmpty();
+            address.ShouldNotBeNull();
+
             m_ServiceName = serviceName;
             m_Address = address;
 
@@ -112,6 +115,8 @@ namespace Ignite.Framework.Micro.Common.Services.Logging.Providers
         /// </param>
         public void SendMessages(object[] logMessages)
         {
+            logMessages.ShouldNotBeEmpty();
+
             foreach (var logMessage in logMessages)
             {
                 var castedMessage = (LogEntry)logMessage;
@@ -127,6 +132,11 @@ namespace Ignite.Framework.Micro.Common.Services.Logging.Providers
             }
         }
 
+        /// <summary>
+        /// Writes tracing information
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="args"></param>
         static void WriteTrace(string format, params object[] args)
         {
             string message = args == null ? format : Fx.Format(format, args);

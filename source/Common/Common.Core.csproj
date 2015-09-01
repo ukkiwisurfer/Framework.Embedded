@@ -39,9 +39,6 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="StringUtility.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.SPOT.Native" />
-  </ItemGroup>
   <ItemGroup />
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <Import Condition="!EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

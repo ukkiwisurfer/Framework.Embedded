@@ -41,7 +41,6 @@
     <Compile Include="Sockets\UdpSocket.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="Microsoft.SPOT.Net" />
     <Reference Include="System" />
   </ItemGroup>
@@ -49,10 +48,6 @@
     <ProjectReference Include="..\Common.Contract.Messaging\Common.Contract.Messaging.csproj">
       <Project>{01EEB893-DCF0-45AF-A084-61A6F5FFCCCF}</Project>
       <Name>Common.Contract.Messaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common.Messaging\Common.Messaging.csproj">
-      <Project>{B492B7F3-EED3-49AC-B6E7-0EA57BA77A94}</Project>
-      <Name>Common.Messaging</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />

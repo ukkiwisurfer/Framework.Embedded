@@ -5,6 +5,9 @@
     /// </summary>
     public interface IQueuedConnection
     {
+        /// <summary>
+        /// The idenifier of the the client.
+        /// </summary>
         string ClientId { get; }
 
         /// <summary>
