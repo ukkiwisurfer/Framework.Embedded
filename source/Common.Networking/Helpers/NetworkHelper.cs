@@ -1,12 +1,11 @@
-using System;
-using Microsoft.SPOT;
 
 namespace Ignite.Framework.Micro.Common.Networking
-{
-    using System.Net;
-
+{  
     using Microsoft.SPOT.Net.NetworkInformation;
 
+    /// <summary>
+    /// Helper class for accessing networking details from the local device.
+    /// </summary>
     public class NetworkHelper
     {
         private readonly NetworkInterface[] m_Interfaces;

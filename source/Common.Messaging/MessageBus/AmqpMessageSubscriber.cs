@@ -69,8 +69,6 @@
                 if (isDisposing)
                 {
                     Disconnect();
-
-                    m_Connection.Dispose();
                 }
 
                 m_IsDisposed = true;

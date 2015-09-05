@@ -60,8 +60,6 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
                 if (isDisposing)
                 {
                     Disconnect();
-
-                    m_Connection.Dispose();
                 }
 
                 m_IsDisposed = true;
