@@ -18,6 +18,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         private SenderLink m_Sender;
         private readonly string m_TopicName;
         private bool m_IsDisposed;
+        private bool m_IsConnected;
 
         /// <summary>
         /// INitialises an instance of the publisher.
@@ -70,7 +71,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// <param name="payload"></param>
         public virtual void Publish(byte[] payload)
         {
-            if (m_Sender != null)
+            if (IsConnected)
             {
                 var message = new Message();
 
@@ -94,7 +95,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// </summary>
         public bool IsConnected
         {
-            get { return m_Connection.IsConnected; }
+            get { return m_IsConnected; }
         }
 
         /// <summary>
@@ -104,8 +105,10 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         {
             if (!IsConnected)
             {
-                m_Connection.Connect();
+                if (!m_Connection.IsConnected) m_Connection.Connect();
                 m_Sender = new SenderLink(m_Connection.Session, "messages", m_TopicName);
+
+                m_IsConnected = true;
             }
         }
         
@@ -118,8 +121,9 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
             {
                 m_Sender.Close();
                 m_Sender = null;
+
+                m_IsConnected = false;
             }
-            if (IsConnected) m_Connection.Disconnect();
         }
 
         /// <summary>
