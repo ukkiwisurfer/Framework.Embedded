@@ -15,7 +15,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
     public class AmqpMessagePublisher : IMessagePublisher, IMessageHandler, IDisposable
     {
         private readonly AmqpConnection m_Connection;
-        private readonly SenderLink m_Sender;
+        private SenderLink m_Sender;
         private readonly string m_TopicName;
         private bool m_IsDisposed;
 
@@ -34,8 +34,6 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
 
             m_Connection = connection;
             m_TopicName = topicName;
-            m_Sender = new SenderLink(m_Connection.Session, "messages", topicName);
-
         }
 
         /// <summary>
@@ -65,18 +63,22 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
                 m_IsDisposed = true;
             }
         }
-
+        
         /// <summary>
         /// Publishes a message to a topic.
         /// </summary>
         /// <param name="payload"></param>
         public virtual void Publish(byte[] payload)
         {
-            var message = new Message(payload);
-            message.Properties = new Properties() { GroupId = m_TopicName };
-            message.ApplicationProperties = new ApplicationProperties();
+            if (m_Sender != null)
+            {
+                var message = new Message();
 
-            m_Sender.Send(message);
+                message.ApplicationProperties = new ApplicationProperties();
+                message.BodySection = new Data() {Binary = payload};
+
+                m_Sender.Send(message);
+            }
         }
 
         /// <summary>
@@ -100,7 +102,11 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// </summary>
         public void Connect()
         {
-            m_Connection.Connect();
+            if (!IsConnected)
+            {
+                m_Connection.Connect();
+                m_Sender = new SenderLink(m_Connection.Session, "messages", m_TopicName);
+            }
         }
         
         /// <summary>
@@ -108,8 +114,12 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// </summary>
         public void Disconnect()
         {
-            m_Sender.Close();
-            m_Connection.Disconnect();
+            if (m_Sender != null)
+            {
+                m_Sender.Close();
+                m_Sender = null;
+            }
+            if (IsConnected) m_Connection.Disconnect();
         }
 
         /// <summary>

@@ -96,12 +96,11 @@
         /// </summary>
         public void Connect()
         {
-            var address = new Address(m_Address.GetUrl());
-
             m_ClientId = Guid.NewGuid().ToString();
+
+            var address = new Address(m_Address.GetUrl());
             m_Connection = new Connection(address);
             m_Session = new Session(m_Connection);
-            //m_Sender = new SenderLink(m_Session, "messages", m_Address.TargetName);
 
             _mIsConnected = true;
         }

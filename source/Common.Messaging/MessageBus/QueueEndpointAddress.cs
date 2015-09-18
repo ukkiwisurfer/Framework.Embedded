@@ -11,7 +11,12 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// <summary>
         /// The name of the host for the MQ server.
         /// </summary>
-        public string HostName { get; set; }
+        public string Host { get; set; }
+
+        /// <summary>
+        /// The name of the host for the MQ server.
+        /// </summary>
+        public string VirtualHost { get; set; }
 
         /// <summary>
         /// The IP address of the MQ server.
@@ -49,7 +54,8 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// </returns>
         public string GetUrl()
         {
-            return StringUtility.Format("amqp://{0}:{1}@{2}:{3}", Username, Password, HostName, Port);
+            var url = StringUtility.Format("amqp://{0}:{1}@{2}:{3}", Username, Password, IPAddress, Port);
+            return url;
         }
     }
 }
