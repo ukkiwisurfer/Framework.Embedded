@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
-    <AssemblyName>Ignite.Framework.Micro.Common.Services</AssemblyName>
+    <AssemblyName>Ignite.Framework.Micro.Common.Services.Data</AssemblyName>
     <OutputType>Library</OutputType>
-    <RootNamespace>Ignite.Framework.Micro.Common.Services</RootNamespace>
+    <RootNamespace>Ignite.Framework.Micro.Common.Services.Data</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{22CD62C7-1D35-444F-86E2-FBB206828E5B}</ProjectGuid>
+    <ProjectGuid>{89DF34BC-B018-4C36-A75B-655433953485}</ProjectGuid>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
   </PropertyGroup>
@@ -29,22 +29,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\SolutionInfo.cs">
-      <Link>Properties\SolutionInfo.cs</Link>
-    </Compile>
-    <Compile Include="Data\BufferedDataService.cs" />
-    <Compile Include="Data\DataTransferService.cs" />
-    <Compile Include="MultiServiceHost.cs" />
+    <Compile Include="BufferedDataCaptureService.cs" />
+    <Compile Include="BufferedDataHandler.cs" />
+    <Compile Include="DataItem.cs" />
+    <Compile Include="DataItemContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ThreadedService.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.SPOT.Native" />
-    <Reference Include="System" />
-    <Reference Include="System.IO" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common.Assertions\Common.Assertions.csproj">
@@ -63,22 +52,29 @@
       <Project>{9DEBF422-3666-446C-8D0B-FA60CCF8EC54}</Project>
       <Name>Common.Contract.Services</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common.Exceptions\Common.Exceptions.csproj">
-      <Project>{43755B10-302F-4BDC-B1AC-B64F132284F3}</Project>
-      <Name>Common.Exceptions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Common.FileManagement\Common.FileManagement.csproj">
       <Project>{31443F08-D806-4B27-80A5-6CD116B8123D}</Project>
       <Name>Common.FileManagement</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common.Networking\Common.Networking.csproj">
-      <Project>{2C84C718-3E0F-4765-9C3C-4FC6A9A032D2}</Project>
-      <Name>Common.Networking</Name>
+    <ProjectReference Include="..\Common.Logging\Common.Logging.csproj">
+      <Project>{5BBF275D-57F6-41EE-9626-1250E0BEAE46}</Project>
+      <Name>Common.Logging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\Common.Core.csproj">
-      <Project>{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}</Project>
-      <Name>Common.Core</Name>
+    <ProjectReference Include="..\Common.Services\Common.Services.csproj">
+      <Project>{22CD62C7-1D35-444F-86E2-FBB206828E5B}</Project>
+      <Name>Common.Services</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Json.NetMF, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Json.NetMF.1.3.0.0\lib\netmf43\Json.NetMF.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.SPOT.Native" />
+    <Reference Include="System.IO" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <Import Condition="!EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

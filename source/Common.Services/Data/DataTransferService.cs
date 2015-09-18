@@ -1,33 +1,33 @@
 ﻿
-namespace Ignite.Framework.Micro.Common.Services
+namespace Ignite.Framework.Micro.Common.Services.Data
 {
     using System;
     using System.IO;
+
     using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Messaging;
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.FileManagement;
-    using Ignite.Framework.Micro.Common.Networking;
 
     /// <summary>
-    /// Transfers data that has been persisted locally to a remote machine.
+    /// Transfers data that has been persisted locally to a remote machine via pub/sub mechanism.
     /// </summary>
     /// <remarks>
-    /// Finds any unsent local data files and sends them via a remote message 
+    /// Finds any unsent local data files and sends them to a message 
     /// broker for processing.
     /// </remarks>
     public class DataTransferService : ThreadedService, IBatchConfiguration
     {
-        private readonly IMessageBrokerClient m_Client;
-        private readonly int m_BufferSize;
-        private readonly string m_Path;
-        private readonly string m_Extension;
+        private readonly IMessagePublisher m_Publisher;
+        private readonly BufferedConfiguration m_Configuration;
         private readonly IFileHelper m_FileHelper;
         private readonly object m_SyncObject;
+        private readonly int m_BufferSize;
         private bool m_IsOpen;
 
         private int m_MessageBatchSize;
         /// <summary>
-        /// The number of log messages to batch up before attempting to send.
+        /// The number of files to batch up before attempting to send.
         /// </summary>
         public int BatchSize
         {
@@ -50,38 +50,33 @@ namespace Ignite.Framework.Micro.Common.Services
         /// <summary>
         /// Initialises an instance of the <see cref="DataTransferService"/> class.
         /// </summary>
-        /// <param name="client">
+        /// <param name="publisher">
         /// The client to use for sending messages to a message broker.
         /// </param>
         /// <param name="fileHelper">
         /// Helper for working with files.
         /// </param>
-        /// <param name="path">
-        /// The path to query for files to send
-        /// </param>
-        /// <param name="extension">
-        /// The file extension to query for.
+        /// <param name="configuration">
+        /// The configuration parameters for where the files are located.
         /// </param>
         /// <param name="bufferSize">
-        /// The size of the read buffer to use when loading data files.
+        /// The size of the read buffer to use when loading each data file's contents.
         /// </param>
-        public DataTransferService(IMessageBrokerClient client, IFileHelper fileHelper, string path, string extension, int bufferSize = 1024) : base()
+        public DataTransferService(IMessagePublisher publisher, IFileHelper fileHelper, BufferedConfiguration configuration, int bufferSize = 1024) : base()
         {
-            client.ShouldNotBeNull();
+            publisher.ShouldNotBeNull();
             fileHelper.ShouldNotBeNull();
-            path.ShouldNotBeEmpty();
-            extension.ShouldNotBeEmpty();
+            configuration.ShouldNotBeNull();
 
             ServiceName = "DataTransferService";
 
             m_FileHelper = fileHelper;
             m_SyncObject = new object();
-            m_Client = client;
-            m_Path = path;
-            m_Extension = extension;
+            m_Publisher = publisher;
             m_BufferSize = bufferSize;
+            m_Configuration = configuration;
 
-            m_MessageBatchSize = 2;
+            m_MessageBatchSize = 5;
         }
 
         /// <summary>
@@ -90,10 +85,8 @@ namespace Ignite.Framework.Micro.Common.Services
         /// <param name="hasWork"></param>
         public override void CheckIfWorkExists(bool hasWork = false)
         {
-            m_FileHelper.CreateDirectory(m_Path);
-
-            var files = m_FileHelper.GetAllFilesMatchingPattern(m_Path, m_Extension);
-            if (files.Length > 0)
+            var files = m_FileHelper.GetAllFilesMatchingPattern(m_Configuration.TargetPath, m_Configuration.TargetFileExtension);
+            if (files.Length >= BatchSize)
             {
                 this.SignalWorkToBeDone();
             }
@@ -104,6 +97,10 @@ namespace Ignite.Framework.Micro.Common.Services
         /// </summary>
         protected override void OnOpening()
         {
+            
+            m_FileHelper.CreateDirectory(m_Configuration.TargetPath);
+            m_Publisher.Connect();
+
             m_IsOpen = true;
         }
 
@@ -112,44 +109,54 @@ namespace Ignite.Framework.Micro.Common.Services
         /// </summary>
         protected override void OnClosing()
         {
+            m_Publisher.Disconnect();
             m_IsOpen = false;
         }
 
         /// <summary>
-        /// Perform transfer of log messages to the real logging service.
+        /// Perform transfer of files to a destination service via a message publisher.
         /// </summary>
         /// <remarks>
-        /// Loads log files off the disk and sends the file contents to a
-        /// message broker client. 
+        /// Loads files off the disk and sends the file contents to a message broker. 
         /// </remarks>
         protected override void DoWork()
         {
             try
             {
-                m_Client.Open();
-
-                if (m_Client.IsOpen)
+                if (m_Publisher.IsConnected)
                 {
-                    var pathExists = m_FileHelper.DoesDirectoryExist(m_Path);
+                    var pathExists = m_FileHelper.DoesDirectoryExist(m_Configuration.TargetPath);
                     if (pathExists)
                     {
-                        var fileNames = m_FileHelper.GetAllFilesMatchingPattern(m_Path, m_Extension);
+                        // Find all files under the target path and with the specified file extension.
+                        var fileNames = m_FileHelper.GetAllFilesMatchingPattern(m_Configuration.TargetPath, m_Configuration.TargetFileExtension);
                         if (fileNames.Length > 0)
                         {
+                            // For each file, read it and publish its contents via a message broker.
                             foreach (var fileName in fileNames)
                             {
-                                // Open file and read payload
-                                using (var file = m_FileHelper.OpenStream(m_Path, fileName, m_BufferSize))
+                                // Open file and read payload.
+                                using (var fileStream = m_FileHelper.OpenStream(m_Configuration.TargetPath, fileName, m_BufferSize))
                                 {
-                                    using (var reader = new StreamReader(file))
+                                    using (var payloadStream = new MemoryStream())
                                     {
-                                        // Send payload via message broker client.
-                                        var payload = reader.ReadToEnd();
-                                        m_Client.SendMessages(new object[] { payload });
+                                        // Copy file contents into memory stream.
+                                        byte[] buffer = new byte[m_BufferSize];
+                                        int bytesRead = 0;
+
+                                        // While there is data to read from the file add it to the payload stream.
+                                        while ((bytesRead = fileStream.Read(buffer, 0, m_BufferSize)) > 0)
+                                        {
+                                            payloadStream.Write(buffer, 0, bytesRead);
+                                        }
+
+                                        // Publish message with file contents.
+                                        m_Publisher.Publish(payloadStream.ToArray());
                                     }
                                 }
 
-                                m_FileHelper.DeleteFile(m_Path, fileName);
+                                // Once sent, delete the file.
+                                m_FileHelper.DeleteFile(m_Configuration.TargetPath, fileName);
                             }
                         }
                     }
@@ -161,7 +168,6 @@ namespace Ignite.Framework.Micro.Common.Services
             }
             finally
             {
-                m_Client.Close();
             }
         }
 
@@ -170,7 +176,7 @@ namespace Ignite.Framework.Micro.Common.Services
         /// </summary>
         public override bool IsServiceActive
         {
-            get { return m_IsOpen; }
+            get { return m_Publisher.IsConnected; }
         }
     }
 }

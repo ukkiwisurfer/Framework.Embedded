@@ -1,5 +1,5 @@
 
-namespace Ignite.Framework.Micro.Common.Services
+namespace Ignite.Framework.Micro.Common.Services.Data
 {
     using System;
     using System.Collections;
@@ -272,8 +272,10 @@ namespace Ignite.Framework.Micro.Common.Services
         /// </remarks>
         protected override void OnOpening()
         {
+            
             m_FileHelper.CreateDirectory(m_WorkingFilePath);
-            m_FileHelper.CreateDirectory(m_TargetFilePath);
+            m_FileHelper.CreateDirectory(m_TargetFilePath);                
+            
         }
 
         /// <summary>

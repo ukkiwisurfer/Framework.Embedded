@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Contract.Messaging",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Contract.Logging", "Common.Contract.Logging\Common.Contract.Logging.csproj", "{98C02320-FBEE-4F0D-B3B4-F3D8D0318643}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Services.Data", "Common.Services.Data\Common.Services.Data.csproj", "{89DF34BC-B018-4C36-A75B-655433953485}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -204,6 +206,16 @@ Global
 		{98C02320-FBEE-4F0D-B3B4-F3D8D0318643}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{98C02320-FBEE-4F0D-B3B4-F3D8D0318643}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{98C02320-FBEE-4F0D-B3B4-F3D8D0318643}.Release|x86.ActiveCfg = Release|Any CPU
+		{89DF34BC-B018-4C36-A75B-655433953485}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89DF34BC-B018-4C36-A75B-655433953485}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89DF34BC-B018-4C36-A75B-655433953485}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{89DF34BC-B018-4C36-A75B-655433953485}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{89DF34BC-B018-4C36-A75B-655433953485}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{89DF34BC-B018-4C36-A75B-655433953485}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89DF34BC-B018-4C36-A75B-655433953485}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89DF34BC-B018-4C36-A75B-655433953485}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{89DF34BC-B018-4C36-A75B-655433953485}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{89DF34BC-B018-4C36-A75B-655433953485}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -224,5 +236,6 @@ Global
 		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{01EEB893-DCF0-45AF-A084-61A6F5FFCCCF} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{98C02320-FBEE-4F0D-B3B4-F3D8D0318643} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
+		{89DF34BC-B018-4C36-A75B-655433953485} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 	EndGlobalSection
 EndGlobal

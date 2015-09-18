@@ -1,29 +1,27 @@
 
-namespace Ignite.Framework.Micro.Common.Services.Logging
+namespace Ignite.Framework.Micro.Common.Services.Data
 {
     using System;
     using System.IO;
+    
     using Ignite.Framework.Micro.Common.Assertions;
-    using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.FileManagement;
-    using Ignite.Framework.Micro.Common.Logging;
-    using Ignite.Framework.Micro.Common.Services;
-    using Ignite.Framework.Micro.Common.Services.Data;
+
     using Json.NETMF;
 
     /// <summary>
-    /// Captures logging requests and buffers them before writing them to disk.
+    /// Captures data items and buffers them before writing them to disk.
     /// </summary>
     /// <remarks>
     /// The batch size determines how many entries are buffered before being written
     /// to disk.
     /// </remarks>
-    public class BufferedLoggingService : BufferedDataService
+    public class BufferedDataCaptureService : BufferedDataService
     {
 
         /// <summary>
-        /// Initialises an instance of the <see cref="BufferedLoggingService"/> class. 
+        /// Initialises an instance of the <see cref="BufferedDataCaptureService"/> class. 
         /// </summary>
         /// <param name="fileHelper">
         /// Helper for working with files.
@@ -31,9 +29,9 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
         /// <param name="configuration">
         /// Configuration details for buffered data persistence. 
         /// </param>
-        public BufferedLoggingService(IFileHelper fileHelper, BufferedConfiguration configuration) : base(fileHelper, configuration)
+        public BufferedDataCaptureService(IFileHelper fileHelper, BufferedConfiguration configuration) : base(fileHelper, configuration)
         {
-            ServiceName = "BufferedLoggingService";
+            ServiceName = "BufferedDataCaptureService";
         }
 
         /// <summary>
@@ -52,23 +50,23 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
         }
 
         /// <summary>
-        /// Adds a new logging entry to the proxy service.
+        /// Adds a new data item entry to the proxy service.
         /// </summary>
         /// <remarks>
-        /// Will add a new log entry in a thread safe manner.
+        /// Will add a new data item in a thread safe manner.
         /// </remarks>
-        /// <param name="logEntry">
-        /// The log entry to add.
+        /// <param name="dataItem">
+        /// The data item to add.
         /// </param>
-        public void AddLogEntry(LogEntry logEntry)
+        public void AddDataEntry(DataItem dataItem)
         {
-            logEntry.ShouldNotBeNull();
+            dataItem.ShouldNotBeNull();
 
-            this.AddDataItem(logEntry);
+            this.AddDataItem(dataItem);
         }
 
         /// <summary>
-        /// Persists log messages to a file.
+        /// Persists data items to a file.
         /// </summary>
         /// <param name="dataItems">
         /// The collection of log messages to persist.
@@ -81,8 +79,8 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
                 writer = this.GetFileStream(WorkingPath, TargetPath);
                 if (writer != null)
                 {
-                    var container = new LogContainer(dataItems);
-                    var converted = SerializeLogContainer(container);
+                    var container = new DataItemContainer(dataItems);
+                    var converted = SerializeDataContainer(container);
 
                     writer.WriteLine(converted);
                 }
@@ -98,17 +96,17 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
         }
 
         /// <summary>
-        /// Serializes a collection of <see cref="LogEntry"/> objects to JSON.
+        /// Serializes a collection of <see cref="DataItem"/> objects to JSON.
         /// </summary>
-        /// <param name="logContainer">
+        /// <param name="container">
         /// The log entry to seralize.
         /// </param>
         /// <returns>
         /// Json representation of the log entry.
         /// </returns>
-        private static string SerializeLogContainer(LogContainer logContainer)
+        private static string SerializeDataContainer(DataItemContainer container)
         {
-            return JsonSerializer.SerializeObject(logContainer);
+            return JsonSerializer.SerializeObject(container);
         }
     }
 }
