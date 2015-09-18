@@ -6,6 +6,12 @@ namespace Ignite.Framework.Micro.Common.FileManagement
     public interface IFileHelper
     {
         /// <summary>
+        /// The current directory.
+        /// </summary>
+        /// <param name="path"></param>
+        void SetCurrentDirectory(string path);
+
+        /// <summary>
         /// Creates a directory.
         /// </summary>
         /// <param name="path">

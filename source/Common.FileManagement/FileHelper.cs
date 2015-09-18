@@ -13,6 +13,15 @@ namespace Ignite.Framework.Micro.Common.FileManagement
     public class FileHelper : IFileHelper
     {
         /// <summary>
+        /// Sets the current directory.
+        /// </summary>
+        /// <param name="path"></param>
+        public void SetCurrentDirectory(string path)
+        {
+            Directory.SetCurrentDirectory(path);
+        }
+
+        /// <summary>
         /// Creates a directory.
         /// </summary>
         /// <param name="path">
@@ -20,9 +29,10 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// </param>
         public void CreateDirectory(string path)
         {
-            if (!Directory.Exists(path))
+            var info = new DirectoryInfo(path);
+            if (!info.Exists)
             {
-                Directory.CreateDirectory(path);
+                info.Create();
             }
         }
 
