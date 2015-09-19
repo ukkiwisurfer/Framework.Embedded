@@ -5,6 +5,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     using System.IO;
     
     using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.FileManagement;
 
@@ -30,6 +31,21 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// Configuration details for buffered data persistence. 
         /// </param>
         public BufferedDataCaptureService(IFileHelper fileHelper, BufferedConfiguration configuration) : base(fileHelper, configuration)
+        {
+            ServiceName = "BufferedDataCaptureService";
+        }
+
+        /// <summary>
+        /// Initialises an instance of the <see cref="BufferedDataCaptureService"/> class. 
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="fileHelper">
+        /// Helper for working with files.
+        /// </param>
+        /// <param name="configuration">
+        /// Configuration details for buffered data persistence. 
+        /// </param>
+        public BufferedDataCaptureService(ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration) : base(logger, fileHelper, configuration)
         {
             ServiceName = "BufferedDataCaptureService";
         }

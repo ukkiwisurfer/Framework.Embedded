@@ -5,6 +5,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     using System.IO;
 
     using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Messaging;
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.FileManagement;
@@ -63,6 +64,39 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// The size of the read buffer to use when loading each data file's contents.
         /// </param>
         public DataTransferService(IMessagePublisher publisher, IFileHelper fileHelper, BufferedConfiguration configuration, int bufferSize = 1024) : base()
+        {
+            publisher.ShouldNotBeNull();
+            fileHelper.ShouldNotBeNull();
+            configuration.ShouldNotBeNull();
+
+            ServiceName = "DataTransferService";
+
+            m_FileHelper = fileHelper;
+            m_SyncObject = new object();
+            m_Publisher = publisher;
+            m_BufferSize = bufferSize;
+            m_Configuration = configuration;
+
+            m_MessageBatchSize = 5;
+        }
+
+        /// <summary>
+        /// Initialises an instance of the <see cref="DataTransferService"/> class.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="publisher">
+        /// The client to use for sending messages to a message broker.
+        /// </param>
+        /// <param name="fileHelper">
+        /// Helper for working with files.
+        /// </param>
+        /// <param name="configuration">
+        /// The configuration parameters for where the files are located.
+        /// </param>
+        /// <param name="bufferSize">
+        /// The size of the read buffer to use when loading each data file's contents.
+        /// </param>
+        public DataTransferService(ILogger logger, IMessagePublisher publisher, IFileHelper fileHelper, BufferedConfiguration configuration, int bufferSize = 1024)  : base(logger)
         {
             publisher.ShouldNotBeNull();
             fileHelper.ShouldNotBeNull();

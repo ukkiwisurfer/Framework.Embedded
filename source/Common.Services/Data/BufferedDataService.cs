@@ -5,6 +5,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     using System.Collections;
     using System.IO;
     using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.FileManagement;
 
@@ -112,6 +113,30 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// Helper for working with files.
         /// </param>
         protected BufferedDataService(IFileHelper fileHelper, BufferedConfiguration configuration)
+        {
+            fileHelper.ShouldNotBeNull();
+            configuration.ShouldNotBeNull();
+
+            m_MessageQueue = new Queue();
+            m_SyncLock = new object();
+            m_BatchSize = 2;
+            m_BufferSize = 1024;
+
+            m_FileHelper = fileHelper;
+            m_Configuration = configuration;
+            m_WorkingFilePath = configuration.WorkingPath;
+            m_TargetFilePath = configuration.TargetPath;
+            m_TargetFileExtension = configuration.TargetFileExtension;
+            m_WorkingFileExtension = configuration.WorkingFileExtension;
+        }
+
+        /// <summary>
+        /// Initialises an instance of the <see cref="BufferedDataService"/> class. 
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="fileHelper"></param>
+        /// <param name="configuration"></param>
+        protected BufferedDataService(ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration) : base(logger)
         {
             fileHelper.ShouldNotBeNull();
             configuration.ShouldNotBeNull();
