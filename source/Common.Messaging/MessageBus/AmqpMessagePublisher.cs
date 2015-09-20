@@ -96,6 +96,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         public bool IsConnected
         {
             get { return m_IsConnected; }
+            private set { m_IsConnected = value; }
         }
 
         /// <summary>
@@ -108,7 +109,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
                 if (!m_Connection.IsConnected) m_Connection.Connect();
                 m_Sender = new SenderLink(m_Connection.Session, "messages", m_TopicName);
 
-                m_IsConnected = true;
+                IsConnected = true;
             }
         }
         
@@ -117,12 +118,15 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// </summary>
         public void Disconnect()
         {
-            if (m_Sender != null)
+            if (IsConnected)
             {
-                m_Sender.Close();
-                m_Sender = null;
+                if (m_Sender != null)
+                {
+                    m_Sender.Close();
+                    m_Sender = null;
+                }
 
-                m_IsConnected = false;
+                IsConnected = false;
             }
         }
 

@@ -14,11 +14,12 @@
     public class AmqpMessageSubscriber : IMessageSubscriber, IDisposable
     {
         private readonly AmqpConnection m_Connection;
-        private readonly ReceiverLink m_Receiver;
+        private ReceiverLink m_Receiver;
         private readonly IMessageHandler m_MessageHandler;
         private readonly ILogger m_Logger;
         private readonly string m_TopicName;
         private bool m_IsDisposed;
+        private bool m_IsConnected;
 
         /// <summary>
         /// INitialises an instance of the publisher.
@@ -32,19 +33,15 @@
         /// <param name="handler">
         /// Processes incoming messages from the AMQP server.
         /// </param>
-        public AmqpMessageSubscriber(AmqpConnection connection, string topicName, IMessageHandler handler, ILogger logger)
+        public AmqpMessageSubscriber(AmqpConnection connection, string topicName, IMessageHandler handler)
         {
             connection.ShouldNotBeNull();
             topicName.ShouldNotBeEmpty();
             handler.ShouldNotBeNull();
-            logger.ShouldNotBeNull();
 
             m_Connection = connection;
             m_TopicName = topicName;
-            m_Receiver = new ReceiverLink(m_Connection.Session, "messages", topicName);
             m_MessageHandler = handler;
-            m_Logger = logger;
-
         }
 
         /// <summary>
@@ -93,8 +90,17 @@
         {
             try
             {
-                var payload = message.Body as byte[];
-                m_MessageHandler.HandleMessage(payload);
+                var payload = message.BodySection;
+                if (payload != null)
+                {
+                    var buffer = new ByteBuffer(1024, true);
+
+                    payload.Decode(buffer);
+                    if (buffer.Length > 0)
+                    {
+                        m_MessageHandler.HandleMessage(buffer.Buffer);
+                    }
+                }
             }
             catch (Exception e)
             {                
@@ -115,7 +121,8 @@
         /// </summary>
         public bool IsConnected
         {
-            get { return m_Connection.IsConnected; }
+            get { return m_IsConnected; }
+            private set { m_IsConnected = value; }
         }
 
         /// <summary>
@@ -123,7 +130,13 @@
         /// </summary>
         public void Connect()
         {
-            m_Connection.Connect();
+            if (!IsConnected)
+            {
+                if (!m_Connection.IsConnected) m_Connection.Connect();
+                m_Receiver = new ReceiverLink(m_Connection.Session, "messages", m_TopicName);
+
+                IsConnected = true;
+            }
         }
 
         /// <summary>
@@ -131,8 +144,16 @@
         /// </summary>
         public void Disconnect()
         {
-            m_Receiver.Close();
-            m_Connection.Disconnect();
+            if (IsConnected)
+            {
+                if (m_Receiver != null)
+                {
+                    m_Receiver.Close();
+                    m_Receiver = null;
+                }
+
+                IsConnected = false;
+            }
         }
     }
 }
