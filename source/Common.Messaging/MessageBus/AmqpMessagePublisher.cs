@@ -17,6 +17,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         private readonly AmqpConnection m_Connection;
         private SenderLink m_Sender;
         private readonly string m_TopicName;
+        private readonly string m_Name;
         private bool m_IsDisposed;
         private bool m_IsConnected;
 
@@ -29,12 +30,18 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// <param name="topicName">
         /// The topic name to publish to.
         /// </param>
-        public AmqpMessagePublisher(AmqpConnection connection, string topicName)
+        /// <param name="name">
+        /// The unique name to associate with the link used to send messages on.
+        /// </param>
+        public AmqpMessagePublisher(AmqpConnection connection, string topicName, string name)
         {
             connection.ShouldNotBeNull();
+            topicName.ShouldNotBeEmpty();
+            name.ShouldNotBeEmpty();
 
             m_Connection = connection;
             m_TopicName = topicName;
+            m_Name = name;
         }
 
         /// <summary>
@@ -107,7 +114,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
             if (!IsConnected)
             {
                 if (!m_Connection.IsConnected) m_Connection.Connect();
-                m_Sender = new SenderLink(m_Connection.Session, "messages", m_TopicName);
+                m_Sender = new SenderLink(m_Connection.Session, m_Name, m_TopicName);
 
                 IsConnected = true;
             }

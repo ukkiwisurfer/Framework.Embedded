@@ -18,6 +18,7 @@
         private readonly IMessageHandler m_MessageHandler;
         private readonly ILogger m_Logger;
         private readonly string m_TopicName;
+        private readonly string m_Name;
         private bool m_IsDisposed;
         private bool m_IsConnected;
 
@@ -30,18 +31,23 @@
         /// <param name="topicName">
         /// The topic name to publish to.
         /// </param>
+        /// <param name="name">
+        /// The unique name to associate with the link used to receive messages on.
+        /// </param>
         /// <param name="handler">
         /// Processes incoming messages from the AMQP server.
         /// </param>
-        public AmqpMessageSubscriber(AmqpConnection connection, string topicName, IMessageHandler handler)
+        public AmqpMessageSubscriber(AmqpConnection connection, string topicName, string name, IMessageHandler handler)
         {
             connection.ShouldNotBeNull();
             topicName.ShouldNotBeEmpty();
             handler.ShouldNotBeNull();
+            name.ShouldNotBeEmpty();
 
             m_Connection = connection;
             m_TopicName = topicName;
             m_MessageHandler = handler;
+            m_Name = name;
         }
 
         /// <summary>
@@ -133,7 +139,7 @@
             if (!IsConnected)
             {
                 if (!m_Connection.IsConnected) m_Connection.Connect();
-                m_Receiver = new ReceiverLink(m_Connection.Session, "messages", m_TopicName);
+                m_Receiver = new ReceiverLink(m_Connection.Session, m_Name, m_TopicName);
 
                 IsConnected = true;
             }
