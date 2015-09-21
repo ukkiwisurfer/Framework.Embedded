@@ -18,7 +18,6 @@
         private readonly string m_ServiceName;
         private Connection m_Connection;
         private Session m_Session;
-        //private SenderLink m_Sender;
         private bool m_IsDisposed;
 
         internal Session Session
@@ -57,10 +56,10 @@
             m_ServiceName = registration.ServiceName;
             m_Address = registration.Address;
 
-            Trace.TraceLevel = TraceLevel.Frame;
-            Trace.TraceListener = WriteTrace;
+            //Trace.TraceLevel = TraceLevel.Frame;
+            //Trace.TraceListener = WriteTrace;
 
-            Connection.DisableServerCertValidation = true;
+            //Connection.DisableServerCertValidation = true;
         }
 
         /// <summary>
@@ -98,7 +97,9 @@
         {
             m_ClientId = Guid.NewGuid().ToString();
 
-            var address = new Address(m_Address.GetUrl());
+            //var address = new Address(m_Address.GetUrl());
+            var address = new Address(@"amqp://owl:owl@192.168.1.111:5672");
+
             m_Connection = new Connection(address);
             m_Session = new Session(m_Connection);
 
