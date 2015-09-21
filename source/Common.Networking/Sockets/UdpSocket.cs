@@ -155,7 +155,7 @@
         public void ListenForMessage()
         {
             EndPoint remoteendpoint = null;
-            ConnectionState state = null;
+            ConnectionState connectionState = null;
             int bytesRead = 0;
             
             lock (m_SyncLock)
@@ -163,19 +163,24 @@
                 if (m_IsOpen)
                 {
                     remoteendpoint = new IPEndPoint(m_Endpoint.Address, m_Endpoint.Port);
-                    state = new ConnectionState(m_Client, BufferSizeInBytes);
+                    connectionState = new ConnectionState(m_Client, BufferSizeInBytes);
 
                     bool hasPayload = m_Client.Poll(PeekTimeoutInMilliseconds, SelectMode.SelectRead);
                     if (hasPayload)
                     {
-                        bytesRead = m_Client.ReceiveFrom(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, ref remoteendpoint);
+                        bytesRead = m_Client.ReceiveFrom(connectionState.Buffer, 0, connectionState.Buffer.Length, SocketFlags.None, ref remoteendpoint);
                     }
                 }
             }
 
             if ((bytesRead > 0) && (remoteendpoint != null))
             {
-                this.OnMessageReceived(bytesRead, state, remoteendpoint);
+                this.OnMessageReceived(bytesRead, connectionState, remoteendpoint);
+            }
+
+            if (connectionState != null)
+            {
+                connectionState.Dispose();
             }
         }
 
@@ -202,11 +207,16 @@
         {
             if (receivedByteCount > 0)
             {
-                // Copy message buffer and send it the message handler.
+                // Copy message buffer as the smallest size it can be to accomodate message and send it the message handler.
                 var message = new byte[receivedByteCount];
-                Array.Copy(state.Buffer, message, receivedByteCount);
-
-                m_MessageHandler.HandleMessage(message);
+                try
+                {
+                    Array.Copy(state.Buffer, message, receivedByteCount);
+                    m_MessageHandler.HandleMessage(message);
+                }
+                finally
+                {
+                }
             }
         }
     }
