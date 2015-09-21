@@ -25,13 +25,13 @@
             get {  return m_Session; }
         }
 
-        private bool _mIsConnected;
+        private bool m_IsConnected;
         /// <summary>
         /// See <see cref="IQueuedConnection.IsConnected"/> for more details.
         /// </summary>
         public bool IsConnected
         {
-            get { return _mIsConnected; }
+            get { return m_IsConnected; }
         }
 
         private string m_ClientId;
@@ -97,13 +97,13 @@
         {
             m_ClientId = Guid.NewGuid().ToString();
 
-            //var address = new Address(m_Address.GetUrl());
-            var address = new Address(@"amqp://owl:owl@192.168.1.111:5672");
+            var address = new Address(m_Address.GetUrl());
+            //var address = new Address(@"amqp://owl:owl@192.168.1.111:5672");
 
             m_Connection = new Connection(address);
             m_Session = new Session(m_Connection);
 
-            _mIsConnected = true;
+            m_IsConnected = true;
         }
 
         /// <summary>
@@ -115,15 +115,13 @@
             {
                 m_Connection.Close();
                 m_Session.Close();
-                //m_Sender.Close();
             }
             finally
             {
-                //m_Sender = null;
                 m_Session = null;
                 m_Connection = null;
 
-                _mIsConnected = false;
+                m_IsConnected = false;
             }
         }
 
