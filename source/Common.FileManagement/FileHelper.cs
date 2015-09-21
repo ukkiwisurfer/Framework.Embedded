@@ -120,7 +120,8 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <returns></returns>
         public virtual Stream OpenStream(string filePath, string fileName, int bufferSize = 1024)
         {
-            return new FileStream(Path.Combine(filePath, fileName), FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, bufferSize);
+            var fileNameWithPath = Path.Combine(filePath, fileName);
+            return new FileStream(fileNameWithPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, bufferSize);
         }
 
         /// <summary>
