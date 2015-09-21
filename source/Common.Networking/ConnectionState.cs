@@ -1,15 +1,17 @@
 ﻿
 namespace Ignite.Framework.Micro.Common.Networking
 {
+    using System;
     using System.Net.Sockets;
 
     /// <summary>
     /// Holds connection state.
     /// </summary>
-    public class ConnectionState
+    public class ConnectionState : IDisposable
     {
-        private readonly byte[] m_Buffer;
+        private byte[] m_Buffer;
         private readonly Socket m_Socket;
+        private bool m_IsDisposed;
 
         /// <summary>
         /// Buffer for receiving incoming data.
@@ -40,6 +42,34 @@ namespace Ignite.Framework.Micro.Common.Networking
         {
             m_Socket = socket;
             m_Buffer = new byte[bufferSize];
+        }
+
+        /// <summary>
+        /// Disposes of any managed or unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes of any managed or unmanaged resources.
+        /// </summary>
+        /// <param name="isDisposing">
+        /// Indicates whether the disposal is deterministic or not.
+        /// </param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (!m_IsDisposed)
+            {
+                if (isDisposing)
+                {
+                    m_Buffer = null;
+                }
+
+                m_IsDisposed = true;
+            }
         }
     }
 }
