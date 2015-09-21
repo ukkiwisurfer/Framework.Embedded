@@ -130,8 +130,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// On attempting to open the service, initialises the connection to the real logging service.
         /// </summary>
         protected override void OnOpening()
-        {
-            
+        { 
             m_FileHelper.CreateDirectory(m_Configuration.TargetPath);
             m_Publisher.Connect();
 
@@ -202,6 +201,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             }
             finally
             {
+                SignalWorkCompleted();
             }
         }
 
