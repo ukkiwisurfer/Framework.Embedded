@@ -237,23 +237,28 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         {
             object[] messages = null;
 
-            // Lock only long enough to drain the queue and copy the messages.
-            lock (m_SyncLock)
+            try
             {
-                if (m_MessageQueue.Count > 0)
+                // Lock only long enough to dequeue a single item from the queue and signal that there us work to be done.
+                lock (m_SyncLock)
                 {
-                    messages = m_MessageQueue.ToArray();
-                    m_MessageQueue.Clear();
+                    if (m_MessageQueue.Count > 0)
+                    {
+                        messages = m_MessageQueue.ToArray();
+                        m_MessageQueue.Clear();
+                    }
                 }
 
+                // Sends the logged messages.
+                if (messages != null)
+                {
+                    this.WriteData(new object[] { messages });
+                }
+            }
+            finally
+            {
                 this.SignalWorkCompleted();
             }
-
-            // Sends the logged messages.
-            if (messages != null)
-            {
-                this.WriteData(messages);
-            }   
         }
 
         /// <summary>
