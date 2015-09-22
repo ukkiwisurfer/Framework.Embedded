@@ -7,10 +7,7 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.FileManagement;
-    using Ignite.Framework.Micro.Common.Logging;
-    using Ignite.Framework.Micro.Common.Services;
     using Ignite.Framework.Micro.Common.Services.Data;
-    using Json.NETMF;
 
     /// <summary>
     /// Captures logging requests and buffers them before writing them to disk.
@@ -75,40 +72,34 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
         /// </param>
         protected override void WriteData(object[] dataItems)
         {
-            StreamWriter writer = null;
-            try
+            using (var stream = this.GetFileStream(WorkingPath, TargetPath))
             {
-                writer = this.GetFileStream(WorkingPath, TargetPath);
-                if (writer != null)
+                using (var writer = new StreamWriter(stream))
                 {
-                    var container = new LogContainer(dataItems);
-                    var converted = SerializeLogContainer(container);
+                    writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+                    writer.WriteLine("<LogEntries>");
 
-                    writer.WriteLine(converted);
-                }
-            }
-            finally
-            {
-                if (writer != null)
-                {
+                    foreach (var item in dataItems)
+                    {
+                        var dataItem = item as LogEntry;
+                        if (dataItem != null)
+                        {
+                            writer.WriteLine("<LogEntry>");
+
+                            writer.WriteLine("<LogEntryId>");
+                            writer.WriteLine(dataItem.LogEntryId);
+                            writer.WriteLine("</LogEntryId>");
+
+                            writer.WriteLine("</LogEntry>");
+
+                            writer.Flush();
+                        }
+                    }
+
+                    writer.WriteLine("</LogEntries>");
                     writer.Flush();
-                    writer.Dispose();
                 }
             }
-        }
-
-        /// <summary>
-        /// Serializes a collection of <see cref="LogEntry"/> objects to JSON.
-        /// </summary>
-        /// <param name="logContainer">
-        /// The log entry to seralize.
-        /// </param>
-        /// <returns>
-        /// Json representation of the log entry.
-        /// </returns>
-        private static string SerializeLogContainer(LogContainer logContainer)
-        {
-            return JsonSerializer.SerializeObject(logContainer);
         }
     }
 }

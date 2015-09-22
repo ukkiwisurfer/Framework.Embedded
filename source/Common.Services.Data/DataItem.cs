@@ -11,13 +11,8 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         public DateTime CaptureTimestamp { get; set; }
 
         /// <summary>
-        /// A name associated with the stream of data.
-        /// </summary>
-        public string DataStreamName { get; set; }
-
-        /// <summary>
         /// The actual data payload.
         /// </summary>
-        public string Payload { get; set; }
+        public byte[] Payload { get; set; }
     }
 }

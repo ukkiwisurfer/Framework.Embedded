@@ -53,10 +53,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         {
             var dataItem = new DataItem();
             dataItem.CaptureTimestamp = DateTime.UtcNow;
-            dataItem.DataStreamName = "Data";
-
-            var chars = Encoding.UTF8.GetChars(message);
-            dataItem.Payload = new string(chars);
+            dataItem.Payload = message;
 
             Service.AddDataEntry(dataItem);
         }

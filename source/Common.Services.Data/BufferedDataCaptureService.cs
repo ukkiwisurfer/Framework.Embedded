@@ -3,13 +3,11 @@ namespace Ignite.Framework.Micro.Common.Services.Data
 {
     using System;
     using System.IO;
-    
+
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.FileManagement;
-
-    using Json.NETMF;
 
     /// <summary>
     /// Captures data items and buffers them before writing them to disk.
@@ -30,7 +28,8 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="configuration">
         /// Configuration details for buffered data persistence. 
         /// </param>
-        public BufferedDataCaptureService(IFileHelper fileHelper, BufferedConfiguration configuration) : base(fileHelper, configuration)
+        public BufferedDataCaptureService(IFileHelper fileHelper, BufferedConfiguration configuration)
+            : base(fileHelper, configuration)
         {
             ServiceName = "BufferedDataCaptureService";
         }
@@ -45,7 +44,8 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="configuration">
         /// Configuration details for buffered data persistence. 
         /// </param>
-        public BufferedDataCaptureService(ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration) : base(logger, fileHelper, configuration)
+        public BufferedDataCaptureService(ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration)
+            : base(logger, fileHelper, configuration)
         {
             ServiceName = "BufferedDataCaptureService";
         }
@@ -62,7 +62,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             {
             }
 
- 	        base.Dispose(isDisposing);
+            base.Dispose(isDisposing);
         }
 
         /// <summary>
@@ -89,40 +89,38 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// </param>
         protected override void WriteData(object[] dataItems)
         {
-            StreamWriter writer = null;
-            try
+            using (var stream = this.GetFileStream(WorkingPath, TargetPath))
             {
-                writer = this.GetFileStream(WorkingPath, TargetPath);
-                if (writer != null)
-                {
-                    var container = new DataItemContainer(dataItems);
-                    var converted = SerializeDataContainer(container);
+                using (var writer = new StreamWriter(stream))
+                {                             
+                    writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+                    writer.WriteLine("<DataItems>");
 
-                    writer.WriteLine(converted);
-                }
-            }
-            finally
-            {
-                if (writer != null)
-                {
+                    foreach (var item in dataItems)
+                    {
+                        var dataItem = item as DataItem;
+                        if (dataItem != null)
+                        {
+                            writer.WriteLine("<DataItem>");
+
+                            writer.WriteLine("<CaptureTimeStamp>");
+                            writer.WriteLine(dataItem.CaptureTimestamp.ToString("s"));
+                            writer.WriteLine("</CaptureTimeStamp>");
+
+                            writer.WriteLine("<Payload>");
+                            writer.WriteLine(Convert.ToBase64String(dataItem.Payload));
+                            writer.WriteLine("</Payload>");
+
+                            writer.WriteLine("</DataItem>");
+
+                            writer.Flush();
+                        }
+                    }
+
+                    writer.WriteLine("</DataItems>");
                     writer.Flush();
-                    writer.Dispose();
                 }
             }
-        }
-
-        /// <summary>
-        /// Serializes a collection of <see cref="DataItem"/> objects to JSON.
-        /// </summary>
-        /// <param name="container">
-        /// The log entry to seralize.
-        /// </param>
-        /// <returns>
-        /// Json representation of the log entry.
-        /// </returns>
-        private static string SerializeDataContainer(DataItemContainer container)
-        {
-            return JsonSerializer.SerializeObject(container);
         }
     }
 }
