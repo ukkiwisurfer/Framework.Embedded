@@ -5,7 +5,9 @@ namespace Ignite.Framework.Micro.Common.FileManagement
     using System.Collections;
     using System.IO;
     using System.Text;
-    using System.Text.RegularExpressions;
+    //using System.Text.RegularExpressions;
+
+    //using System.Text.RegularExpressions;
 
     /// <summary>
     /// Supports file operations.
@@ -89,18 +91,19 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         {
             var fileNames = Directory.EnumerateFiles(sourcePath);
 
-            var patternCriteria = @"\." + oldExtension;
-            var regular = new Regex(patternCriteria, RegexOptions.Compiled);
+            var patternCriteria = @"." + oldExtension;
+            //var regular = new Regex(patternCriteria, RegexOptions.Compiled);
 
             foreach (string oldFileNameWithPath in fileNames)
             {
-                if (regular.IsMatch(oldFileNameWithPath))
+            //    if (regular.IsMatch(oldFileNameWithPath))
+                if (oldFileNameWithPath.LastIndexOf(patternCriteria) > 0)
                 {
                     string oldFileName = Path.GetFileName(oldFileNameWithPath);
                     string newFileName = Path.GetFileNameWithoutExtension(oldFileName) + "." + newExtension;
                     string newFileNameWithPath = this.BuildFilePath(targetPath, newFileName);
 
-                    RenameFile(oldFileNameWithPath, newFileNameWithPath);                    
+                    RenameFile(oldFileNameWithPath, newFileNameWithPath);
                 }
             }
         }
@@ -138,15 +141,17 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// </returns>
         public string[] GetAllFilesMatchingPattern(string folder, string pattern)
         {
-            var patternCriteria = @"\." + pattern;
+            var patternCriteria = @"." + pattern;
 
             var fileNames = Directory.EnumerateFiles(folder);
-            var regular = new Regex(patternCriteria, RegexOptions.Compiled);
+            //var regular = new Regex(patternCriteria, RegexOptions.Compiled);
             var matches = new ArrayList();
 
             foreach (string oldFileNameWithPath in fileNames)
             {
-                if (regular.IsMatch(oldFileNameWithPath))
+                //if (regular.IsMatch(oldFileNameWithPath))
+                var foundIndex = oldFileNameWithPath.LastIndexOf(patternCriteria);
+                if (foundIndex > 0)
                 {
                     matches.Add(Path.GetFileName(oldFileNameWithPath));
                 }
