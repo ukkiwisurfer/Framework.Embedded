@@ -3,7 +3,7 @@ namespace Ignite.Framework.Micro.Common.Services
 {
     using System;
     using System.Collections;
-
+    using System.Reflection;
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
@@ -13,6 +13,7 @@ namespace Ignite.Framework.Micro.Common.Services
     /// </summary>
     public class MultiServiceHost : IServiceHost
     {
+        private IResourceLoader m_ResourceLoader;
         private readonly ArrayList m_Hosts;
         private readonly ILogger m_Logger;
         private bool m_IsDisposed;
@@ -29,6 +30,7 @@ namespace Ignite.Framework.Micro.Common.Services
 
             m_Hosts = new ArrayList();
             m_Logger = logger;
+            m_ResourceLoader = new ResourceLoader("Ignite.Framework.Micro.Common.Services.Resources", Assembly.GetExecutingAssembly());
         }
 
         /// <summary>
@@ -45,7 +47,7 @@ namespace Ignite.Framework.Micro.Common.Services
         /// </summary>
         public void Start()
         {
-            m_Logger.Info("Starting {0} host(s).", m_Hosts.Count);
+            m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.StartingHosts), m_Hosts.Count);
             foreach (var host in m_Hosts)
             {
                 var cast = host as IThreadedService;
@@ -61,7 +63,7 @@ namespace Ignite.Framework.Micro.Common.Services
         /// </summary>
         public void Stop()
         {
-            m_Logger.Info("Stopping {0} host(s).", m_Hosts.Count);
+            m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.StoppingHosts), m_Hosts.Count);
             foreach (var host in m_Hosts)
             {
                 var cast = host as IThreadedService;
@@ -83,7 +85,7 @@ namespace Ignite.Framework.Micro.Common.Services
             service.ShouldNotBeNull();
 
             m_Hosts.Add(service);
-            m_Logger.Info("Added new host. {0}", service.ServiceId );
+            m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.AddedNewHost), service.ServiceId );
         }
 
         /// <summary>
@@ -91,7 +93,7 @@ namespace Ignite.Framework.Micro.Common.Services
         /// </summary>
         public void Clear()
         {
-            m_Logger.Info("Clearing {0} host(s).", m_Hosts.Count);
+            m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.ClearingHosts), m_Hosts.Count);
 
             foreach (var host in m_Hosts)
             {
@@ -104,13 +106,13 @@ namespace Ignite.Framework.Micro.Common.Services
                     }
                     catch (Exception ex)
                     {
-                        m_Logger.Error("Exception occurred releasing host.", ex);
+                        m_Logger.Error(m_ResourceLoader.GetString(Resources.StringResources.ExceptionOccurred), ex);
                     }
                 }
             }
 
             m_Hosts.Clear();
-            m_Logger.Info("All hosts removed.");
+            m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.AllHostsRemoved));
         }
 
         /// <summary>

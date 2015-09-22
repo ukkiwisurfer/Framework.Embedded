@@ -34,13 +34,20 @@
     </Compile>
     <Compile Include="Data\BufferedDataService.cs" />
     <Compile Include="Data\DataTransferService.cs" />
+    <Compile Include="IResourceLoader.cs" />
     <Compile Include="MultiServiceHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceLoader.cs" />
     <Compile Include="ThreadedService.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.SPOT.Graphics" />
     <Reference Include="Microsoft.SPOT.Native" />
-    <Reference Include="System" />
     <Reference Include="System.IO" />
   </ItemGroup>
   <ItemGroup>
@@ -71,14 +78,17 @@
       <Project>{31443F08-D806-4B27-80A5-6CD116B8123D}</Project>
       <Name>Common.FileManagement</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common.Networking\Common.Networking.csproj">
-      <Project>{2C84C718-3E0F-4765-9C3C-4FC6A9A032D2}</Project>
-      <Name>Common.Networking</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Common\Common.Core.csproj">
       <Project>{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}</Project>
       <Name>Common.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <Import Condition="!EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
