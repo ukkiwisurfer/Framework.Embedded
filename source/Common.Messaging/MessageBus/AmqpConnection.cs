@@ -55,11 +55,6 @@
 
             m_ServiceName = registration.ServiceName;
             m_Address = registration.Address;
-
-            //Trace.TraceLevel = TraceLevel.Frame;
-            //Trace.TraceListener = WriteTrace;
-
-            //Connection.DisableServerCertValidation = true;
         }
 
         /// <summary>
