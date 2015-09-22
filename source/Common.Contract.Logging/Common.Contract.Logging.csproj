@@ -40,9 +40,6 @@
     <Compile Include="TraceEventType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Common.Errors\Common.Errors.csproj">
       <Project>{EBE7390D-27FB-491E-939F-2E31B79A23C4}</Project>
       <Name>Common.Errors</Name>

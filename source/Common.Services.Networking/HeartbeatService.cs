@@ -3,7 +3,6 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
 {
     using System;
     using Ignite.Framework.Micro.Common.Networking;
-    using Microsoft.SPOT.Hardware;
 
     /// <summary>
     /// Service that listens for heartbeat messages from a server.
