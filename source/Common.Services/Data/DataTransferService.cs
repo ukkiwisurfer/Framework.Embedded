@@ -63,7 +63,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="bufferSize">
         /// The size of the read buffer to use when loading each data file's contents.
         /// </param>
-        public DataTransferService(IMessagePublisher publisher, IFileHelper fileHelper, BufferedConfiguration configuration, int bufferSize = 1024) : base()
+        public DataTransferService(IMessagePublisher publisher, IFileHelper fileHelper, BufferedConfiguration configuration, int bufferSize = 400) : base()
         {
             publisher.ShouldNotBeNull();
             fileHelper.ShouldNotBeNull();
@@ -96,7 +96,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="bufferSize">
         /// The size of the read buffer to use when loading each data file's contents.
         /// </param>
-        public DataTransferService(ILogger logger, IMessagePublisher publisher, IFileHelper fileHelper, BufferedConfiguration configuration, int bufferSize = 1024)  : base(logger)
+        public DataTransferService(ILogger logger, IMessagePublisher publisher, IFileHelper fileHelper, BufferedConfiguration configuration, int bufferSize = 400)  : base(logger)
         {
             publisher.ShouldNotBeNull();
             fileHelper.ShouldNotBeNull();
@@ -186,6 +186,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                                         // Publish message with file contents.
                                         m_Publisher.Publish(payloadStream.ToArray());
                                     }
+
                                 }
 
                                 // Once sent, delete the file.

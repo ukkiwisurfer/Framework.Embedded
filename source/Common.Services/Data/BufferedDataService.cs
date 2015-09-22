@@ -201,9 +201,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <returns>
         /// A stream writer used to write logging entries to.
         /// </returns>
-        protected StreamWriter GetFileStream(string sourceFilePath, string targetFilePath, string fileName = null)
+        protected Stream GetFileStream(string sourceFilePath, string targetFilePath, string fileName = null)
         {
-            StreamWriter writer = null;
+            Stream fileStream = null;
 
             string generatedFileName = fileName ?? this.m_FileHelper.GenerateFileName(DateTime.Now, m_WorkingFileExtension);
             string pathAndfileName = this.m_FileHelper.BuildFilePath(sourceFilePath, generatedFileName);
@@ -215,16 +215,14 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                     this.m_FileHelper.RenameAllFilesMatchingExtension(sourceFilePath, targetFilePath, m_WorkingFileExtension, m_TargetFileExtension);
                 }
 
-                var fileStream = this.m_FileHelper.OpenStream(sourceFilePath, generatedFileName);
+                fileStream = this.m_FileHelper.OpenStream(sourceFilePath, generatedFileName);
                 fileStream.Seek(0, SeekOrigin.End);
-
-                writer = new StreamWriter(fileStream);
             }
             catch (Exception ex)
             {                
             }
 
-            return writer;
+            return fileStream;
         }
 
         /// <summary>
@@ -252,7 +250,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                 // Sends the logged messages.
                 if (messages != null)
                 {
-                    this.WriteData(new object[] { messages });
+                    this.WriteData(messages);
                 }
             }
             finally
@@ -302,10 +300,8 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// </remarks>
         protected override void OnOpening()
         {
-            
             m_FileHelper.CreateDirectory(m_WorkingFilePath);
             m_FileHelper.CreateDirectory(m_TargetFilePath);                
-            
         }
 
         /// <summary>
