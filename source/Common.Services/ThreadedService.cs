@@ -7,6 +7,7 @@
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.Core;
+    using Microsoft.SPOT;
 
 
     /// <summary>
@@ -18,7 +19,7 @@
     /// </remarks>
     public abstract class ThreadedService : IThreadedService
     {
-        
+        private readonly IResourceLoader m_ResourceLoader;
         private Thread m_WorkerThread;
         private readonly object m_SyncLock;
         private bool m_IsDisposed;
@@ -160,9 +161,10 @@
             m_ServiceId = Guid.NewGuid().ToString();
             m_ServiceName = m_ServiceId;
 
-            this.m_CancellationRequestEvent = new ManualResetEvent(false);
-            this.m_CancellationCompleteEvent = new ManualResetEvent(false);
-            this.m_WorkDetectedEvent = new ManualResetEvent(false);
+            m_CancellationRequestEvent = new ManualResetEvent(false);
+            m_CancellationCompleteEvent = new ManualResetEvent(false);
+            m_WorkDetectedEvent = new ManualResetEvent(false);
+            m_ResourceLoader = new ServicesResourceLoader();
 
             m_WorkerThread = new Thread(this.PerformWork);
             m_SyncLock = new object();
@@ -207,7 +209,8 @@
         /// </summary>
         public void Start()
         {
-            LogInfo("Attempting to start the service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+            //LogInfo("Attempting to start the service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+            LogInfo(m_ResourceLoader.GetString(Resources.StringResources.AttemptingToStartService), m_ServiceId, m_ServiceName);
 
             this.m_CancellationRequestEvent.Reset();
             this.m_CancellationCompleteEvent.Reset();
@@ -222,7 +225,9 @@
         /// </summary>
         public void Stop()
         {
-            LogInfo("Attempting to stop the service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+            //LogInfo("Attempting to stop the service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+            LogInfo(m_ResourceLoader.GetString(Resources.StringResources.AttemptingToStopService), m_ServiceId, m_ServiceName);
+
 
             if (IsRunning)
             {
@@ -240,11 +245,13 @@
                 }
                 catch (Exception ex)
                 {
-                    LogFatal("Error attempting to stop the service. ServiceId: {0}, ServiceName: {1}.", ex, m_ServiceId, m_ServiceName);
+                    //LogFatal("Error attempting to stop the service. ServiceId: {0}, ServiceName: {1}.", ex, m_ServiceId, m_ServiceName);
+                    LogFatal(m_ResourceLoader.GetString(Resources.StringResources.ErrorAttemptingToStopService), ex, m_ServiceId, m_ServiceName);
                 }
             }
 
-            LogInfo("The service has stopped. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+            //LogInfo("The service has stopped. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+            LogInfo(m_ResourceLoader.GetString(Resources.StringResources.ServiceHasStopped));
         }
 
         /// <summary>
@@ -270,7 +277,9 @@
                         }
                         catch (Exception ex)
                         {
-                            LogFatal("Encountered an error occurred while trying to process IDispose.Dispose(). ServiceId: {0}, ServiceName: {1}.", ex, m_ServiceId, m_ServiceName);
+                            //LogFatal("Encountered an error occurred while trying to process IDispose.Dispose(). ServiceId: {0}, ServiceName: {1}.", ex, m_ServiceId, m_ServiceName);
+                            LogFatal(m_ResourceLoader.GetString(Resources.StringResources.DisposeError), ex, m_ServiceId, m_ServiceName);
+
                         }
                         finally
                         {
@@ -294,7 +303,8 @@
 
             try
             {
-                LogInfo("Starting the service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+                //LogInfo("Starting the service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+                LogInfo(m_ResourceLoader.GetString(Resources.StringResources.StartingService), m_ServiceId, m_ServiceName);
                 
                 this.OnOpening();
 
@@ -311,7 +321,8 @@
                         signalled = WaitForEvent();
                     }
 
-                    LogDebug("Cancellation requested. About to start controlled shutdown of service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+                    //LogDebug("Cancellation requested. About to start controlled shutdown of service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+                    LogDebug(m_ResourceLoader.GetString(Resources.StringResources.CancellationRequest), m_ServiceId, m_ServiceName);
                 }
             }
             finally
@@ -333,18 +344,30 @@
         protected virtual int WaitForEvent()
         {
             int signalled = WaitHandle.WaitAny(new WaitHandle[] { m_CancellationRequestEvent, m_WorkDetectedEvent }, SleepPeriodInMilliseconds, false);
+           
+            DetermineIfWorkDetected(signalled);
+
+            return signalled;
+        }
+
+        /// <summary>
+        /// Processes the signalled event to determine if work needs to be performed.
+        /// </summary>
+        /// <param name="signalled"></param>
+        /// <returns></returns>
+        protected virtual void DetermineIfWorkDetected(int signalled)
+        {
             if (signalled == WaitHandle.WaitTimeout)
             {
-                LogDebug("Waited for event - no event detected. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+                //LogDebug("Waited for event - no event detected. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
+                LogDebug(m_ResourceLoader.GetString(Resources.StringResources.TimeoutEventOccurred), m_ServiceId, m_ServiceName);
             }
 
             // If the work detected event has been signalled, perform the task.
             if (signalled == 1)
             {
                 this.DoWork();
-            }
-
-            return signalled;
+            }            
         }
 
         /// <summary>
