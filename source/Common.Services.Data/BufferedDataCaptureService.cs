@@ -18,6 +18,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     /// </remarks>
     public class BufferedDataCaptureService : BufferedDataService
     {
+        private readonly string m_IPAddress;
 
         /// <summary>
         /// Initialises an instance of the <see cref="BufferedDataCaptureService"/> class. 
@@ -28,10 +29,12 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="configuration">
         /// Configuration details for buffered data persistence. 
         /// </param>
-        public BufferedDataCaptureService(IFileHelper fileHelper, BufferedConfiguration configuration)
-            : base(fileHelper, configuration)
+        public BufferedDataCaptureService(IFileHelper fileHelper, BufferedConfiguration configuration, string ipAddress)  : base(fileHelper, configuration)
         {
+            ipAddress.ShouldNotBeEmpty();
+
             ServiceName = "BufferedDataCaptureService";
+            m_IPAddress = ipAddress;
         }
 
         /// <summary>
@@ -44,10 +47,12 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="configuration">
         /// Configuration details for buffered data persistence. 
         /// </param>
-        public BufferedDataCaptureService(ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration)
-            : base(logger, fileHelper, configuration)
+        public BufferedDataCaptureService(ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration, string ipAddress) : base(logger, fileHelper, configuration)
         {
+            ipAddress.ShouldNotBeEmpty();
+
             ServiceName = "BufferedDataCaptureService";
+            m_IPAddress = ipAddress;
         }
 
         /// <summary>
@@ -94,8 +99,11 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                 using (var writer = new StreamWriter(stream))
                 {                             
                     writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-                    writer.WriteLine("<DataItems>");
+                    writer.WriteLine("<DataCapture>");
 
+                    AddDeviceMetadata(writer);
+
+                    writer.WriteLine("<DataItems>");
                     foreach (var item in dataItems)
                     {
                         var dataItem = item as DataItem;
@@ -116,11 +124,27 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                             writer.Flush();
                         }
                     }
-
                     writer.WriteLine("</DataItems>");
+
+                    writer.WriteLine("</DataCapture>");
                     writer.Flush();
                 }
             }
+        }
+
+        /// <summary>
+        /// Adds device metadata for outgoing control messages.
+        /// </summary>
+        /// <param name="writer">
+        /// The writer used to output to the underlying stream.
+        /// </param>
+        private void AddDeviceMetadata(StreamWriter writer)
+        {
+            writer.WriteLine("<CaptureDevice>");
+            writer.Write("<IPAddress>");
+            writer.Write(m_IPAddress);
+            writer.WriteLine("</IPAddress");
+            writer.WriteLine("</CaptureDevice>");
         }
     }
 }
