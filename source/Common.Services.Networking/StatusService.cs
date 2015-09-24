@@ -191,7 +191,7 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
             writer.WriteLine("</Device>");
 
             writer.Write("<Timestamp>");
-            writer.Write(DateTime.UtcNow.ToString("s"));
+            writer.Write(DateTime.UtcNow.ToString("u"));
             writer.WriteLine("</Timestamp>");
         }
 
