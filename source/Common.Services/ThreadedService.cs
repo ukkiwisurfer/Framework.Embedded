@@ -209,7 +209,6 @@
         /// </summary>
         public void Start()
         {
-            //LogInfo("Attempting to start the service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
             LogInfo(m_ResourceLoader.GetString(Resources.StringResources.AttemptingToStartService), m_ServiceId, m_ServiceName);
 
             this.m_CancellationRequestEvent.Reset();
@@ -225,7 +224,6 @@
         /// </summary>
         public void Stop()
         {
-            //LogInfo("Attempting to stop the service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
             LogInfo(m_ResourceLoader.GetString(Resources.StringResources.AttemptingToStopService), m_ServiceId, m_ServiceName);
 
 
@@ -245,12 +243,10 @@
                 }
                 catch (Exception ex)
                 {
-                    //LogFatal("Error attempting to stop the service. ServiceId: {0}, ServiceName: {1}.", ex, m_ServiceId, m_ServiceName);
                     LogFatal(m_ResourceLoader.GetString(Resources.StringResources.ErrorAttemptingToStopService), ex, m_ServiceId, m_ServiceName);
                 }
             }
 
-            //LogInfo("The service has stopped. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
             LogInfo(m_ResourceLoader.GetString(Resources.StringResources.ServiceHasStopped));
         }
 
@@ -277,7 +273,6 @@
                         }
                         catch (Exception ex)
                         {
-                            //LogFatal("Encountered an error occurred while trying to process IDispose.Dispose(). ServiceId: {0}, ServiceName: {1}.", ex, m_ServiceId, m_ServiceName);
                             LogFatal(m_ResourceLoader.GetString(Resources.StringResources.DisposeError), ex, m_ServiceId, m_ServiceName);
 
                         }
@@ -303,7 +298,6 @@
 
             try
             {
-                //LogInfo("Starting the service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
                 LogInfo(m_ResourceLoader.GetString(Resources.StringResources.StartingService), m_ServiceId, m_ServiceName);
                 
                 this.OnOpening();
@@ -321,7 +315,6 @@
                         signalled = WaitForEvent();
                     }
 
-                    //LogDebug("Cancellation requested. About to start controlled shutdown of service. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
                     LogDebug(m_ResourceLoader.GetString(Resources.StringResources.CancellationRequest), m_ServiceId, m_ServiceName);
                 }
             }
@@ -359,7 +352,6 @@
         {
             if (signalled == WaitHandle.WaitTimeout)
             {
-                //LogDebug("Waited for event - no event detected. ServiceId: {0}, ServiceName: {1}.", m_ServiceId, m_ServiceName);
                 LogDebug(m_ResourceLoader.GetString(Resources.StringResources.TimeoutEventOccurred), m_ServiceId, m_ServiceName);
             }
 
