@@ -29,6 +29,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="BufferedDataCaptureService.cs" />
     <Compile Include="BufferedDataHandler.cs" />
     <Compile Include="DataItem.cs" />
