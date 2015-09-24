@@ -32,7 +32,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="HeartbeatService.cs" />
+    <Compile Include="StatusService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UdpListenerService.cs" />
   </ItemGroup>
@@ -40,6 +40,10 @@
     <ProjectReference Include="..\Common.Assertions\Common.Assertions.csproj">
       <Project>{5FF19D7E-0827-4297-8FB1-2B51791F89D8}</Project>
       <Name>Common.Assertions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common.Contract.Messaging\Common.Contract.Messaging.csproj">
+      <Project>{01EEB893-DCF0-45AF-A084-61A6F5FFCCCF}</Project>
+      <Name>Common.Contract.Messaging</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common.Contract.Services\Common.Contract.Services.csproj">
       <Project>{9DEBF422-3666-446C-8D0B-FA60CCF8EC54}</Project>
@@ -53,6 +57,10 @@
       <Project>{22CD62C7-1D35-444F-86E2-FBB206828E5B}</Project>
       <Name>Common.Services</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SPOT.Native" />
+    <Reference Include="System.IO" />
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <Import Condition="!EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
