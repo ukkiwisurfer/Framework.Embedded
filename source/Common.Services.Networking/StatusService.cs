@@ -184,7 +184,7 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
             writer.WriteLine("<Device>");
             writer.Write("<MachineName>");
             writer.Write(m_MachineName);
-            writer.WriteLine("</MachineName");
+            writer.WriteLine("</MachineName>");
             writer.Write("<IPAddress>");
             writer.Write(m_IPAddress);
             writer.WriteLine("</IPAddress>");
