@@ -3,7 +3,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
 {
     using System;
     using System.IO;
-
+    using System.Text;
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
@@ -103,12 +103,12 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                         {
                             writer.WriteLine("<DataItem>");
 
-                            writer.WriteLine("<CaptureTimeStamp>");
-                            writer.WriteLine(dataItem.CaptureTimestamp.ToString("s"));
+                            writer.Write("<CaptureTimeStamp>");
+                            writer.Write(dataItem.CaptureTimestamp.ToString("u"));
                             writer.WriteLine("</CaptureTimeStamp>");
 
                             writer.WriteLine("<Payload>");
-                            writer.WriteLine(Convert.ToBase64String(dataItem.Payload));
+                            writer.WriteLine(Encoding.UTF8.GetChars(dataItem.Payload));
                             writer.WriteLine("</Payload>");
 
                             writer.WriteLine("</DataItem>");
