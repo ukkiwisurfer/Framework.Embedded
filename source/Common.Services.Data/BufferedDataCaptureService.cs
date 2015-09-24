@@ -143,7 +143,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             writer.WriteLine("<CaptureDevice>");
             writer.Write("<IPAddress>");
             writer.Write(m_IPAddress);
-            writer.WriteLine("</IPAddress");
+            writer.WriteLine("</IPAddress>");
             writer.WriteLine("</CaptureDevice>");
         }
     }
