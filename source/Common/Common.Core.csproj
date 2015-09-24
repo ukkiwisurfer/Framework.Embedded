@@ -29,6 +29,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Extensions\ByteArrayExtensions.cs" />
     <Compile Include="Extensions\Filter.cs" />
     <Compile Include="Extensions\Enumerator.cs" />
     <Compile Include="FormatException.cs" />

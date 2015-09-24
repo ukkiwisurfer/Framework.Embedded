@@ -5,6 +5,9 @@ namespace Ignite.Framework.Micro.Common.Core.Extensions
 
     public delegate bool Predicate(object o);
 
+    /// <summary>
+    /// Provides the capability to enumerate over items that meet a given condition defined by a <see cref="Predicate"/>.
+    /// </summary>
     public sealed class Enumerator : IEnumerator
     {
         private readonly IEnumerator e;
@@ -13,8 +16,12 @@ namespace Ignite.Framework.Micro.Common.Core.Extensions
         /// <summary>
         /// Initialises an instance of a enumerator that supports predicate filtering.
         /// </summary>
-        /// <param name="e"></param>
-        /// <param name="p"></param>
+        /// <param name="e">
+        /// The standard enumerator to wrap.
+        /// </param>
+        /// <param name="p">
+        /// The predicate to use when evaluating whether to include an element as part of filtering. 
+        /// </param>
         internal Enumerator(IEnumerator e, Predicate p)
         {
             this.e = e;
@@ -24,6 +31,9 @@ namespace Ignite.Framework.Micro.Common.Core.Extensions
         /// <summary>
         /// See <see cref="IEnumerator.Current"/> for more details.
         /// </summary>
+        /// <returns>
+        /// The current item pointed to by the enumerator.
+        /// </returns>
         object IEnumerator.Current
         {
             get { return e.Current; }
@@ -40,7 +50,9 @@ namespace Ignite.Framework.Micro.Common.Core.Extensions
         /// <summary>
         /// Moves to the next item in the collection that meets the predicate condition.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// True if the enumerator could move to the next item.
+        /// </returns>
         bool IEnumerator.MoveNext()
         {
             var b = e.MoveNext();
