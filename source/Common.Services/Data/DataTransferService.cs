@@ -19,6 +19,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     /// </remarks>
     public class DataTransferService : ThreadedService, IBatchConfiguration
     {
+        private const string CN_ServiceName = "DataTransferService";
+
+        private readonly IResourceLoader m_ResourceLoader;
         private readonly IMessagePublisher m_Publisher;
         private readonly BufferedConfiguration m_Configuration;
         private readonly IFileHelper m_FileHelper;
@@ -69,8 +72,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             fileHelper.ShouldNotBeNull();
             configuration.ShouldNotBeNull();
 
-            ServiceName = "DataTransferService";
+            ServiceName = CN_ServiceName;
 
+            m_ResourceLoader = new ServicesResourceLoader();
             m_FileHelper = fileHelper;
             m_SyncObject = new object();
             m_Publisher = publisher;
@@ -102,8 +106,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             fileHelper.ShouldNotBeNull();
             configuration.ShouldNotBeNull();
 
-            ServiceName = "DataTransferService";
+            ServiceName = CN_ServiceName;
 
+            m_ResourceLoader = new ServicesResourceLoader();
             m_FileHelper = fileHelper;
             m_SyncObject = new object();
             m_Publisher = publisher;
@@ -184,7 +189,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                                         }
 
                                         // Publish message with file contents.
-                                        m_Publisher.Publish(payloadStream.ToArray());
+                                       m_Publisher.Publish(payloadStream.ToArray());
                                     }
 
                                 }
@@ -198,7 +203,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             }
             catch (Exception ex)
             {
-                this.LogFatal("Error occured trying to transfer data to remote endpoint.", ex);
+                this.LogFatal(m_ResourceLoader.GetString(Resources.StringResources.ErrorOccuredWhileTransferringData), ex);
             }
             finally
             {
