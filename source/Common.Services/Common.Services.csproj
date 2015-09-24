@@ -37,7 +37,7 @@
     <Compile Include="IResourceLoader.cs" />
     <Compile Include="MultiServiceHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ResourceLoader.cs" />
+    <Compile Include="ServicesResourceLoader.cs" />
     <Compile Include="ThreadedService.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

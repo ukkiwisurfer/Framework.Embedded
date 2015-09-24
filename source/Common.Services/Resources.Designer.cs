@@ -35,9 +35,18 @@ namespace Ignite.Framework.Micro.Common.Services
             StoppingHosts = -31843,
             ClearingHosts = -31745,
             StartingHosts = -30509,
+            TimeoutEventOccurred = -20989,
             ExceptionOccurred = -19817,
             AddedNewHost = -16348,
+            StartingService = -11632,
+            AttemptingToStartService = 8220,
+            ServiceHasStopped = 9290,
+            AttemptingToStopService = 10704,
+            ErrorAttemptingToStopService = 14930,
+            CancellationRequest = 15983,
             AllHostsRemoved = 22908,
+            DisposeError = 24388,
+            ErrorOccuredWhileTransferringData = 27052,
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Ignite.Framework.Micro.Common.Services
 
             m_Hosts = new ArrayList();
             m_Logger = logger;
-            m_ResourceLoader = new ResourceLoader("Ignite.Framework.Micro.Common.Services.Resources", Assembly.GetExecutingAssembly());
+            m_ResourceLoader = new ServicesResourceLoader();
         }
 
         /// <summary>

@@ -123,16 +123,43 @@
   <data name="AllHostsRemoved" xml:space="preserve">
     <value>All hosts removed.</value>
   </data>
+  <data name="AttemptingToStartService" xml:space="preserve">
+    <value>Attempting to start the service. ServiceId: {0}, ServiceName: {1}.</value>
+  </data>
+  <data name="AttemptingToStopService" xml:space="preserve">
+    <value>Attempting to stop the service. ServiceId: {0}, ServiceName: {1}.</value>
+  </data>
+  <data name="CancellationRequest" xml:space="preserve">
+    <value>Cancellation requested. About to start controlled shutdown of service. ServiceId: {0}, ServiceName: {1}.</value>
+  </data>
   <data name="ClearingHosts" xml:space="preserve">
     <value>Clearing {0} host(s).</value>
+  </data>
+  <data name="DisposeError" xml:space="preserve">
+    <value>Encountered an error occurred while trying to process IDispose.Dispose(). ServiceId: {0}, ServiceName: {1}.</value>
+  </data>
+  <data name="ErrorAttemptingToStopService" xml:space="preserve">
+    <value>Error attempting to stop the service. ServiceId: {0}, ServiceName: {1}.</value>
+  </data>
+  <data name="ErrorOccuredWhileTransferringData" xml:space="preserve">
+    <value>Error occured trying to transfer data to remote endpoint.</value>
   </data>
   <data name="ExceptionOccurred" xml:space="preserve">
     <value>Exception occurred releasing host.</value>
   </data>
+  <data name="ServiceHasStopped" xml:space="preserve">
+    <value>The service has stopped. ServiceId: {0}, ServiceName: {1}.</value>
+  </data>
   <data name="StartingHosts" xml:space="preserve">
     <value>Starting hosts. {0}.</value>
   </data>
+  <data name="StartingService" xml:space="preserve">
+    <value>Starting the service. ServiceId: {0}, ServiceName: {1}.</value>
+  </data>
   <data name="StoppingHosts" xml:space="preserve">
     <value>Stopping hosts. {0}.</value>
+  </data>
+  <data name="TimeoutEventOccurred" xml:space="preserve">
+    <value>Waited for event - no event detected. ServiceId: {0}, ServiceName: {1}.</value>
   </data>
 </root>
