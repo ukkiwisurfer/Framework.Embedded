@@ -2,11 +2,9 @@
 {
     using System;
     using Amqp;
-    using Amqp.Framing;
 
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Messaging;
-    using Trace = Amqp.Trace;
 
     /// <summary>
     /// Processes incoming messages and dispatches them via an
@@ -20,6 +18,9 @@
         private Session m_Session;
         private bool m_IsDisposed;
 
+        /// <summary>
+        /// The AMQP session that is required to publish messages on.
+        /// </summary>
         internal Session Session
         {
             get {  return m_Session; }
@@ -53,7 +54,6 @@
         {
             registration.ShouldNotBeNull();
 
-            m_ServiceName = registration.ServiceName;
             m_Address = registration.Address;
         }
 
@@ -93,7 +93,6 @@
             m_ClientId = Guid.NewGuid().ToString();
 
             var address = new Address(m_Address.GetUrl());
-            //var address = new Address(@"amqp://owl:owl@192.168.1.111:5672");
 
             m_Connection = new Connection(address);
             m_Session = new Session(m_Connection);
@@ -118,23 +117,6 @@
 
                 m_IsConnected = false;
             }
-        }
-
-        
-
-        /// <summary>
-        /// Amqp tracing to console method.
-        /// </summary>
-        /// <param name="format">
-        /// Formatting string.
-        /// </param>
-        /// <param name="args">
-        /// Arguments to pass to the formatting string.
-        /// </param>
-        static void WriteTrace(string format, params object[] args)
-        {
-            string message = args == null ? format : Fx.Format(format, args);
-            //Debug.Print(message);
         }
     }
 }

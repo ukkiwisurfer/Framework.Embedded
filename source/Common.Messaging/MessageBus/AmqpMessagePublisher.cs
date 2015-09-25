@@ -10,7 +10,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
     using Ignite.Framework.Micro.Common.Contract.Messaging;
 
     /// <summary>
-    /// Provides a message publishing capability to a AMQP server.
+    /// Provides a message publishing capability (to an AMQP server).
     /// </summary>
     public class AmqpMessagePublisher : IMessagePublisher, IMessageHandler, IDisposable
     {
@@ -18,11 +18,12 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         private SenderLink m_Sender;
         private readonly string m_TopicName;
         private readonly string m_Name;
+        private string m_ClientId;
         private bool m_IsDisposed;
         private bool m_IsConnected;
 
         /// <summary>
-        /// INitialises an instance of the publisher.
+        /// Initialises an instance of the publisher.
         /// </summary>
         /// <param name="connection">
         /// The AMQP connection to use.
@@ -39,6 +40,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
             topicName.ShouldNotBeEmpty();
             name.ShouldNotBeEmpty();
 
+            m_ClientId = string.Empty;
             m_Connection = connection;
             m_TopicName = topicName;
             m_Name = name;
@@ -75,17 +77,26 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// <summary>
         /// Publishes a message to a topic.
         /// </summary>
-        /// <param name="payload"></param>
+        /// <param name="payload">
+        /// The message payload to send.
+        /// </param>
         public virtual void Publish(byte[] payload)
         {
-            if (IsConnected)
+            try
             {
-                var message = new Message();
+                if (IsConnected)
+                {
+                    var message = new Message();
 
-                message.ApplicationProperties = new ApplicationProperties();
-                message.BodySection = new Data() {Binary = payload};
+                    message.ApplicationProperties = new ApplicationProperties();
+                    message.BodySection = new Data() { Binary = payload };
 
-                m_Sender.Send(message);
+                    m_Sender.Send(message);
+                }
+            }
+            catch (AmqpException e)
+            {
+                IsConnected = false;
             }
         }
 
@@ -94,7 +105,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// </summary>
         public string ClientId
         {
-            get { return m_Connection.ClientId; }
+            get { return m_ClientId; }
         }
 
         /// <summary>
@@ -111,12 +122,23 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// </summary>
         public void Connect()
         {
-            if (!IsConnected)
+            try
             {
-                if (!m_Connection.IsConnected) m_Connection.Connect();
-                m_Sender = new SenderLink(m_Connection.Session, m_Name, m_TopicName);
+                if (!IsConnected)
+                {
+                    if (!m_Connection.IsConnected)
+                    {
+                        m_Connection.Connect();
+                        m_ClientId = m_Connection.ClientId;
+                    }
 
-                IsConnected = true;
+                    m_Sender = new SenderLink(m_Connection.Session, m_Name, m_TopicName);
+
+                    IsConnected = true;
+                }
+            }
+            catch (AmqpException e)
+            {
             }
         }
         
@@ -125,22 +147,32 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// </summary>
         public void Disconnect()
         {
-            if (IsConnected)
+            try
             {
-                if (m_Sender != null)
+                if (IsConnected)
                 {
-                    m_Sender.Close();
-                    m_Sender = null;
+                    if (m_Sender != null)
+                    {
+                        m_Sender.Close();
+                        m_Sender = null;
+                    }
                 }
-
-                IsConnected = false;
+            }
+            catch (AmqpException e)
+            {
+            }
+            finally
+            {
+                IsConnected = false;                
             }
         }
 
         /// <summary>
         /// See <see cref="IMessageHandler.HandleMessage"/> for more details.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">
+        /// The message payload to send.
+        /// </param>
         public void HandleMessage(byte[] message)
         {
             Publish(message);

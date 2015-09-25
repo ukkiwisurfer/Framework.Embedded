@@ -14,16 +14,17 @@
     public class AmqpMessageSubscriber : IMessageSubscriber, IDisposable
     {
         private readonly AmqpConnection m_Connection;
-        private ReceiverLink m_Receiver;
         private readonly IMessageHandler m_MessageHandler;
+        private ReceiverLink m_Receiver;
         private readonly ILogger m_Logger;
         private readonly string m_TopicName;
         private readonly string m_Name;
+        private string m_ClientId;
         private bool m_IsDisposed;
         private bool m_IsConnected;
 
         /// <summary>
-        /// INitialises an instance of the publisher.
+        /// Initialises an instance of the publisher.
         /// </summary>
         /// <param name="connection">
         /// The AMQP connection to use.
@@ -45,6 +46,7 @@
             name.ShouldNotBeEmpty();
 
             m_Connection = connection;
+            m_ClientId = string.Empty;
             m_TopicName = topicName;
             m_MessageHandler = handler;
             m_Name = name;
@@ -81,17 +83,26 @@
         /// <summary>
         /// Starts the processing of messages sent from an AMQP server.
         /// </summary>
-         /// <returns></returns>
         public void Subscribe()
         {
-            m_Receiver.Start(100, OnMessage);
+            try
+            {
+                m_Receiver.Start(100, OnMessage);
+            }
+            catch (AmqpException e)
+            {
+            }
         }
 
         /// <summary>
         /// On recei[t of a message for the AMQP server, process it.
         /// </summary>
-        /// <param name="receiver"></param>
-        /// <param name="message"></param>
+        /// <param name="receiver">
+        /// The link used to receive the incoming messages from the AMQP server.
+        /// </param>
+        /// <param name="message">
+        /// The message that was received.
+        /// </param>
         private void OnMessage(ReceiverLink receiver, Message message)
         {
             try
@@ -119,7 +130,7 @@
         /// </summary>
         public string ClientId
         {
-            get { return m_Connection.ClientId; }
+            get { return m_ClientId; }
         }
 
         /// <summary>
@@ -136,12 +147,22 @@
         /// </summary>
         public void Connect()
         {
-            if (!IsConnected)
+            try
             {
-                if (!m_Connection.IsConnected) m_Connection.Connect();
-                m_Receiver = new ReceiverLink(m_Connection.Session, m_Name, m_TopicName);
+                if (!IsConnected)
+                {
+                    if (!m_Connection.IsConnected)
+                    {
+                        m_Connection.Connect();
+                        m_ClientId = m_Connection.ClientId;
+                    }
+                    m_Receiver = new ReceiverLink(m_Connection.Session, m_Name, m_TopicName);
 
-                IsConnected = true;
+                    IsConnected = true;
+                }
+            }
+            catch (AmqpException e)
+            {
             }
         }
 
@@ -150,15 +171,21 @@
         /// </summary>
         public void Disconnect()
         {
-            if (IsConnected)
+            try
             {
-                if (m_Receiver != null)
+                if (IsConnected)
                 {
-                    m_Receiver.Close();
-                    m_Receiver = null;
-                }
+                    if (m_Receiver != null)
+                    {
+                        m_Receiver.Close();
+                        m_Receiver = null;
+                    }
 
-                IsConnected = false;
+                    IsConnected = false;
+                }
+            }
+            catch (AmqpException e)
+            {
             }
         }
     }
