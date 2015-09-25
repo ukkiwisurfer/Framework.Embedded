@@ -10,12 +10,12 @@ One of the standard services (StatusService) publishes periodic heart-beat messa
 
 The current list of (non-abstract) services are:
 
-StatusService - Publishes the status/health of the device in general.
-DataTransferService - Publishes previously persisted datasets (to SD) to a remote server.
-BufferedLoggingService - Captures log entries to a persistent storage (SD) locally.
-BufferedDataCaptureService - Persists captured datasets to a persistent storage (SD) locally.
+* StatusService - Publishes the status/health of the device in general.
+* DataTransferService - Publishes previously persisted datasets (to SD) to a remote server.
+* BufferedLoggingService - Captures log entries to a persistent storage (SD) locally.
+* BufferedDataCaptureService - Persists captured datasets to a persistent storage (SD) locally.
 
 There are a number of abstract services that the above services derive from:
 
-ThreadedService - The base service that all services derive from
-BufferedDataService - Provides the capability to capture incoming data sets and interact with file streams
+* ThreadedService - The base service that all services derive from
+* BufferedDataService - Provides the capability to capture incoming data sets and interact with file streams
