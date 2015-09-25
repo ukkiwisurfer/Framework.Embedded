@@ -33,7 +33,6 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="ConnectionState.cs" />
-    <Compile Include="IMessageBrokerClient.cs" />
     <Compile Include="Helpers\NetworkHelper.cs" />
     <Compile Include="Helpers\NetworkInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
