@@ -10,11 +10,17 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
     using Microsoft.SPOT;
 
     /// <summary>
-    /// Service that listens for heartbeat messages from a server.
+    /// A service that publishes details about the status of the device.
     /// </summary>
     /// <remarks>
-    /// If after a certain period of time no heartbeat message has been
-    /// detected, the service attmpts to force a reboot of the device.
+    /// Publishes a periodic heartbeat message indicating the status of
+    /// various capablities of the device. 
+    /// <para></para>
+    /// The heartbeat message contains: 
+    /// 1. Machine name
+    /// 2. IP Address
+    /// 3. Timestamp
+    /// 4. Free memory
     /// </remarks>
     public class StatusService : ThreadedService
     {
@@ -33,9 +39,15 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         /// <summary>
         /// Initialises an instance of the <see cref="StatusService"/> class.
         /// </summary>
-        /// <param name="publisher"></param>
-        /// <param name="ipAddress"></param>
-        /// <param name="machineName"></param>
+        /// <param name="publisher">
+        /// Provides the ability to publish status messages on. 
+        /// </param>
+        /// <param name="ipAddress">
+        /// The IP address of the device.
+        /// </param>
+        /// <param name="machineName">
+        /// The name associated with the device.
+        /// </param>
         public StatusService(IMessagePublisher publisher, string ipAddress, string machineName) : base()
         {
             m_Publisher = publisher;
@@ -76,10 +88,12 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         /// <summary>
         /// When a timeout event occurs, treat it as a oppertunity to perform work.
         /// </summary>
-        /// <param name="signalled"></param>
-        /// <returns></returns>
+        /// <param name="signalled">
+        /// The index of the event that signalled.
+        /// </param>
         protected override void DetermineIfWorkDetected(int signalled)
         {
+            // If a timeout occurred then treat it as a work detected event.
             if (signalled == WaitHandle.WaitTimeout)
             {
                 this.DoWork();
@@ -91,8 +105,6 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         /// </summary>
         private void PublishHeartbeat()
         {
-            var freeMemory = Debug.GC(false);
-
             using (var stream = new MemoryStream())
             {
                 using (var writer = new StreamWriter(stream))
@@ -117,8 +129,6 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         /// </summary>
         private void PublishStartupMessage()
         {
-            var freeMemory = Debug.GC(false);
-
             using (var stream = new MemoryStream())
             {
                 using (var writer = new StreamWriter(stream))

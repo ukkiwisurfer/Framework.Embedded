@@ -6,11 +6,6 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
     public class RegistrationData
     {
         /// <summary>
-        /// The name of the service to associate with sent messages.
-        /// </summary>
-        public string ServiceName { get; private set; }
-
-        /// <summary>
         /// The endpoint address for the server.
         /// </summary>
         public QueueEndpointAddress Address { get; private set; }
@@ -18,15 +13,11 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// <summary>
         /// Initialies an instance of the <see cref="RegistrationData"/> class.
         /// </summary>
-        /// <param name="serviceName">
-        /// The name of the service to associate with sent messages.
-        /// </param>
         /// <param name="address">
         /// The connection details for the server hosting the queues.
         /// </param>
-        public RegistrationData(string serviceName, QueueEndpointAddress address)
+        public RegistrationData(QueueEndpointAddress address)
         {
-            this.ServiceName = serviceName;
             this.Address = address;
         }
     }
