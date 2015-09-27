@@ -8,15 +8,17 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
     /// </summary>
     public class LoggingProvider : ILogProvider
     {
-        private readonly BufferedLoggingService m_TransferService;
+        private readonly BufferedLoggingService m_LoggingService;
 
         /// <summary>
         /// Initialises ans instance of the <see cref="LoggingProvider"/> class.
         /// </summary>
-        /// <param name="transferService"></param>
-        public LoggingProvider(BufferedLoggingService transferService)
+        /// <param name="loggingService">
+        /// Service that supports the queuing and persisting of log messages.
+        /// </param>
+        public LoggingProvider(BufferedLoggingService loggingService)
         {
-            this.m_TransferService = transferService;
+            this.m_LoggingService = loggingService;
         }
     
         /// <summary>
@@ -43,7 +45,7 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
         /// </param>
         public void Log(LogEntry entry)
         {
- 	        this.m_TransferService.AddLogEntry(entry);
+ 	        this.m_LoggingService.AddLogEntry(entry);
         }
     }
 }
