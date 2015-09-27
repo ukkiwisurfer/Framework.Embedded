@@ -1,7 +1,9 @@
 ﻿namespace Ignite.Framework.Micro.Common.Services
 {
-    using System;
 
+    /// <summary>
+    /// Provides support to load embedded resources.
+    /// </summary>
     internal interface IResourceLoader
     {
         /// <summary>
