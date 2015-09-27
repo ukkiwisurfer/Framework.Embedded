@@ -7,8 +7,6 @@
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.Core;
-    using Microsoft.SPOT;
-
 
     /// <summary>
     /// A service that supports threaded operations.
@@ -211,9 +209,9 @@
         {
             LogInfo(m_ResourceLoader.GetString(Resources.StringResources.AttemptingToStartService), m_ServiceId, m_ServiceName);
 
-            this.m_CancellationRequestEvent.Reset();
-            this.m_CancellationCompleteEvent.Reset();
-            this.m_WorkDetectedEvent.Reset();
+            m_CancellationRequestEvent.Reset();
+            m_CancellationCompleteEvent.Reset();
+            m_WorkDetectedEvent.Reset();
 
             m_WorkerThread = new Thread(this.PerformWork);
             m_WorkerThread.Start();
@@ -232,10 +230,10 @@
                 try
                 {
                     // Request graceful termination.
-                    this.m_CancellationRequestEvent.Set();
+                    m_CancellationRequestEvent.Set();
 
                     // Wait for thread to terminate gracefully.
-                    if (!this.m_CancellationCompleteEvent.WaitOne(m_WaitForShutdownPeriodInMilliseconds, false))
+                    if (!m_CancellationCompleteEvent.WaitOne(m_WaitForShutdownPeriodInMilliseconds, false))
                     {
                         // If the thread didn't terminate gracefully, chop it off at the knees.
                         m_WorkerThread.Abort();
@@ -269,7 +267,7 @@
                     {
                         try
                         {
-                            this.Stop();
+                            Stop();
                         }
                         catch (Exception ex)
                         {
@@ -300,17 +298,17 @@
             {
                 LogInfo(m_ResourceLoader.GetString(Resources.StringResources.StartingService), m_ServiceId, m_ServiceName);
                 
-                this.OnOpening();
+                OnOpening();
 
                 // If the sensor platform is active.
-                if (this.IsServiceActive)
+                if (IsServiceActive)
                 {
                     int signalled = WaitHandle.WaitTimeout;
 
                     // Main processing loop. Terminate if the cancellation request has been detected.
                     while (signalled != 0)
                     {
-                        this.CheckIfWorkExists();
+                        CheckIfWorkExists();
 
                         signalled = WaitForEvent();
                     }
@@ -320,7 +318,7 @@
             }
             finally
             {
-                this.OnClosing();
+                OnClosing();
                 IsRunning = false;
             }
 
@@ -358,7 +356,7 @@
             // If the work detected event has been signalled, perform the task.
             if (signalled == 1)
             {
-                this.DoWork();
+                DoWork();
             }            
         }
 
