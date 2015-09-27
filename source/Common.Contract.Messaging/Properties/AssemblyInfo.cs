@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Common.Contract.Messaging")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Ignite.Framework.Micro.Common.Contract.Messaging")]
+[assembly: AssemblyDescription("Contracts for a messaging library for the Micro.NET framework.")]
 [assembly: AssemblyConfiguration("")]
 

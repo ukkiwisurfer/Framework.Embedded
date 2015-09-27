@@ -4,5 +4,5 @@
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Ignite.Framework.Micro.Common.IO.FileManagement")]
-[assembly: AssemblyDescription("File I/O library")]
+[assembly: AssemblyDescription("A library for file I/O for the .NET Micro framework")]
 [assembly: AssemblyConfiguration("")]
