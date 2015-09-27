@@ -3,7 +3,7 @@ namespace Ignite.Framework.Micro.Common.Services
 {
     using System;
     using System.Collections;
-    using System.Reflection;
+
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
