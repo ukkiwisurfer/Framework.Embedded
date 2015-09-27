@@ -7,6 +7,9 @@ namespace Ignite.Framework.Micro.Common.Services
     
     using Microsoft.SPOT;
 
+    /// <summary>
+    /// Provides support to load embedded resources.
+    /// </summary>
     internal class ServicesResourceLoader : ResourceLoader, IResourceLoader
     {
         /// <summary>
@@ -19,8 +22,12 @@ namespace Ignite.Framework.Micro.Common.Services
         /// <summary>
         /// Returns the string from the resource file.
         /// </summary>
-        /// <param name="identifier"></param>
-        /// <returns></returns>
+        /// <param name="identifier">
+        /// The identifier of the embedded resource to load. 
+        /// </param>
+        /// <returns>
+        /// The embedded string resource.
+        /// </returns>
         public string GetString(Resources.StringResources identifier)
         {
             return ResourceUtility.GetObject(ResourceManager, identifier) as string;
