@@ -4,6 +4,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     using System;
     using System.IO;
     using System.Text;
+
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
@@ -29,6 +30,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="configuration">
         /// Configuration details for buffered data persistence. 
         /// </param>
+        /// <param name="ipAddress">
+        /// The IP address where this service is hosted.
+        /// </param>
         public BufferedDataCaptureService(IFileHelper fileHelper, BufferedConfiguration configuration, string ipAddress)  : base(fileHelper, configuration)
         {
             ipAddress.ShouldNotBeEmpty();
@@ -46,6 +50,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// </param>
         /// <param name="configuration">
         /// Configuration details for buffered data persistence. 
+        /// </param>
+        /// <param name="ipAddress">
+        /// The IP address where this service is hosted.
         /// </param>
         public BufferedDataCaptureService(ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration, string ipAddress) : base(logger, fileHelper, configuration)
         {
