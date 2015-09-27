@@ -5,9 +5,6 @@ namespace Ignite.Framework.Micro.Common.FileManagement
     using System.Collections;
     using System.IO;
     using System.Text;
-    //using System.Text.RegularExpressions;
-
-    //using System.Text.RegularExpressions;
 
     /// <summary>
     /// Supports file operations.
