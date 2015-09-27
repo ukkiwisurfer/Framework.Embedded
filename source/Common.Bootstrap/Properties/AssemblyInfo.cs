@@ -5,6 +5,6 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Common.Bootstrap")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Ignite.Framework.Micro.Common.Bootstrap")]
+[assembly: AssemblyDescription("Bootstrapping library for the Micro.NET framework.")]
 [assembly: AssemblyConfiguration("")]
