@@ -33,7 +33,6 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="MessageBus\AmqpBuilder.cs" />
-    <Compile Include="MessageBus\AmqpFaultTolerantPublisher.cs" />
     <Compile Include="MessageBus\AmqpConnection.cs" />
     <Compile Include="MessageBus\AmqpMessagePublisher.cs" />
     <Compile Include="MessageBus\AmqpMessageSubscriber.cs" />
