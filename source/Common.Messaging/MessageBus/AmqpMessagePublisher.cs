@@ -5,7 +5,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
 
     using Amqp;
     using Amqp.Framing;
-
+    using Amqp.Types;
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Messaging;
 
@@ -21,6 +21,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         private string m_ClientId;
         private bool m_IsDisposed;
         private bool m_IsConnected;
+        private bool m_IsDurable;
 
         /// <summary>
         /// Initialises an instance of the publisher.
@@ -34,7 +35,10 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// <param name="name">
         /// The unique name to associate with the link used to send messages on.
         /// </param>
-        public AmqpMessagePublisher(AmqpConnection connection, string topicName, string name)
+        /// <param name="isDurable">
+        /// Indicates whether the messages should be durable (Persistent).
+        /// </param>
+        public AmqpMessagePublisher(AmqpConnection connection, string topicName, string name, bool isDurable = true)
         {
             connection.ShouldNotBeNull();
             topicName.ShouldNotBeEmpty();
@@ -44,6 +48,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
             m_Connection = connection;
             m_TopicName = topicName;
             m_Name = name;
+            m_IsDurable = isDurable;
         }
 
         /// <summary>
@@ -77,10 +82,27 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// <summary>
         /// Publishes a message to a topic.
         /// </summary>
+        /// <remarks>
+        /// By default each message will be set to honour the publisher level durability settings.
+        /// </remarks>
         /// <param name="payload">
         /// The message payload to send.
         /// </param>
         public virtual void Publish(byte[] payload)
+        {
+           Publish(payload, m_IsDurable);
+        }
+
+        /// <summary>
+        /// Publishes a message to a topic.
+        /// </summary>
+        /// <param name="payload">
+        /// The message payload to send.
+        /// </param>
+        /// <param name="isDurable">
+        /// Indicates whether the message should be persisted by the underlying queue.
+        /// </param>
+        public virtual void Publish(byte[] payload, bool isDurable)
         {
             try
             {
@@ -88,8 +110,13 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
                 {
                     var message = new Message();
 
+                    message.Header = new Header();
+                    message.Header.Durable = isDurable;
+
+                    message.Properties = new Properties();
                     message.ApplicationProperties = new ApplicationProperties();
                     message.BodySection = new Data() { Binary = payload };
+
 
                     m_Sender.Send(message);
                 }

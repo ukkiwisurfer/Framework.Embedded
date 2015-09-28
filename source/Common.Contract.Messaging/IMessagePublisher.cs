@@ -11,9 +11,18 @@
         /// <param name="payload">
         /// The payload to publish.
         /// </param>
-        /// <returns>
-        /// Returns the status publishing to the message bus.
-        /// </returns>
         void Publish(byte[] payload);
+
+        /// <summary>
+        /// Publishes a message on the message bus.
+        /// </summary>
+        /// <param name="payload">
+        /// The payload to publish.
+        /// </param>
+        /// <param name="isDurable">
+        /// Indicates whether the message should be persisted by the queue.
+        /// </param>
+        void Publish(byte[] payload, bool isDurable);
+
     }
 }
