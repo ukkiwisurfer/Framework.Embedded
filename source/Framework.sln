@@ -36,7 +36,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Services.Logging", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Services.Networking", "Common.Services.Networking\Common.Services.Networking.csproj", "{154BE737-20C2-479A-ABC3-36D4C3502898}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Core", "Common\Common.Core.csproj", "{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Core", "Common.Core\Common.Core.csproj", "{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Contract.Messaging", "Common.Contract.Messaging\Common.Contract.Messaging.csproj", "{01EEB893-DCF0-45AF-A084-61A6F5FFCCCF}"
 EndProject

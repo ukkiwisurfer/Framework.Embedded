@@ -6,6 +6,7 @@ namespace Ignite.Framework.Micro.Common.Networking
     using System.Net.Sockets;
     using Microsoft.SPOT.Hardware;
     using Microsoft.SPOT.Net.NetworkInformation;
+    using Microsoft.SPOT.Time;
 
     /// <summary>
     /// Helper class for accessing networking details from the local device.
@@ -72,6 +73,19 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// </summary>
         public void SetNetworkTime()
         {
+            //var settings = new TimeServiceSettings();
+            //settings.ForceSyncAtWakeUp = true;
+            //settings.AutoDayLightSavings = true;
+
+            //var primary = GetHostEntry("time-a.nist.gov");
+            //if (primary != null)
+            //{
+            //    settings.PrimaryServer = primary.GetAddressBytes();
+            //}
+
+
+            //TimeService.Start();
+
             var networkTime = GetNetworkTime();
             Utility.SetLocalTime(networkTime); 
         }
@@ -104,6 +118,17 @@ namespace Ignite.Framework.Micro.Common.Networking
             }
 
             return networkDateTime;
+        }
+
+        public IPAddress GetHostEntry(string hostName)
+        {
+             var hostEntry = Dns.GetHostEntry(hostName);
+            if (hostEntry.AddressList.Length > 0)
+            {
+                return hostEntry.AddressList[0];
+            }
+
+            return null;
         }
 
         /// <summary>
