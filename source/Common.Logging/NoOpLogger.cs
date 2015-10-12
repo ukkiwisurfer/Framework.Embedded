@@ -21,7 +21,7 @@ namespace Ignite.Framework.Micro.Common.Logging
     /// <summary>
     /// A log provider that does nothing.
     /// </summary>
-    public class NullLogger : ILogProvider
+    public class NoOpLogger : ILogProvider
     {
         /// <summary>
         /// See <see cref="ILogProvider.IsDebugEnabled"/> for more details.

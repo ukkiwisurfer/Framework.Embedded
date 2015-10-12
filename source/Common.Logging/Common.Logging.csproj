@@ -36,7 +36,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="LoggingFactory.cs" />
     <Compile Include="LogHelper.cs" />
-    <Compile Include="NullLogger.cs" />
+    <Compile Include="NoOpLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
