@@ -24,7 +24,7 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
         /// <summary>
         /// The idenifier of the the client.
         /// </summary>
-        string ClientId { get; }
+        string ConnectionId { get; }
 
         /// <summary>
         /// Indicates whether the connection to the AMQP server is open.

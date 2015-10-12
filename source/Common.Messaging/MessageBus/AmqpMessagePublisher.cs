@@ -121,6 +121,8 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         {
             try
             {
+                Connect();
+
                 if (IsConnected)
                 {
                     var message = new Message();
@@ -140,14 +142,6 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
             {
                 IsConnected = false;
             }
-        }
-
-        /// <summary>
-        /// Returns the unique identifier of the client.
-        /// </summary>
-        public string ClientId
-        {
-            get { return m_ClientId; }
         }
 
         /// <summary>
@@ -171,7 +165,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
                     if (!m_Connection.IsConnected)
                     {
                         m_Connection.Connect();
-                        m_ClientId = m_Connection.ClientId;
+                        m_ClientId = m_Connection.ConnectionId;
                     }
 
                     m_Sender = new SenderLink(m_Connection.Session, m_Name, m_TopicName);
@@ -181,6 +175,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
             }
             catch (AmqpException e)
             {
+                Disconnect();
             }
         }
         

@@ -18,9 +18,10 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
 {
     using System;
     using Amqp;
-
+    using Amqp.Framing;
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Messaging;
+    using Microsoft.SPOT;
 
     /// <summary>
     /// Processes incoming messages and dispatches them via an
@@ -29,6 +30,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
     public class AmqpConnection : IQueuedConnection, IDisposable
     {
         private readonly QueueEndpointAddress m_Address;
+        private readonly EventHandler m_OnClosedConnection;
         private readonly string m_ServiceName;
         private Connection m_Connection;
         private Session m_Session;
@@ -51,14 +53,15 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
             get { return m_IsConnected; }
         }
 
-        private string m_ClientId;
+        private string m_ConnectionId;
         /// <summary>
         /// The identifier for the MQTT client.
         /// </summary>
-        public string ClientId
+        public string ConnectionId
         {
-            get { return m_ClientId; }
+            get { return m_ConnectionId; }
         }
+
 
         /// <summary>
         /// Initialises an instance of the <see cref="AmqpConnection"/> class.
@@ -71,6 +74,20 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
             registration.ShouldNotBeNull();
 
             m_Address = registration.Address;
+        }
+
+        /// <summary>
+        /// Initialises an instance of the <see cref="AmqpConnection"/> class.
+        /// </summary>
+        /// <param name="registration">
+        /// Details required to connect to the queued message server.
+        /// </param>
+        /// <param name="onCloseEventHandler">
+        /// Event handler to fire when the connection is closed.
+        /// </param>
+        public AmqpConnection(RegistrationData registration, EventHandler onCloseEventHandler) : this(registration)
+        {
+            m_OnClosedConnection = onCloseEventHandler;
         }
 
         /// <summary>
@@ -106,14 +123,34 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// </summary>
         public void Connect()
         {
-            m_ClientId = Guid.NewGuid().ToString();
+            m_ConnectionId = Guid.NewGuid().ToString();
 
             var address = new Address(m_Address.GetUrl());
 
             m_Connection = new Connection(address);
+            m_Connection.Closed += OnClosedConnection;
+
             m_Session = new Session(m_Connection);
 
             m_IsConnected = true;
+        }
+
+        /// <summary>
+        /// Event handler that fires when an AMQP connection is closed.
+        /// </summary>
+        /// <param name="sender">
+        /// The AMQP connection that is propogating the closed event.
+        /// </param>
+        /// <param name="error">
+        /// The AMQP <see cref="Error"/> event that caused the connection to close (if one exists). 
+        /// </param>
+        private void OnClosedConnection(AmqpObject sender, Error error)
+        {
+            Disconnect();
+            if (m_OnClosedConnection != null)
+            {
+                m_OnClosedConnection(this, EventArgs.Empty);
+            }
         }
 
         /// <summary>
@@ -123,8 +160,8 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         {
             try
             {
-                m_Connection.Close();
                 m_Session.Close();
+                m_Connection.Close();
             }
             finally
             {
