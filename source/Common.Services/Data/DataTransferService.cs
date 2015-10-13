@@ -8,6 +8,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Messaging;
     using Ignite.Framework.Micro.Common.Contract.Services;
+    using Ignite.Framework.Micro.Common.Core.Extensions;
     using Ignite.Framework.Micro.Common.FileManagement;
 
     /// <summary>
@@ -125,7 +126,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         public override void CheckIfWorkExists(bool hasWork = false)
         {
             var files = m_FileHelper.GetAllFilesMatchingPattern(m_Configuration.TargetPath, m_Configuration.TargetFileExtension);
-            if (files.Length >= BatchSize)
+            if (files.Count() >= BatchSize)
             {
                 this.SignalWorkToBeDone();
             }
@@ -168,13 +169,20 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                     {
                         // Find all files under the target path and with the specified file extension.
                         var fileNames = m_FileHelper.GetAllFilesMatchingPattern(m_Configuration.TargetPath, m_Configuration.TargetFileExtension);
-                        if (fileNames.Length > 0)
+
+                        var iterator = fileNames.GetEnumerator();
+                        var isValid = iterator.MoveNext();
+
+                        // For each file, read it and publish its contents via a message broker.
+                        while (isValid)
                         {
-                            // For each file, read it and publish its contents via a message broker.
-                            foreach (var fileName in fileNames)
+                            var fileName = iterator.Current as string;
+                            if (fileName != null)
                             {
                                 // Open file and read payload.
-                                using (var fileStream = m_FileHelper.OpenStream(m_Configuration.TargetPath, fileName, m_BufferSize))
+                                using (
+                                    var fileStream = m_FileHelper.OpenStream(m_Configuration.TargetPath, fileName,
+                                        m_BufferSize))
                                 {
                                     using (var payloadStream = new MemoryStream())
                                     {
@@ -189,7 +197,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                                         }
 
                                         // Publish message with file contents.
-                                       m_Publisher.Publish(payloadStream.ToArray());
+                                        m_Publisher.Publish(payloadStream.ToArray());
                                     }
 
                                 }
@@ -197,7 +205,10 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                                 // Once sent, delete the file.
                                 m_FileHelper.DeleteFile(m_Configuration.TargetPath, fileName);
                             }
+
+                            isValid = iterator.MoveNext();
                         }
+                        
                     }
                 }
             }

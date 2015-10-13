@@ -133,28 +133,42 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <param name="pattern">
         /// The file pattern to query for.
         /// </param>
+        /// <param name="fileLimit">
+        /// The maximum number of files to process per call.
+        /// </param>
         /// <returns>
         /// A collection of all filenames matching the search criteria.
         /// </returns>
-        public string[] GetAllFilesMatchingPattern(string folder, string pattern)
+        public IEnumerable GetAllFilesMatchingPattern(string folder, string pattern, int fileLimit = 5)
         {
             var patternCriteria = @"." + pattern;
 
             var fileNames = Directory.EnumerateFiles(folder);
-            //var regular = new Regex(patternCriteria, RegexOptions.Compiled);
             var matches = new ArrayList();
+            var iterator = fileNames.GetEnumerator();
 
-            foreach (string oldFileNameWithPath in fileNames)
+            var isValid = iterator.MoveNext();
+            if (isValid)
             {
-                //if (regular.IsMatch(oldFileNameWithPath))
-                var foundIndex = oldFileNameWithPath.LastIndexOf(patternCriteria);
-                if (foundIndex > 0)
+                for (int fileIndex = 0; fileIndex < fileLimit; fileIndex++)
                 {
-                    matches.Add(Path.GetFileName(oldFileNameWithPath));
+                    if (!isValid) break;
+
+                    var oldFileNameWithPath = iterator.Current as string;
+                    if (oldFileNameWithPath != null)
+                    {
+                        var foundIndex = oldFileNameWithPath.LastIndexOf(patternCriteria);
+                        if (foundIndex > 0)
+                        {
+                            matches.Add(Path.GetFileName(oldFileNameWithPath));
+                        }
+                    }
+
+                    isValid = iterator.MoveNext();
                 }
             }
 
-            return (string[]) matches.ToArray(typeof(string));
+            return matches;
         }
 
         /// <summary>

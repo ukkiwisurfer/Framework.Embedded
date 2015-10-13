@@ -1,6 +1,7 @@
 namespace Ignite.Framework.Micro.Common.FileManagement
 {
     using System;
+    using System.Collections;
     using System.IO;
 
     public interface IFileHelper
@@ -82,10 +83,13 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <param name="pattern">
         /// The file pattern to query for.
         /// </param>
+        /// <param name="fileLimit">
+        /// The maximum number of files to process per call.
+        /// </param>
         /// <returns>
         /// A collection of all filenames matching the search criteria.
         /// </returns>
-        string[] GetAllFilesMatchingPattern(string folder, string pattern);
+        IEnumerable GetAllFilesMatchingPattern(string folder, string pattern, int fileLimit = 5);
 
         /// <summary>
         /// Deletes a file.
