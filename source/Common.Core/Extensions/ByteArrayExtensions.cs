@@ -1,4 +1,4 @@
-﻿//--------------------------------------------------------------------------- 
+//--------------------------------------------------------------------------- 
 //   Copyright 2014-2015 Igniteous Limited
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,21 +14,28 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-namespace Ignite.Framework.Micro.Common.Hardware
+namespace Ignite.Framework.Micro.Common.Core.Extensions
 {
-    using SecretLabs.NETMF.Hardware.NetduinoPlus;
-
     /// <summary>
-    /// Provides the ability to control the onboard LED.
+    /// Extension methods for converting arrays of bytes.
     /// </summary>
-    public class OnboardLed : Led
+    public static class ByteArrayExtensions
     {
         /// <summary>
-        /// Initialises an instance of the <see cref="OnboardLed"/> class.
+        /// Converts an array of bytes to a hex string representation.
         /// </summary>
-        public OnboardLed() : base(Pins.ONBOARD_LED, false)
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static string BytesToHexString(this byte[] bytes)
         {
-            
+            var builder = new StringBuilder();
+
+            foreach (byte b in bytes)
+            {
+                builder.Append(StringUtility.Format("{0:X}", b));
+            }
+
+            return builder.ToString();
         }
     }
 }

@@ -1,4 +1,20 @@
-﻿namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
+﻿//--------------------------------------------------------------------------- 
+//   Copyright 2014-2015 Igniteous Limited
+//
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software
+//   distributed under the License is distributed on an "AS IS" BASIS,
+//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and
+//   limitations under the License. 
+//----------------------------------------------------------------------------- 
+
+namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
 {
     using System;
     using Amqp;
@@ -19,9 +35,49 @@
         private readonly ILogger m_Logger;
         private readonly string m_TopicName;
         private readonly string m_Name;
-        private string m_ClientId;
+        private string m_ConnectionId;
         private bool m_IsDisposed;
         private bool m_IsConnected;
+        private int m_WindowSize;
+
+        /// <summary>
+        /// Returns the unique identifier of the connection.
+        /// </summary>
+        public string ConnectionId
+        {
+            get { return m_ConnectionId; }
+        }
+
+        /// <summary>
+        /// Indicates whether the connection to the AMQP server is established.
+        /// </summary>
+        public bool IsConnected
+        {
+            get { return m_IsConnected; }
+            private set { m_IsConnected = value; }
+        }
+
+        /// <summary>
+        /// The maximum number of messages a receiver is allowed to receive from the queue concurrently. 
+        /// </summary>
+        public int WindowSize
+        {
+            get { return m_WindowSize; }
+            set
+            {
+                m_WindowSize = value;
+                if (m_IsConnected)
+                {
+                    m_Receiver.SetCredit(m_WindowSize);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Indicaates whether an existing valid connection should be reused when reconnecting.
+        /// </summary>
+        public bool ReuseExistingConnection { get; set; }
+
 
         /// <summary>
         /// Initialises an instance of the publisher.
@@ -38,7 +94,7 @@
         /// <param name="handler">
         /// Processes incoming messages from the AMQP server.
         /// </param>
-        public AmqpMessageSubscriber(AmqpConnection connection, string topicName, string name, IMessageHandler handler)
+        public AmqpMessageSubscriber(AmqpConnection connection, string topicName, string name, IMessageHandler handler, int windowSize = 20)
         {
             connection.ShouldNotBeNull();
             topicName.ShouldNotBeEmpty();
@@ -46,9 +102,10 @@
             name.ShouldNotBeEmpty();
 
             m_Connection = connection;
-            m_ClientId = string.Empty;
+            m_ConnectionId = string.Empty;
             m_TopicName = topicName;
             m_MessageHandler = handler;
+            m_WindowSize = windowSize;
             m_Name = name;
         }
 
@@ -87,7 +144,7 @@
         {
             try
             {
-                m_Receiver.Start(100, OnMessage);
+                m_Receiver.Start(m_WindowSize , OnMessage);
             }
             catch (AmqpException e)
             {
@@ -126,23 +183,6 @@
         }
 
         /// <summary>
-        /// Returns the unique identifier of the client.
-        /// </summary>
-        public string ClientId
-        {
-            get { return m_ClientId; }
-        }
-
-        /// <summary>
-        /// Indicates whether the connection to the AMQP server is established.
-        /// </summary>
-        public bool IsConnected
-        {
-            get { return m_IsConnected; }
-            private set { m_IsConnected = value; }
-        }
-
-        /// <summary>
         /// Attempts to connect to a AMQP server.
         /// </summary>
         public void Connect()
@@ -154,11 +194,11 @@
                     if (!m_Connection.IsConnected)
                     {
                         m_Connection.Connect();
-                        m_ClientId = m_Connection.ClientId;
+                        m_ConnectionId = m_Connection.ConnectionId;
                     }
                     m_Receiver = new ReceiverLink(m_Connection.Session, m_Name, m_TopicName);
 
-                    IsConnected = true;
+                    m_IsConnected = true;
                 }
             }
             catch (AmqpException e)
@@ -181,12 +221,14 @@
                         m_Receiver = null;
                     }
 
-                    IsConnected = false;
+                    m_IsConnected = false;
                 }
             }
             catch (AmqpException e)
             {
             }
         }
+
+
     }
 }
