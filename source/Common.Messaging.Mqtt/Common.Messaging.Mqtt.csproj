@@ -32,6 +32,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="MQTT\MqttBuilder.cs" />
     <Compile Include="MQTT\MqttMessagePublisher.cs" />
     <Compile Include="MQTT\MqttMessageSubscriber.cs" />
     <Compile Include="MQTT\RegistrationData.cs" />

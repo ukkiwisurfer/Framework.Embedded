@@ -16,10 +16,12 @@
 
 namespace Ignite.Framework.Micro.Common.Contract.Messaging
 {
+    using System;
+
     /// <summary>
     /// Factory for creating client connections to a message bus server.
     /// </summary>
-    public interface IMessageBrokerFactory
+    public interface IMessageBrokerFactory : IDisposable
     {
         /// <summary>
         /// Creates a message bus client.

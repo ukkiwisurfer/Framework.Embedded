@@ -27,7 +27,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
     /// <summary>
     /// Processes incoming messages from an MQTT broker.
     /// </summary>
-    public class MqttMessageSubscriber
+    public class MqttMessageSubscriber : IMessageSubscriber
     {
         private byte QOS = 1;
 
@@ -56,6 +56,11 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
             get { return m_IsConnected; }
             private set { m_IsConnected = value; }
         }
+
+        /// <summary>
+        /// The maximum number of messages to receive concurrently.
+        /// </summary>
+        public int WindowSize { get; set; }
 
         /// <summary>
         /// Initialises an instance of the <see cref="MqttMessagePublisher"/> class.
@@ -141,6 +146,14 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
             catch (Exception e)
             {
             }
+        }
+
+        /// <summary>
+        /// Stops the processing of messages sent from a MQTT broker.
+        /// </summary>
+        public void Unsubscribe()
+        {
+            Unsubscribe(m_TopicName);
         }
 
         /// <summary>

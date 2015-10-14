@@ -1,65 +1,32 @@
-//--------------------------------------------------------------------------- 
-//   Copyright 2014-2015 Igniteous Limited
-//
-//   Licensed under the Apache License, Version 2.0 (the "License");
-//   you may not use this file except in compliance with the License.
-//   You may obtain a copy of the License at
-//
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-//   Unless required by applicable law or agreed to in writing, software
-//   distributed under the License is distributed on an "AS IS" BASIS,
-//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//   See the License for the specific language governing permissions and
-//   limitations under the License. 
-//----------------------------------------------------------------------------- 
 
-namespace Ignite.Framework.Micro.Common.Messaging.AMQP
+
+namespace Ignite.Framework.Micro.Common.Messaging.MQTT
 {
     using System;
-    using System.Collections;
+
+    using Microsoft.SPOT;
 
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Messaging;
 
-    using Microsoft.SPOT;
-
     /// <summary>
     /// Builds AMQP components.
     /// </summary>
-    public class AmqpBuilder : IMessageBrokerFactory
+    public class MqttBuilder : IMessageBrokerFactory
     {
-        private readonly AmqpConnection m_Connection;
+        private readonly MqttConnection m_Connection;
         private bool m_IsDisposed;
 
-        /// <summary>
-        /// Initialises an instance of the <see cref="AmqpBuilder"/> class
-        /// </summary>
-        private AmqpBuilder()
-        {
-        }
-
+     
         /// <summary>
         /// Initialises an instance of the <see cref="AmqpBuilder"/> class.
         /// </summary>
         /// <param name="endpointAddress"></param>
-        public AmqpBuilder(QueueEndpointAddress endpointAddress) : this()
+        public MqttBuilder(RegistrationData endpointAddress)
         {
             endpointAddress.ShouldNotBeNull();
 
-            m_Connection = BuildConnection(endpointAddress);
-        }
-
-        /// <summary>
-        /// Initialises an instance of the <see cref="AmqpBuilder"/> class.
-        /// </summary>
-        /// <param name="endpointAddress"></param>
-        /// <param name="closedEventHandler"></param>
-        public AmqpBuilder(QueueEndpointAddress endpointAddress, EventHandler closedEventHandler) : this()
-        {
-            endpointAddress.ShouldNotBeNull();
-
-            m_Connection = BuildConnection(endpointAddress, closedEventHandler);
+            m_Connection = new MqttConnection(endpointAddress);
         }
 
         /// <summary>
@@ -103,32 +70,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             }
         }
 
-        /// <summary>
-        /// Builds an AMQP connection.
-        /// </summary>
-        /// <returns>
-        /// An initialised instance of a <see cref="AmqpConnection"/> class.
-        /// </returns>
-        public AmqpConnection BuildConnection(QueueEndpointAddress endpointAddress)
-        {
-            var configuration = new RegistrationData(endpointAddress);
-            return new AmqpConnection(configuration);
-        }
-
-
-        /// <summary>
-        /// Builds an AMQP connection.
-        /// </summary>
-        /// <returns>
-        /// An initialised instance of a <see cref="AmqpConnection"/> class.
-        /// </returns>
-        public AmqpConnection BuildConnection(QueueEndpointAddress endpointAddress, EventHandler closedEventHandler)
-        {
-            var configuration = new RegistrationData(endpointAddress);
-            return new AmqpConnection(configuration, closedEventHandler);
-        }
-
-        /// <summary>
+          /// <summary>
         /// Builds an AMQP publisher.
         /// </summary>
         /// <param name="topicName">
@@ -142,7 +84,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// </returns>
         public IMessagePublisher BuildPublisher(string topicName, string linkName)
         {
-            var publisher = new AmqpMessagePublisher(m_Connection, topicName, linkName);
+            var publisher = new MqttMessagePublisher(m_Connection, topicName, linkName);
             return publisher;
         }
 
@@ -163,7 +105,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// </returns>
         public IMessageSubscriber BuildSubscriber(string topicName, string linkName, IMessageHandler messageHandler)
         {
-            var subscriber = new AmqpMessageSubscriber(m_Connection, topicName, linkName, messageHandler, 20);
+            var subscriber = new MqttMessageSubscriber(m_Connection, topicName, linkName, messageHandler);
             return subscriber;
         }
 
@@ -184,7 +126,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// </returns>
         public IMessageSubscriber BuildSubscriber(string topicName, string linkName, IMessageHandler messageHandler, int windowSize)
         {
-            var subscriber = new AmqpMessageSubscriber(m_Connection, topicName, linkName, messageHandler, windowSize);
+            var subscriber = new MqttMessageSubscriber(m_Connection, topicName, linkName, messageHandler);
             return subscriber;
         }
     }

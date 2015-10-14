@@ -21,11 +21,12 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
     using uPLibrary.Networking.M2Mqtt;
 
     using Ignite.Framework.Micro.Common.Assertions;
+    using Ignite.Framework.Micro.Common.Contract.Messaging;
 
     /// <summary>
     /// Provides a message publishing capability to an MQTT broker.
     /// </summary>
-    public class MqttMessagePublisher
+    public class MqttMessagePublisher : IMessagePublisher
     {
         private readonly MqttConnection m_Connection;
         private readonly string m_TopicName;
@@ -150,6 +151,15 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         }
 
         /// <summary>
+        /// See <see cref="IMessagePublisher.HandleMessage"/> for more details.
+        /// </summary>
+        /// <param name="message"></param>
+        public void HandleMessage(byte[] message)
+        {
+           Publish(message);
+        }
+
+        /// <summary>
         /// Attempts to connect to a AMQP server.
         /// </summary>
         public void Connect()
@@ -196,5 +206,6 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
             }
         }
 
+       
     }
 }
