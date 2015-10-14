@@ -21,7 +21,6 @@ namespace Ignite.Framework.Micro.Common.Networking
     using System.Net.Sockets;
     using Microsoft.SPOT.Hardware;
     using Microsoft.SPOT.Net.NetworkInformation;
-    using Microsoft.SPOT.Time;
 
     /// <summary>
     /// Helper class for accessing networking details from the local device.

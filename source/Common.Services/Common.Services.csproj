@@ -46,7 +46,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SPOT.Graphics" />
     <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="System.IO" />
   </ItemGroup>
@@ -70,6 +69,10 @@
       <Project>{9DEBF422-3666-446C-8D0B-FA60CCF8EC54}</Project>
       <Name>Common.Contract.Services</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common.Core\Common.Core.csproj">
+      <Project>{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}</Project>
+      <Name>Common.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common.Exceptions\Common.Exceptions.csproj">
       <Project>{43755B10-302F-4BDC-B1AC-B64F132284F3}</Project>
       <Name>Common.Exceptions</Name>
@@ -77,10 +80,6 @@
     <ProjectReference Include="..\Common.FileManagement\Common.FileManagement.csproj">
       <Project>{31443F08-D806-4B27-80A5-6CD116B8123D}</Project>
       <Name>Common.FileManagement</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common.Core\Common.Core.csproj">
-      <Project>{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}</Project>
-      <Name>Common.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

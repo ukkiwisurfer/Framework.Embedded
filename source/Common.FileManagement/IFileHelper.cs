@@ -112,6 +112,15 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// </returns>
         IEnumerable GetAllFilesMatchingPattern(string folder, string pattern, int fileLimit = 5);
 
+
+        /// <summary>
+        /// Returns the size of the file.
+        /// </summary>
+        /// <param name="targetPath"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        long GetFileSize(string targetPath, string fileName);
+
         /// <summary>
         /// Deletes a file.
         /// </summary>

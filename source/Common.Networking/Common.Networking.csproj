@@ -40,10 +40,8 @@
     <Compile Include="Sockets\UdpSocket.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.SPOT.Hardware" />
     <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="Microsoft.SPOT.Net" />
-    <Reference Include="Microsoft.SPOT.Time" />
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>

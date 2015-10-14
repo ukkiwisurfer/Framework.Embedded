@@ -21,6 +21,8 @@ namespace Ignite.Framework.Micro.Common.FileManagement
     using System.IO;
     using System.Text;
 
+    using Ignite.Framework.Micro.Common.Core.Extensions;
+
     /// <summary>
     /// Supports file operations.
     /// </summary>
@@ -85,6 +87,25 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         }
 
         /// <summary>
+        /// Returns the size of the file
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public long GetFileSize(string targetPath, string fileName)
+        {
+            long fileSize = 0;
+
+            string filePath = Path.Combine(targetPath, fileName);
+            if (File.Exists(filePath))
+            {
+                var info = new FileInfo(filePath);
+                fileSize = info.Length;
+            }
+
+            return fileSize;
+        }
+
+        /// <summary>
         /// Renames all files ending with the supplied extension to end with '.log' extension.
         /// </summary>
         /// <param name="sourcePath">
@@ -104,11 +125,9 @@ namespace Ignite.Framework.Micro.Common.FileManagement
             var fileNames = Directory.EnumerateFiles(sourcePath);
 
             var patternCriteria = @"." + oldExtension;
-            //var regular = new Regex(patternCriteria, RegexOptions.Compiled);
 
             foreach (string oldFileNameWithPath in fileNames)
             {
-            //    if (regular.IsMatch(oldFileNameWithPath))
                 if (oldFileNameWithPath.LastIndexOf(patternCriteria) > 0)
                 {
                     string oldFileName = Path.GetFileName(oldFileNameWithPath);
@@ -133,7 +152,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// The size of the read buffer to associate with the file stream.
         /// </param>
         /// <returns></returns>
-        public virtual Stream OpenStream(string filePath, string fileName, int bufferSize = 1024)
+        public virtual Stream OpenStream(string filePath, string fileName, int bufferSize = 512)
         {
             var fileNameWithPath = Path.Combine(filePath, fileName);
             return new FileStream(fileNameWithPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, bufferSize);
@@ -160,26 +179,32 @@ namespace Ignite.Framework.Micro.Common.FileManagement
 
             var fileNames = Directory.EnumerateFiles(folder);
             var matches = new ArrayList();
-            var iterator = fileNames.GetEnumerator();
 
-            var isValid = iterator.MoveNext();
-            if (isValid)
+            var fileCount = fileNames.Count();
+            if (fileCount > 0)
             {
-                for (int fileIndex = 0; fileIndex < fileLimit; fileIndex++)
+                var iterator = fileNames.GetEnumerator();
+                var isValid = iterator.MoveNext();
+
+                if (isValid)
                 {
-                    if (!isValid) break;
-
-                    var oldFileNameWithPath = iterator.Current as string;
-                    if (oldFileNameWithPath != null)
+                    var limit = (fileCount < fileLimit) ? fileCount : fileLimit;
+                    for (int fileIndex = 0; fileIndex < limit; fileIndex++)
                     {
-                        var foundIndex = oldFileNameWithPath.LastIndexOf(patternCriteria);
-                        if (foundIndex > 0)
-                        {
-                            matches.Add(Path.GetFileName(oldFileNameWithPath));
-                        }
-                    }
+                        if (!isValid) break;
 
-                    isValid = iterator.MoveNext();
+                        var oldFileNameWithPath = iterator.Current as string;
+                        if (oldFileNameWithPath != null)
+                        {
+                            var foundIndex = oldFileNameWithPath.LastIndexOf(patternCriteria);
+                            if (foundIndex > 0)
+                            {
+                                matches.Add(Path.GetFileName(oldFileNameWithPath));
+                            }
+                        }
+
+                        isValid = iterator.MoveNext();
+                    }
                 }
             }
 

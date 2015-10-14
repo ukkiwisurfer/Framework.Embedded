@@ -33,10 +33,18 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         private SenderLink m_Sender;
         private readonly string m_TopicName;
         private readonly string m_Name;
-        private string m_ClientId;
+        private string m_ConnectionId;
         private bool m_IsDisposed;
         private bool m_IsConnected;
         private bool m_IsDurable;
+
+        /// <summary>
+        /// Returns the unique identifier of the connection.
+        /// </summary>
+        public string ConnectionId
+        {
+            get { return m_ConnectionId; }
+        }
 
         /// <summary>
         /// Initialises an instance of the publisher.
@@ -59,7 +67,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
             topicName.ShouldNotBeEmpty();
             name.ShouldNotBeEmpty();
 
-            m_ClientId = string.Empty;
+            m_ConnectionId = string.Empty;
             m_Connection = connection;
             m_TopicName = topicName;
             m_Name = name;
@@ -165,7 +173,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
                     if (!m_Connection.IsConnected)
                     {
                         m_Connection.Connect();
-                        m_ClientId = m_Connection.ConnectionId;
+                        m_ConnectionId = m_Connection.ConnectionId;
                     }
 
                     m_Sender = new SenderLink(m_Connection.Session, m_Name, m_TopicName);

@@ -54,6 +54,10 @@
       <Project>{98C02320-FBEE-4F0D-B3B4-F3D8D0318643}</Project>
       <Name>Common.Contract.Logging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common.Core\Common.Core.csproj">
+      <Project>{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}</Project>
+      <Name>Common.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common.Errors\Common.Errors.csproj">
       <Project>{EBE7390D-27FB-491E-939F-2E31B79A23C4}</Project>
       <Name>Common.Errors</Name>
@@ -61,10 +65,6 @@
     <ProjectReference Include="..\Common.Exceptions\Common.Exceptions.csproj">
       <Project>{43755B10-302F-4BDC-B1AC-B64F132284F3}</Project>
       <Name>Common.Exceptions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common.Core\Common.Core.csproj">
-      <Project>{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}</Project>
-      <Name>Common.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
