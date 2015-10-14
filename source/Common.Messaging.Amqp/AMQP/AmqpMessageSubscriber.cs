@@ -140,7 +140,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         }
 
         /// <summary>
-        /// Starts the processing of messages sent from an AMQP server.
+        /// See <see cref="IMessageSubscriber.Subscribe"/> for more details.
         /// </summary>
         public void Subscribe()
         {
@@ -150,14 +150,23 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             }
             catch (AmqpException e)
             {
+                //m_Logger.Error("Unable to set up subscription.", e.CreateApplicationException("Invalid subscription request."));
             }
         }
 
         /// <summary>
-        /// On recei[t of a message for the AMQP server, process it.
+        /// See <see cref="IMessageSubscriber.Unsubscribe"/> for more details.
+        /// </summary>
+        public void Unsubscribe()
+        {
+            
+        }
+
+        /// <summary>
+        /// On receipt of a message from the AMQP broker, processes it.
         /// </summary>
         /// <param name="receiver">
-        /// The link used to receive the incoming messages from the AMQP server.
+        /// The link used to receive the incoming messages from the AMQP broker.
         /// </param>
         /// <param name="message">
         /// The message that was received.
@@ -180,7 +189,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             }
             catch (Exception e)
             {                
-                m_Logger.Error("Invalid message format" ,e.CreateApplicationException("Invalid message format"));
+                //m_Logger.Error("Invalid message format" ,e.CreateApplicationException("Invalid message format"));
             }
         }
 

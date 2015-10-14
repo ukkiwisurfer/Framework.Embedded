@@ -27,8 +27,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
     using Microsoft.SPOT;
 
     /// <summary>
-    /// Processes incoming messages and dispatches them via an
-    /// AMQP endpoint.
+    /// Provides a connection to an AMQP broker.
     /// </summary>
     public class AmqpConnection : IQueuedConnection, IDisposable
     {

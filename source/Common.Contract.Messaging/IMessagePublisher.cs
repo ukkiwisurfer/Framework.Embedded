@@ -16,10 +16,12 @@
 
 namespace Ignite.Framework.Micro.Common.Contract.Messaging
 {
+    using System;
+
     /// <summary>
     /// Provides the means to publish messages to a message bus.
     /// </summary>
-    public interface IMessagePublisher : IQueuedConnection
+    public interface IMessagePublisher : IQueuedConnection, IMessageHandler, IDisposable
     {
         /// <summary>
         /// Publishes a message on the message bus.

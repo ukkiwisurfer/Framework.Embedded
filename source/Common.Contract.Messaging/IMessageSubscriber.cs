@@ -16,11 +16,18 @@
 
 namespace Ignite.Framework.Micro.Common.Contract.Messaging
 {
+    using System;
+
     /// <summary>
     /// Defines the capabilities to subscribe to a MQ topic.
     /// </summary>
-    public interface IMessageSubscriber : IQueuedConnection
+    public interface IMessageSubscriber : IQueuedConnection, IDisposable
     {
+        /// <summary>
+        /// The maximum number of messages to receive concurrently.
+        /// </summary>
+        int WindowSize { get; set; }
+
         /// <summary>
         /// Subscribes to a message topic on the message bus.
         /// </summary>
@@ -28,5 +35,10 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
         /// Returns the status publishing to the message bus.
         /// </returns>
         void Subscribe();
+
+        /// <summary>
+        /// Unsubscribes from a MQ topic.
+        /// </summary>
+        void Unsubscribe();
     }
 }

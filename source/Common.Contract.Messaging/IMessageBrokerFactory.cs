@@ -19,22 +19,27 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
     /// <summary>
     /// Factory for creating client connections to a message bus server.
     /// </summary>
-    public interface IMessageBusFactory
+    public interface IMessageBrokerFactory
     {
         /// <summary>
         /// Creates a message bus client.
         /// </summary>
+        /// <param name="topicName"></param>
+        /// <param name="linkName"></param>
         /// <returns>
-        /// An instance of a message bus client.
+        /// An instance of a message bus publisher.
         /// </returns>
-        IMessagePublisher BuildPublisher();
+        IMessagePublisher BuildPublisher(string topicName, string linkName);
 
         /// <summary>
         /// Creates a message bus client.
         /// </summary>
+        /// <param name="topicName"></param>
+        /// <param name="linkName"></param>
+        /// <param name="messageHandler"></param>
         /// <returns>
-        /// An instance of a message bus client.
+        /// An instance of a message bus subscriber.
         /// </returns>
-        IMessagePublisher BuildSubscriber();
+        IMessageSubscriber BuildSubscriber(string topicName, string linkName, IMessageHandler messageHandler);
     }
 }

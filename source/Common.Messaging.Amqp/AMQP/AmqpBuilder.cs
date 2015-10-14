@@ -16,6 +16,10 @@
 
 namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
+    using System;
+    using System.Collections;
+
+    using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Messaging;
 
     using Microsoft.SPOT;
@@ -23,30 +27,106 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
     /// <summary>
     /// Builds AMQP components.
     /// </summary>
-    public class AmqpBuilder
+    public class AmqpBuilder : IMessageBrokerFactory, IDisposable
     {
+        private readonly AmqpConnection m_Connection;
+        private readonly ArrayList m_Publishers;
+        private readonly ArrayList m_Subscribers;
+        private bool m_IsDisposed;
 
         /// <summary>
-        /// Builds an AMQP connection.
+        /// Initialises an instance of the <see cref="AmqpBuilder"/> class
         /// </summary>
-        /// <returns>
-        /// An initialised instance of a <see cref="AmqpConnection"/> class.
-        /// </returns>
-        public AmqpConnection BuildAmqpConnection(QueueEndpointAddress endpointAddress)
+        private AmqpBuilder()
         {
-            var configuration = new RegistrationData(endpointAddress);
-            return new AmqpConnection(configuration);
+            m_Publishers = new ArrayList();
+            m_Subscribers = new ArrayList();
+        }
+
+        /// <summary>
+        /// Initialises an instance of the <see cref="AmqpBuilder"/> class.
+        /// </summary>
+        /// <param name="endpointAddress"></param>
+        public AmqpBuilder(QueueEndpointAddress endpointAddress) : this()
+        {
+            endpointAddress.ShouldNotBeNull();
+
+            m_Connection = BuildConnection(endpointAddress);
+        }
+
+        /// <summary>
+        /// Initialises an instance of the <see cref="AmqpBuilder"/> class.
+        /// </summary>
+        /// <param name="endpointAddress"></param>
+        /// <param name="closedEventHandler"></param>
+        public AmqpBuilder(QueueEndpointAddress endpointAddress, EventHandler closedEventHandler) : this()
+        {
+            endpointAddress.ShouldNotBeNull();
+
+            m_Connection = BuildConnection(endpointAddress, closedEventHandler);
+        }
+
+        /// <summary>
+        /// See <see cref="IDisposable.Dispose"/> for more details.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases any unamanaged resources.
+        /// </summary>
+        /// <param name="isDisposing">
+        /// Indicates whether the disposal is deterministic or not.
+        /// </param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (!m_IsDisposed)
+            {
+                if (isDisposing)
+                {
+                    m_Connection.Dispose();
+                }
+
+                m_IsDisposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Releases a disposable resources.
+        /// </summary>
+        /// <param name="resource"></param>
+        private void DisposeResource(object resource)
+        {
+            var disposable = resource as IDisposable;
+            if (disposable != null)
+            {
+                disposable.Dispose();
+            }
         }
 
         /// <summary>
         /// Builds an AMQP connection.
         /// </summary>
-        /// <param name="endpointAddress"></param>
-        /// <param name="closedEventHandler"></param>
         /// <returns>
         /// An initialised instance of a <see cref="AmqpConnection"/> class.
         /// </returns>
-        public AmqpConnection BuildAmqpConnection(QueueEndpointAddress endpointAddress, EventHandler closedEventHandler)
+        public AmqpConnection BuildConnection(QueueEndpointAddress endpointAddress)
+        {
+            var configuration = new RegistrationData(endpointAddress);
+            return new AmqpConnection(configuration);
+        }
+
+
+        /// <summary>
+        /// Builds an AMQP connection.
+        /// </summary>
+        /// <returns>
+        /// An initialised instance of a <see cref="AmqpConnection"/> class.
+        /// </returns>
+        public AmqpConnection BuildConnection(QueueEndpointAddress endpointAddress, EventHandler closedEventHandler)
         {
             var configuration = new RegistrationData(endpointAddress);
             return new AmqpConnection(configuration, closedEventHandler);
@@ -55,9 +135,6 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <summary>
         /// Builds an AMQP publisher.
         /// </summary>
-        /// <param name="connection">
-        /// The AMQP connection instance to use for publishing messages (pub/sub).
-        /// </param>
         /// <param name="topicName">
         /// The name of the AMQP topic to publish 
         /// </param>
@@ -67,17 +144,15 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <returns>
         /// An initialised instance of a <see cref="AmqpMessagePublisher"/> class.
         /// </returns>
-        public AmqpMessagePublisher BuildAmqpPublisher(AmqpConnection connection, string topicName, string linkName)
+        public IMessagePublisher BuildPublisher(string topicName, string linkName)
         {
-            return new AmqpMessagePublisher(connection, topicName, linkName);
+            var publisher = new AmqpMessagePublisher(m_Connection, topicName, linkName);
+            return publisher;
         }
 
         /// <summary>
         /// Builds an AMQP subscriber.
         /// </summary>
-        /// <param name="connection">
-        /// The AMQP connection instance to use for publishing messages (pub/sub).
-        /// </param>
         /// <param name="topicName">
         /// The name of the AMQP topic to subscribe to. 
         /// </param>
@@ -90,9 +165,31 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <returns>
         /// An initialised instance of a <see cref="AmqpMessageSubscriber"/> class.
         /// </returns>
-        public AmqpMessageSubscriber BuildAmqpSubscriber(AmqpConnection connection, string topicName, string linkName, IMessageHandler messageHandler, int windowSize = 20)
+        public IMessageSubscriber BuildSubscriber(string topicName, string linkName, IMessageHandler messageHandler)
         {
-            return new AmqpMessageSubscriber(connection, topicName, linkName, messageHandler, windowSize);
+            var subscriber = new AmqpMessageSubscriber(m_Connection, topicName, linkName, messageHandler, 20);
+            return subscriber;
+        }
+
+        /// <summary>
+        /// Builds an AMQP subscriber.
+        /// </summary>
+        /// <param name="topicName">
+        /// The name of the AMQP topic to subscribe to. 
+        /// </param>
+        /// <param name="linkName">
+        /// The unique name to associate with the link used to receive messages on.
+        /// </param>
+        /// <param name="messageHandler">
+        /// Processes any incoming message payloads.
+        /// </param>
+        /// <returns>
+        /// An initialised instance of a <see cref="AmqpMessageSubscriber"/> class.
+        /// </returns>
+        public IMessageSubscriber BuildSubscriber(string topicName, string linkName, IMessageHandler messageHandler, int windowSize)
+        {
+            var subscriber = new AmqpMessageSubscriber(m_Connection, topicName, linkName, messageHandler, windowSize);
+            return subscriber;
         }
     }
 }

@@ -38,7 +38,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         private readonly string m_TopicName;
         private readonly string m_Name;
         private readonly bool m_IsDurable;
-        private AmqpMessageSubscriber m_Subscriber;
+        private IMessageSubscriber m_Subscriber;
         private AmqpConnection m_Connection;
         private string m_ConnectionId;
         private bool m_IsDisposed;
@@ -126,7 +126,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
                     m_Connection = BuildAmqpConnection(ReuseExistingConnection);
                     m_ConnectionId = m_Connection.ConnectionId;
 
-                    m_Subscriber = m_Builder.BuildAmqpSubscriber(m_Connection, m_TopicName, m_Name, m_MessageHandler, m_WindowSize);
+                    m_Subscriber = m_Builder.BuildSubscriber(m_TopicName, m_Name, m_MessageHandler, m_WindowSize);
                     m_IsConnected = true;
 
                 }
@@ -151,7 +151,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             {
                 connection = m_Connection;
             }
-            else connection = m_Builder.BuildAmqpConnection(m_Address, ClosedEventHandler);
+            else connection = m_Builder.BuildConnection(m_Address, ClosedEventHandler);
 
             return connection;
         }
@@ -192,7 +192,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         }
 
         /// <summary>
-        /// Publishes a message to a topic.
+        /// See <see cref="IMessageSubscriber.Subscribe"/> for more details.
         /// </summary>
         /// <param name="payload">
         /// The message payload to send.
@@ -209,6 +209,24 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
                 if (m_IsConnected)
                 {
                     m_Subscriber.Subscribe();
+                }
+            }
+            catch (Exception)
+            {
+                Disconnect();
+            }
+        }
+
+        /// <summary>
+        /// See <see cref="IMessageSubscriber.Unsubscribe"/> for more details.
+        /// </summary>
+        public void Unsubscribe()
+        {
+            try
+            {
+                if (m_IsConnected)
+                {
+                    m_Subscriber.Unsubscribe();
                 }
             }
             catch (Exception)
