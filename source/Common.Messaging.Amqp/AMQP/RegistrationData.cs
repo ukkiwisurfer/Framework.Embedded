@@ -14,7 +14,7 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
+namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
     /// <summary>
     /// Describes registraton details to connect to a message queue server. 

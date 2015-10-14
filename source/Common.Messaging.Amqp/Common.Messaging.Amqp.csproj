@@ -32,15 +32,15 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="MessageBus\AmqpBuilder.cs" />
-    <Compile Include="MessageBus\AmqpConnection.cs" />
-    <Compile Include="MessageBus\AmqpMessagePublisher.cs" />
-    <Compile Include="MessageBus\AmqpMessageSubscriber.cs" />
-    <Compile Include="MessageBus\AmqpPublisherProxy.cs" />
-    <Compile Include="MessageBus\AmqpSubscriberProxy.cs" />
+    <Compile Include="AMQP\AmqpBuilder.cs" />
+    <Compile Include="AMQP\AmqpConnection.cs" />
+    <Compile Include="AMQP\AmqpMessagePublisher.cs" />
+    <Compile Include="AMQP\AmqpMessageSubscriber.cs" />
+    <Compile Include="AMQP\AmqpPublisherProxy.cs" />
+    <Compile Include="AMQP\AmqpSubscriberProxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MessageBus\QueueEndpointAddress.cs" />
-    <Compile Include="MessageBus\RegistrationData.cs" />
+    <Compile Include="AMQP\QueueEndpointAddress.cs" />
+    <Compile Include="AMQP\RegistrationData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

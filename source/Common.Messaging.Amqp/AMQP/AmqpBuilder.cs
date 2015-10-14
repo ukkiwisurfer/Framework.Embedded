@@ -14,9 +14,10 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
+namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
     using Ignite.Framework.Micro.Common.Contract.Messaging;
+
     using Microsoft.SPOT;
 
     /// <summary>

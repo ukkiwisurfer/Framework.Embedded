@@ -1,4 +1,4 @@
-﻿//--------------------------------------------------------------------------- 
+//--------------------------------------------------------------------------- 
 //   Copyright 2014-2015 Igniteous Limited
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,31 +14,30 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
+
+namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
     using System;
+
     using Amqp;
+    using Amqp.Framing;
 
     using Ignite.Framework.Micro.Common.Assertions;
-    using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Messaging;
-    using Ignite.Framework.Micro.Common.Exceptions;
 
     /// <summary>
-    /// Processes incoming messages from an AMQP server.
+    /// Provides a message publishing capability (to an AMQP server).
     /// </summary>
-    public class AmqpMessageSubscriber : IMessageSubscriber, IDisposable
+    public class AmqpMessagePublisher : IMessagePublisher, IMessageHandler, IDisposable
     {
         private readonly AmqpConnection m_Connection;
-        private readonly IMessageHandler m_MessageHandler;
-        private ReceiverLink m_Receiver;
-        private readonly ILogger m_Logger;
+        private SenderLink m_Sender;
         private readonly string m_TopicName;
         private readonly string m_Name;
         private string m_ConnectionId;
         private bool m_IsDisposed;
         private bool m_IsConnected;
-        private int m_WindowSize;
+        private bool m_IsDurable;
 
         /// <summary>
         /// Returns the unique identifier of the connection.
@@ -47,37 +46,6 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         {
             get { return m_ConnectionId; }
         }
-
-        /// <summary>
-        /// Indicates whether the connection to the AMQP server is established.
-        /// </summary>
-        public bool IsConnected
-        {
-            get { return m_IsConnected; }
-            private set { m_IsConnected = value; }
-        }
-
-        /// <summary>
-        /// The maximum number of messages a receiver is allowed to receive from the queue concurrently. 
-        /// </summary>
-        public int WindowSize
-        {
-            get { return m_WindowSize; }
-            set
-            {
-                m_WindowSize = value;
-                if (m_IsConnected)
-                {
-                    m_Receiver.SetCredit(m_WindowSize);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Indicaates whether an existing valid connection should be reused when reconnecting.
-        /// </summary>
-        public bool ReuseExistingConnection { get; set; }
-
 
         /// <summary>
         /// Initialises an instance of the publisher.
@@ -89,24 +57,22 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
         /// The topic name to publish to.
         /// </param>
         /// <param name="name">
-        /// The unique name to associate with the link used to receive messages on.
+        /// The unique name to associate with the link used to send messages on.
         /// </param>
-        /// <param name="handler">
-        /// Processes incoming messages from the AMQP server.
+        /// <param name="isDurable">
+        /// Indicates whether the messages should be durable (Persistent).
         /// </param>
-        public AmqpMessageSubscriber(AmqpConnection connection, string topicName, string name, IMessageHandler handler, int windowSize = 20)
+        public AmqpMessagePublisher(AmqpConnection connection, string topicName, string name, bool isDurable = true)
         {
             connection.ShouldNotBeNull();
             topicName.ShouldNotBeEmpty();
-            handler.ShouldNotBeNull();
             name.ShouldNotBeEmpty();
 
-            m_Connection = connection;
             m_ConnectionId = string.Empty;
+            m_Connection = connection;
             m_TopicName = topicName;
-            m_MessageHandler = handler;
-            m_WindowSize = windowSize;
             m_Name = name;
+            m_IsDurable = isDurable;
         }
 
         /// <summary>
@@ -136,50 +102,64 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
                 m_IsDisposed = true;
             }
         }
+        
+        /// <summary>
+        /// Publishes a message to a topic.
+        /// </summary>
+        /// <remarks>
+        /// By default each message will be set to honour the publisher level durability settings.
+        /// </remarks>
+        /// <param name="payload">
+        /// The message payload to send.
+        /// </param>
+        public virtual void Publish(byte[] payload)
+        {
+           Publish(payload, m_IsDurable);
+        }
 
         /// <summary>
-        /// Starts the processing of messages sent from an AMQP server.
+        /// Publishes a message to a topic.
         /// </summary>
-        public void Subscribe()
+        /// <param name="payload">
+        /// The message payload to send.
+        /// </param>
+        /// <param name="isDurable">
+        /// Indicates whether the message should be persisted by the underlying queue.
+        /// </param>
+        public virtual void Publish(byte[] payload, bool isDurable)
         {
             try
             {
-                m_Receiver.Start(m_WindowSize , OnMessage);
+                Connect();
+
+                if (IsConnected)
+                {
+                    var message = new Message();
+
+                    message.Header = new Header();
+                    message.Header.Durable = isDurable;
+
+                    message.Properties = new Properties();
+                    message.ApplicationProperties = new ApplicationProperties();
+                    message.BodySection = new Data() { Binary = payload };
+
+
+                    m_Sender.Send(message);
+                }
             }
             catch (AmqpException e)
             {
+                IsConnected = false;
             }
         }
 
         /// <summary>
-        /// On recei[t of a message for the AMQP server, process it.
+        /// Indicates whether the connection to the AMQP server is established.
         /// </summary>
-        /// <param name="receiver">
-        /// The link used to receive the incoming messages from the AMQP server.
-        /// </param>
-        /// <param name="message">
-        /// The message that was received.
-        /// </param>
-        private void OnMessage(ReceiverLink receiver, Message message)
+        public bool IsConnected
         {
-            try
-            {
-                var payload = message.BodySection;
-                if (payload != null)
-                {
-                    var buffer = new ByteBuffer(1024, true);
-
-                    payload.Decode(buffer);
-                    if (buffer.Length > 0)
-                    {
-                        m_MessageHandler.HandleMessage(buffer.Buffer);
-                    }
-                }
-            }
-            catch (Exception e)
-            {                
-                m_Logger.Error("Invalid message format" ,e.CreateApplicationException("Invalid message format"));
-            }
+            get { return m_IsConnected; }
+            private set { m_IsConnected = value; }
         }
 
         /// <summary>
@@ -196,16 +176,18 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
                         m_Connection.Connect();
                         m_ConnectionId = m_Connection.ConnectionId;
                     }
-                    m_Receiver = new ReceiverLink(m_Connection.Session, m_Name, m_TopicName);
 
-                    m_IsConnected = true;
+                    m_Sender = new SenderLink(m_Connection.Session, m_Name, m_TopicName);
+
+                    IsConnected = true;
                 }
             }
             catch (AmqpException e)
             {
+                Disconnect();
             }
         }
-
+        
         /// <summary>
         /// Disconnects from a AMQP server.
         /// </summary>
@@ -215,20 +197,31 @@ namespace Ignite.Framework.Micro.Common.Messaging.MessageBus
             {
                 if (IsConnected)
                 {
-                    if (m_Receiver != null)
+                    if (m_Sender != null)
                     {
-                        m_Receiver.Close();
-                        m_Receiver = null;
+                        m_Sender.Close();
+                        m_Sender = null;
                     }
-
-                    m_IsConnected = false;
                 }
             }
             catch (AmqpException e)
             {
             }
+            finally
+            {
+                IsConnected = false;                
+            }
         }
 
-
+        /// <summary>
+        /// See <see cref="IMessageHandler.HandleMessage"/> for more details.
+        /// </summary>
+        /// <param name="message">
+        /// The message payload to send.
+        /// </param>
+        public void HandleMessage(byte[] message)
+        {
+            Publish(message);
+        }
     }
 }
