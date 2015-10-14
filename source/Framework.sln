@@ -54,6 +54,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Core", "Common.Core\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Messaging.Amqp", "Common.Messaging.Amqp\Common.Messaging.Amqp.csproj", "{B492B7F3-EED3-49AC-B6E7-0EA57BA77A94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Messaging.Mqtt", "Common.Messaging.Mqtt\Common.Messaging.Mqtt.csproj", "{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -270,6 +272,16 @@ Global
 		{B492B7F3-EED3-49AC-B6E7-0EA57BA77A94}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B492B7F3-EED3-49AC-B6E7-0EA57BA77A94}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B492B7F3-EED3-49AC-B6E7-0EA57BA77A94}.Release|x86.ActiveCfg = Release|Any CPU
+		{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -295,5 +307,6 @@ Global
 		{8D2CC200-ED26-48A5-9879-A03625FB3AA8} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{DF2512B0-02A8-4820-BCCF-72543FB9B1AC} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{B492B7F3-EED3-49AC-B6E7-0EA57BA77A94} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
+		{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 	EndGlobalSection
 EndGlobal
