@@ -23,8 +23,8 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Messaging;
     using Ignite.Framework.Micro.Common.Contract.Services;
-    using Ignite.Framework.Micro.Common.Core.Extensions;
     using Ignite.Framework.Micro.Common.FileManagement;
+    using Ignite.Framework.Micro.Common.Core.Extensions;
 
     /// <summary>
     /// Transfers data that has been persisted locally to a remote machine via pub/sub mechanism.
@@ -82,7 +82,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="bufferSize">
         /// The size of the read buffer to use when loading each data file's contents.
         /// </param>
-        public DataTransferService(IMessagePublisher publisher, IFileHelper fileHelper, BufferedConfiguration configuration, int bufferSize = 400) : base()
+        public DataTransferService(IMessagePublisher publisher, IFileHelper fileHelper, BufferedConfiguration configuration, int bufferSize = 512) : base()
         {
             publisher.ShouldNotBeNull();
             fileHelper.ShouldNotBeNull();
@@ -184,46 +184,48 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                     {
                         // Find all files under the target path and with the specified file extension.
                         var fileNames = m_FileHelper.GetAllFilesMatchingPattern(m_Configuration.TargetPath, m_Configuration.TargetFileExtension);
-
-                        var iterator = fileNames.GetEnumerator();
-                        var isValid = iterator.MoveNext();
-
-                        // For each file, read it and publish its contents via a message broker.
-                        while (isValid)
+                        var fileCount = fileNames.Count();
+                        if (fileCount > 0)
                         {
-                            var fileName = iterator.Current as string;
-                            if (fileName != null)
+                            var iterator = fileNames.GetEnumerator();
+                            var isValid = iterator.MoveNext();
+
+                            byte[] buffer = new byte[m_BufferSize];
+
+                            // For each file, read it and publish its contents via a message broker.
+                            for(int fileIndex = 0; fileIndex < fileCount; fileIndex++)
                             {
-                                // Open file and read payload.
-                                using (
-                                    var fileStream = m_FileHelper.OpenStream(m_Configuration.TargetPath, fileName,
-                                        m_BufferSize))
-                                {
-                                    using (var payloadStream = new MemoryStream())
+                                if (!isValid) break;
+
+                                var fileName = iterator.Current as string;
+                                if (fileName != null)
+                                {                                   
+                                    // Open file and read payload.
+                                    using (var fileStream = m_FileHelper.OpenStream(m_Configuration.TargetPath, fileName, m_BufferSize))
                                     {
-                                        // Copy file contents into memory stream.
-                                        byte[] buffer = new byte[m_BufferSize];
-                                        int bytesRead = 0;
-
-                                        // While there is data to read from the file add it to the payload stream.
-                                        while ((bytesRead = fileStream.Read(buffer, 0, m_BufferSize)) > 0)
+                                        using (var memoryStream = new MemoryStream())
                                         {
-                                            payloadStream.Write(buffer, 0, bytesRead);
-                                        }
+                                            int bytesRead = 0;
 
-                                        // Publish message with file contents.
-                                        m_Publisher.Publish(payloadStream.ToArray());
+                                            // While there is data to read from the file add it to the buffer.
+                                            while ((bytesRead = fileStream.Read(buffer, 0, m_BufferSize)) > 0)
+                                            {
+                                                memoryStream.Write(buffer, 0, bytesRead);
+                                            }
+
+                                            m_Publisher.Publish(memoryStream.ToArray());
+                                        }
                                     }
 
+                                    // Once sent, delete the file.
+                                    m_FileHelper.DeleteFile(m_Configuration.TargetPath, fileName);
                                 }
 
-                                // Once sent, delete the file.
-                                m_FileHelper.DeleteFile(m_Configuration.TargetPath, fileName);
-                            }
 
-                            isValid = iterator.MoveNext();
+                                isValid = iterator.MoveNext();
+                            }
                         }
-                        
+
                     }
                 }
             }
