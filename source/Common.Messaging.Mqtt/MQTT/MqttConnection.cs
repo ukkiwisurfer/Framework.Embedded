@@ -37,6 +37,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         private bool m_IsDisposed;
         private bool m_IsConnected;
         private string m_ConnectionId;
+        private object m_Synclock;
 
         /// <summary>
         /// See <see cref="IQueuedConnection.IsConnected"/> for more details.
@@ -71,6 +72,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
             registrationData.ShouldNotBeNull();
 
             m_RegistrationData = registrationData;
+            m_Synclock = new object();
         }
 
         /// <summary>
@@ -106,12 +108,19 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         /// </summary>
         public void Connect()
         {
-            m_ConnectionId = Guid.NewGuid().ToString();
+            lock (m_Synclock)
+            {
+                if (!m_IsConnected)
+                {
+                    m_ConnectionId = Guid.NewGuid().ToString();
 
-            m_Connection = new MqttClient(m_RegistrationData.IPAddress);
-            m_Connection.ConnectionClosed += OnClosedConnection;
+                    m_Connection = new MqttClient(m_RegistrationData.IPAddress);
+                    m_Connection.ConnectionClosed += OnClosedConnection;
+                    m_Connection.Connect(m_ConnectionId, m_RegistrationData.Username, m_RegistrationData.Password);
 
-            m_IsConnected = true;
+                    m_IsConnected = true;
+                }
+            }
         }
 
         /// <summary>
@@ -140,7 +149,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         {
             try
             {
-                m_Connection.Disconnect();
+                if (m_Connection != null) m_Connection.Disconnect();
             }
             finally
             {
