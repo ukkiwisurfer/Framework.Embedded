@@ -43,6 +43,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         private readonly IFileHelper m_FileHelper;
         private readonly object m_SyncObject;
         private readonly int m_BufferSize;
+
         private bool m_IsOpen;
 
         private int m_MessageBatchSize;
@@ -63,6 +64,28 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                 lock (m_SyncObject)
                 {
                     m_MessageBatchSize = value;
+                }
+            }
+        }
+
+        private int m_TransferLimit;
+        /// <summary>
+        /// The maximum number of files to transfer in one call.
+        /// </summary>
+        public int TransferLimit
+        {
+            get
+            {
+                lock (m_SyncObject)
+                {
+                    return m_TransferLimit;
+                }
+            }
+            set
+            {
+                lock (m_SyncObject)
+                {
+                    m_TransferLimit = value;
                 }
             }
         }
@@ -140,7 +163,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="hasWork"></param>
         public override void CheckIfWorkExists(bool hasWork = false)
         {
-            var files = m_FileHelper.GetAllFilesMatchingPattern(m_Configuration.TargetPath, m_Configuration.TargetFileExtension);
+            var files = m_FileHelper.GetAllFilesMatchingPattern(m_Configuration.TargetPath, m_Configuration.TargetFileExtension, m_TransferLimit);
             if (files.Count() >= BatchSize)
             {
                 this.SignalWorkToBeDone();
@@ -183,7 +206,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                     if (pathExists)
                     {
                         // Find all files under the target path and with the specified file extension.
-                        var fileNames = m_FileHelper.GetAllFilesMatchingPattern(m_Configuration.TargetPath, m_Configuration.TargetFileExtension);
+                        var fileNames = m_FileHelper.GetAllFilesMatchingPattern(m_Configuration.TargetPath, m_Configuration.TargetFileExtension, m_TransferLimit);
                         var fileCount = fileNames.Count();
                         if (fileCount > 0)
                         {
@@ -215,6 +238,8 @@ namespace Ignite.Framework.Micro.Common.Services.Data
 
                                             m_Publisher.Publish(memoryStream.ToArray());
                                         }
+
+                                        fileStream.Close();
                                     }
 
                                     // Once sent, delete the file.
