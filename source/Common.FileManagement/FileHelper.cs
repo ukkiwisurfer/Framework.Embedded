@@ -80,7 +80,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         {
             if (File.Exists(targetFileName))
             {
-                File.Delete(targetFileName);
+                DeleteFile(targetFileName);
             }
 
             File.Move(rawFileName, targetFileName);
@@ -122,20 +122,25 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// </param>
         public void RenameAllFilesMatchingExtension(string sourcePath, string targetPath, string oldExtension, string newExtension)
         {
-            var fileNames = Directory.EnumerateFiles(sourcePath);
-
-            var patternCriteria = @"." + oldExtension;
-
-            foreach (string oldFileNameWithPath in fileNames)
+            try
             {
-                if (oldFileNameWithPath.LastIndexOf(patternCriteria) > 0)
-                {
-                    string oldFileName = Path.GetFileName(oldFileNameWithPath);
-                    string newFileName = Path.GetFileNameWithoutExtension(oldFileName) + "." + newExtension;
-                    string newFileNameWithPath = this.BuildFilePath(targetPath, newFileName);
+                var fileNames = Directory.EnumerateFiles(sourcePath);
+                var patternCriteria = @"." + oldExtension;
 
-                    RenameFile(oldFileNameWithPath, newFileNameWithPath);
+                foreach (string oldFileNameWithPath in fileNames)
+                {
+                    if (oldFileNameWithPath.LastIndexOf(patternCriteria) > 0)
+                    {
+                        string oldFileName = Path.GetFileName(oldFileNameWithPath);
+                        string newFileName = Path.GetFileNameWithoutExtension(oldFileName) + "." + newExtension;
+                        string newFileNameWithPath = this.BuildFilePath(targetPath, newFileName);
+
+                        RenameFile(oldFileNameWithPath, newFileNameWithPath);
+                    }
                 }
+            }
+            catch (Exception)
+            {
             }
         }
 
@@ -176,36 +181,42 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         public IEnumerable GetAllFilesMatchingPattern(string folder, string pattern, int fileLimit = 5)
         {
             var patternCriteria = @"." + pattern;
-
-            var fileNames = Directory.EnumerateFiles(folder);
             var matches = new ArrayList();
 
-            var fileCount = fileNames.Count();
-            if (fileCount > 0)
+            try
             {
-                var iterator = fileNames.GetEnumerator();
-                var isValid = iterator.MoveNext();
+                var fileNames = Directory.EnumerateFiles(folder);
 
-                if (isValid)
+                var fileCount = fileNames.Count();
+                if (fileCount > 0)
                 {
-                    var limit = (fileCount < fileLimit) ? fileCount : fileLimit;
-                    for (int fileIndex = 0; fileIndex < limit; fileIndex++)
+                    var iterator = fileNames.GetEnumerator();
+                    var isValid = iterator.MoveNext();
+
+                    if (isValid)
                     {
-                        if (!isValid) break;
-
-                        var oldFileNameWithPath = iterator.Current as string;
-                        if (oldFileNameWithPath != null)
+                        var limit = (fileCount < fileLimit) ? fileCount : fileLimit;
+                        for (int fileIndex = 0; fileIndex < limit; fileIndex++)
                         {
-                            var foundIndex = oldFileNameWithPath.LastIndexOf(patternCriteria);
-                            if (foundIndex > 0)
-                            {
-                                matches.Add(Path.GetFileName(oldFileNameWithPath));
-                            }
-                        }
+                            if (!isValid) break;
 
-                        isValid = iterator.MoveNext();
+                            var oldFileNameWithPath = iterator.Current as string;
+                            if (oldFileNameWithPath != null)
+                            {
+                                var foundIndex = oldFileNameWithPath.LastIndexOf(patternCriteria);
+                                if (foundIndex > 0)
+                                {
+                                    matches.Add(Path.GetFileName(oldFileNameWithPath));
+                                }
+                            }
+
+                            isValid = iterator.MoveNext();
+                        }
                     }
                 }
+            }
+            catch (Exception)
+            {
             }
 
             return matches;
@@ -226,9 +237,39 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         public bool DeleteFile(string path, string fileName)
         {
             var filePath = BuildFilePath(path, fileName);
-            File.Delete(filePath);
+            return DeleteFile(filePath); 
+        }
 
-            return !File.Exists(filePath);
+        /// <summary>
+        /// Deletes a file.
+        /// </summary>
+        /// <param name="filePath">
+        /// The fully qualified file path of the file to delete.
+        /// </param>
+        /// <returns>
+        /// True if the file was deleted.
+        /// </returns>
+        public bool DeleteFile(string filePath)
+        {
+            bool isDeleted = false;
+
+            try
+            {
+
+                File.SetAttributes(filePath, FileAttributes.Normal);
+
+                FileInfo info = new FileInfo(filePath);
+                info.Delete();
+
+                isDeleted = info.Exists;
+
+            }
+            catch (Exception)
+            {
+                isDeleted = false;
+            }
+
+            return isDeleted;
         }
 
         /// <summary>

@@ -136,6 +136,17 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         bool DeleteFile(string path, string fileName);
 
         /// <summary>
+        /// Deletes a file.
+        /// </summary>
+        /// <param name="fileName">
+        /// The fully qualified path of the file to delete.
+        /// </param>
+        /// <returns>
+        /// True if the file was deleted.
+        /// </returns>
+        bool DeleteFile(string filePath);
+
+        /// <summary>
         /// Creates a file path.
         /// </summary>
         /// <param name="path">
