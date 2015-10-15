@@ -134,6 +134,11 @@ namespace Ignite.Framework.Micro.Common.Networking
             return networkDateTime;
         }
 
+        /// <summary>
+        /// Returns the IP address for the given host name.
+        /// </summary>
+        /// <param name="hostName"></param>
+        /// <returns></returns>
         public IPAddress GetHostEntry(string hostName)
         {
              var hostEntry = Dns.GetHostEntry(hostName);
