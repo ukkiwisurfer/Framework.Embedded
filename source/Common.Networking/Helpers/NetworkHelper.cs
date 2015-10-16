@@ -14,6 +14,9 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System.Threading;
+using Microsoft.SPOT;
+
 namespace Ignite.Framework.Micro.Common.Networking
 {
     using System;
@@ -28,6 +31,8 @@ namespace Ignite.Framework.Micro.Common.Networking
     public class NetworkHelper
     {
         private readonly NetworkInterface[] m_Interfaces;
+        private readonly AutoResetEvent m_WaitForNetwork;
+        private readonly AutoResetEvent m_WaitForAddressChange;
 
         /// <summary>
         /// The number of interfaces this device supports.
@@ -42,7 +47,9 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// </summary>
         public NetworkHelper()
         {
-            m_Interfaces = NetworkInterface.GetAllNetworkInterfaces();            
+            m_Interfaces = NetworkInterface.GetAllNetworkInterfaces();
+            m_WaitForNetwork = new AutoResetEvent(false);
+            m_WaitForAddressChange = new AutoResetEvent(false);
         }
 
         /// <summary>
@@ -67,11 +74,21 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <returns></returns>
         public NetworkInformation GetNetworkDetails(int interfaceIndex)
         {
-            var information = new NetworkInformation();
+            NetworkInformation information = null;
 
+            // Set up event handlers for network state changes.
+            NetworkChange.NetworkAvailabilityChanged += OnNetworkAvailabilityChanged;
+            NetworkChange.NetworkAddressChanged += OnNetworkAddressChanged;
+
+            //// Wait for the network to become availableand for a DHCP address to be allocated.
+            WaitHandle.WaitAll(new[] { m_WaitForAddressChange, m_WaitForNetwork });
+
+            // Retrieve network interface details.
             var networkInterface = GetInterface(interfaceIndex);
             if (networkInterface != null)
             {
+                // Then capture the network details. 
+                information = new NetworkInformation();
                 information.IpAddress = networkInterface.IPAddress;
                 information.IsDHCPEnabled = networkInterface.IsDhcpEnabled;
                 information.SubnetMask = networkInterface.SubnetMask;
@@ -80,6 +97,29 @@ namespace Ignite.Framework.Micro.Common.Networking
             }
 
             return information;
+        }
+
+        /// <summary>
+        /// Event handler to signal when the network address has changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void OnNetworkAddressChanged(object sender, EventArgs eventArgs)
+        {
+            m_WaitForAddressChange.Set();
+        }
+
+        /// <summary>
+        /// Event handler to signal that the network is now available.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="networkAvailabilityEventArgs"></param>
+        private void OnNetworkAvailabilityChanged(object sender, NetworkAvailabilityEventArgs networkAvailabilityEventArgs)
+        {
+            if (networkAvailabilityEventArgs.IsAvailable)
+            {
+                m_WaitForNetwork.Set();
+            }
         }
 
         /// <summary>
