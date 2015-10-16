@@ -55,8 +55,12 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <summary>
         /// Returns the network interface for a given index.
         /// </summary>
-        /// <param name="interfaceIndex"></param>
-        /// <returns></returns>
+        /// <param name="interfaceIndex">
+        ///  The index of the network interface to query.
+        /// </param>
+        /// <returns>
+        /// Details of the network interface.
+        /// </returns>
         private NetworkInterface GetInterface(int interfaceIndex)
         {
             if ((interfaceIndex >= 0) && (interfaceIndex < m_Interfaces.Length))
@@ -70,8 +74,12 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <summary>
         /// Returns the IP address of the device.
         /// </summary>
-        /// <param name="interfaceIndex"></param>
-        /// <returns></returns>
+        /// <param name="interfaceIndex">
+        /// The index of the network interface to query.
+        /// </param>
+        /// <returns>
+        /// Information about the specified network interface.
+        /// </returns>
         public NetworkInformation GetNetworkDetails(int interfaceIndex)
         {
             NetworkInformation information = null;
@@ -102,8 +110,12 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <summary>
         /// Event handler to signal when the network address has changed.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="eventArgs"></param>
+        /// <param name="sender">
+        /// The object that initiated the event.
+        /// </param>
+        /// <param name="eventArgs">
+        /// The event arguments associated with the change in network address.
+        /// </param>
         private void OnNetworkAddressChanged(object sender, EventArgs eventArgs)
         {
             m_WaitForAddressChange.Set();
@@ -112,8 +124,12 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <summary>
         /// Event handler to signal that the network is now available.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="networkAvailabilityEventArgs"></param>
+        /// <param name="sender">
+        /// The object that initiated the event.
+        /// </param>
+        /// <param name="networkAvailabilityEventArgs">
+        /// The event arguments associated with the change in network availability,
+        /// </param>
         private void OnNetworkAvailabilityChanged(object sender, NetworkAvailabilityEventArgs networkAvailabilityEventArgs)
         {
             if (networkAvailabilityEventArgs.IsAvailable)
@@ -147,7 +163,9 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <summary>
         /// Retrives the time from a TNS server.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The calculated timestamp to associate to the device.
+        /// </returns>
         public DateTime GetNetworkTime(string hostName = "time-a.nist.gov")
         {
             DateTime serverTime = new DateTime(1900, 1, 1);
@@ -177,8 +195,12 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <summary>
         /// Returns the IP address for the given host name.
         /// </summary>
-        /// <param name="hostName"></param>
-        /// <returns></returns>
+        /// <param name="hostName">
+        /// The name of thw host to query for.
+        /// </param>
+        /// <returns>
+        /// The IP address of the specified host (if found) otherwise null.
+        /// </returns>
         public IPAddress GetHostEntry(string hostName)
         {
              var hostEntry = Dns.GetHostEntry(hostName);
@@ -193,8 +215,12 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <summary>
         /// Parses the NTP response and constructs a network time
         /// </summary>
-        /// <param name="ntpData"></param>
-        /// <returns></returns>
+        /// <param name="ntpData">
+        /// The payload from the NTP service used to calculate the current local time. 
+        /// </param>
+        /// <returns>
+        /// The calculated network time.
+        /// </returns>
         private DateTime BuildNetworkTime(byte[] ntpData)
         {
             var datetime = new DateTime(1900, 1, 1);
@@ -222,9 +248,11 @@ namespace Ignite.Framework.Micro.Common.Networking
         }
 
         /// <summary>
-        /// Builds a NTP request.
+        /// Builds a NTP request poacket.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// A NTP request packet.
+        /// </returns>
         private byte[] BuildNtpRequest()
         {
             byte[] ntpData = new byte[48];
