@@ -36,6 +36,7 @@ namespace Ignite.Framework.Micro.Common.Services
         private readonly IResourceLoader m_ResourceLoader;
         private Thread m_WorkerThread;
         private readonly object m_SyncLock;
+        private bool m_IsProcessingEnabled;
         private bool m_IsDisposed;
 
         private readonly ILogger m_Logger;
@@ -168,6 +169,28 @@ namespace Ignite.Framework.Micro.Common.Services
         }
 
         /// <summary>
+        /// Indicates whether processing of work is to be performed.
+        /// </summary>
+        public bool IsProcessingEnabled
+        {
+            get
+            {
+                lock (m_SyncLock)
+                {
+                    return m_IsProcessingEnabled;
+                }
+            }
+            set
+            {
+                lock (m_SyncLock)
+                {
+                    m_IsProcessingEnabled = value;
+                    OnProcessingStateChanged(value);
+                }
+            }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ThreadedService"/> class. 
         /// </summary>
         protected ThreadedService()
@@ -182,6 +205,7 @@ namespace Ignite.Framework.Micro.Common.Services
 
             m_WorkerThread = new Thread(this.PerformWork);
             m_SyncLock = new object();
+            m_IsProcessingEnabled = true;
 
             m_SleepPeriodInMilliseconds = 10000;
             m_WaitForShutdownPeriodInMilliseconds = 10000;
@@ -370,7 +394,7 @@ namespace Ignite.Framework.Micro.Common.Services
             }
 
             // If the work detected event has been signalled, perform the task.
-            if (signalled == 1)
+            if (signalled == 1 && IsProcessingEnabled)
             {
                 DoWork();
             }            
@@ -490,6 +514,14 @@ namespace Ignite.Framework.Micro.Common.Services
         /// Checks to see if work exists
         /// </summary>
         public virtual void CheckIfWorkExists(bool hasWork = false)
+        {
+        }
+
+        /// <summary>
+        /// Handles when 
+        /// </summary>
+        /// <param name="processingState"></param>
+        protected virtual void OnProcessingStateChanged(bool processingState)
         {
             
         }
