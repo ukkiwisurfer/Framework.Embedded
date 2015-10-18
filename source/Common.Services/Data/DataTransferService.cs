@@ -176,8 +176,6 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         protected override void OnOpening()
         { 
             m_FileHelper.CreateDirectory(m_Configuration.TargetPath);
-            m_Publisher.Connect();
-
             m_IsOpen = true;
         }
 
@@ -186,8 +184,14 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// </summary>
         protected override void OnClosing()
         {
-            m_Publisher.Disconnect();
-            m_IsOpen = false;
+            try
+            {
+                m_Publisher.Disconnect();
+            }
+            finally
+            {
+                m_IsOpen = false;
+            }
         }
 
         /// <summary>
@@ -200,6 +204,8 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         {
             try
             {
+                if (!m_Publisher.IsConnected) m_Publisher.Connect();
+
                 if (m_Publisher.IsConnected)
                 {
                     var pathExists = m_FileHelper.DoesDirectoryExist(m_Configuration.TargetPath);
@@ -246,7 +252,6 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                                     m_FileHelper.DeleteFile(m_Configuration.TargetPath, fileName);
                                 }
 
-
                                 isValid = iterator.MoveNext();
                             }
                         }
@@ -270,6 +275,20 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         public override bool IsServiceActive
         {
             get { return m_Publisher.IsConnected; }
+        }
+
+        /// <summary>
+        /// On detection of a change in processing state, update the status of the message publisher.
+        /// </summary>
+        /// <param name="processingState">
+        /// The value of the procesing state flag.
+        /// </param>
+        protected override void OnProcessingStateChanged(bool processingState)
+        {
+            if (!processingState)
+            {
+                m_Publisher.Disconnect();
+            }
         }
     }
 }
