@@ -19,12 +19,12 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
     using System;
 
     /// <summary>
-    /// Provides the means to publish messages to a message bus.
+    /// Provides the means to publish messages to a MQ broker.
     /// </summary>
     public interface IMessagePublisher : IQueuedConnection, IMessageHandler, IDisposable
     {
         /// <summary>
-        /// Publishes a message on the message bus.
+        /// Publishes a message to a MQ broker.
         /// </summary>
         /// <param name="payload">
         /// The payload to publish.
@@ -32,7 +32,7 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
         void Publish(byte[] payload);
 
         /// <summary>
-        /// Publishes a message on the message bus.
+        /// Publishes a message to a MQ broker.
         /// </summary>
         /// <param name="payload">
         /// The payload to publish.

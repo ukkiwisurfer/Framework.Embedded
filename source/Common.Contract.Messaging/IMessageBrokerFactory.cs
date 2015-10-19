@@ -19,15 +19,19 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
     using System;
 
     /// <summary>
-    /// Factory for creating client connections to a message bus server.
+    /// Factory for creating client connections to a MQ broker.
     /// </summary>
     public interface IMessageBrokerFactory : IDisposable
     {
         /// <summary>
         /// Creates a message bus client.
         /// </summary>
-        /// <param name="topicName"></param>
-        /// <param name="linkName"></param>
+        /// <param name="topicName">
+        /// The MQ topic to publish to.
+        /// </param>
+        /// <param name="linkName">
+        /// The unique name for the connection to the MQ server.
+        /// </param>
         /// <returns>
         /// An instance of a message bus publisher.
         /// </returns>
@@ -36,9 +40,15 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
         /// <summary>
         /// Creates a message bus client.
         /// </summary>
-        /// <param name="topicName"></param>
-        /// <param name="linkName"></param>
-        /// <param name="messageHandler"></param>
+        /// <param name="topicName">
+        /// The MQ topic to subscribe to.
+        /// </param>
+        /// <param name="linkName">
+        /// The unique name for the connection to the MQ server.
+        /// </param>
+        /// <param name="messageHandler">
+        /// Handler for processing received messages.
+        /// </param>
         /// <returns>
         /// An instance of a message bus subscriber.
         /// </returns>

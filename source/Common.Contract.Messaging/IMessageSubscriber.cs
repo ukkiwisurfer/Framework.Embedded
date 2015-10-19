@@ -29,11 +29,8 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
         int WindowSize { get; set; }
 
         /// <summary>
-        /// Subscribes to a message topic on the message bus.
+        /// Subscribes to a message topic from the MQ broker.
         /// </summary>
-        /// <returns>
-        /// Returns the status publishing to the message bus.
-        /// </returns>
         void Subscribe();
 
         /// <summary>

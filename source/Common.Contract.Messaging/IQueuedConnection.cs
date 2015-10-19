@@ -17,7 +17,7 @@
 namespace Ignite.Framework.Micro.Common.Contract.Messaging
 {
     /// <summary>
-    /// Provides support for connection to a server application via MQ (message queueing) technology.
+    /// Provides support for connection to a MQ (message queueing) broker.
     /// </summary>
     public interface IQueuedConnection
     {

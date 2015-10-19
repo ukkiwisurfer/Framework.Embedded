@@ -18,15 +18,15 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
 {
 
     /// <summary>
-    /// Message handler for processing raw sensor readings
+    /// Message handler for processing raw messages from a MQ broker.
     /// </summary>
     public interface IMessageHandler
     {
         /// <summary>
-        /// Handles raw sensor messages.
+        /// Processes incoming messages from a MQ broker..
         /// </summary>
         /// <param name="message">
-        /// The raw message.
+        /// The raw message (as a byte stream).
         /// </param>
         void HandleMessage(byte[] message);
     }
