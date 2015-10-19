@@ -14,13 +14,12 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-namespace Ignite.Framework.Micro.Common.Networking
-{
-    using System.Net;
-    using System.Text;
+using System.Text;
 
+namespace Ignite.Framework.Micro.Common.Contract.Networking
+{
     /// <summary>
-    /// Details about the network interface. 
+    /// Details about a network interface. 
     /// </summary>
     public class NetworkInformation
     {

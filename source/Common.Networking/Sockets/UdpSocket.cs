@@ -22,7 +22,6 @@ namespace Ignite.Framework.Micro.Common.Networking
 
     using Ignite.Framework.Micro.Common.Contract.Messaging;
 
-    public delegate void OnDataReceivedEvent();
 
     /// <summary>
     /// Represents a UDP socket.

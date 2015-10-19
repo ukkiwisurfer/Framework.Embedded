@@ -14,14 +14,16 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-using System.Threading;
-using Microsoft.SPOT;
+using Ignite.Framework.Micro.Common.Contract.Networking;
 
 namespace Ignite.Framework.Micro.Common.Networking
 {
     using System;
     using System.Net;
     using System.Net.Sockets;
+    using System.Threading;
+
+    using Microsoft.SPOT;
     using Microsoft.SPOT.Hardware;
     using Microsoft.SPOT.Net.NetworkInformation;
 
@@ -30,16 +32,43 @@ namespace Ignite.Framework.Micro.Common.Networking
     /// </summary>
     public class NetworkHelper
     {
+        private NetworkAvailabilityChangedEvent m_OnNetworkAvailabilityChanged;
         private readonly NetworkInterface[] m_Interfaces;
         private readonly AutoResetEvent m_WaitForNetwork;
         private readonly AutoResetEvent m_WaitForAddressChange;
-
+        private readonly object m_SyncLock;
+      
         /// <summary>
         /// The number of interfaces this device supports.
         /// </summary>
         public int Count
         {
             get { return m_Interfaces.Length; }
+        }
+
+        /// <summary>
+        /// Event handler for when the network availability changes.
+        /// </summary>
+        public event NetworkAvailabilityChangedEvent OnNetworkAvailabilityChanged
+        {
+            add
+            {
+                lock (m_SyncLock)
+                {
+                    m_OnNetworkAvailabilityChanged += value;
+                }
+            }
+            remove
+            {
+                lock (m_SyncLock)
+                {
+                    var handler = m_OnNetworkAvailabilityChanged;
+                    if (handler != null)
+                    {
+                        handler -= value;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -50,6 +79,7 @@ namespace Ignite.Framework.Micro.Common.Networking
             m_Interfaces = NetworkInterface.GetAllNetworkInterfaces();
             m_WaitForNetwork = new AutoResetEvent(false);
             m_WaitForAddressChange = new AutoResetEvent(false);
+            m_SyncLock = new object();  
         }
 
         /// <summary>
@@ -85,11 +115,12 @@ namespace Ignite.Framework.Micro.Common.Networking
             NetworkInformation information = null;
 
             // Set up event handlers for network state changes.
-            NetworkChange.NetworkAvailabilityChanged += OnNetworkAvailabilityChanged;
+            NetworkChange.NetworkAvailabilityChanged += OnInternalNetworkAvailabilityChanged;
             NetworkChange.NetworkAddressChanged += OnNetworkAddressChanged;
 
             //// Wait for the network to become availableand for a DHCP address to be allocated.
-            WaitHandle.WaitAll(new[] { m_WaitForAddressChange, m_WaitForNetwork });
+            //WaitHandle.WaitAll(new[] { m_WaitForAddressChange, m_WaitForNetwork });
+            //WaitHandle.WaitAny(new[] { m_WaitForAddressChange, m_WaitForNetwork });
 
             // Retrieve network interface details.
             var networkInterface = GetInterface(interfaceIndex);
@@ -122,6 +153,22 @@ namespace Ignite.Framework.Micro.Common.Networking
         }
 
         /// <summary>
+        /// Event handler for indicating when the network availability changes.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="isNetworkAvailable">
+        /// Indicates the status of the 
+        /// </param>
+        private void OnInternalNetworkAvailabilityChanged(object sender, bool isNetworkAvailable)
+        {
+            if (m_OnNetworkAvailabilityChanged != null)
+            {
+                m_OnNetworkAvailabilityChanged(isNetworkAvailable);
+            }
+        }
+
+
+        /// <summary>
         /// Event handler to signal that the network is now available.
         /// </summary>
         /// <param name="sender">
@@ -130,12 +177,14 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <param name="networkAvailabilityEventArgs">
         /// The event arguments associated with the change in network availability,
         /// </param>
-        private void OnNetworkAvailabilityChanged(object sender, NetworkAvailabilityEventArgs networkAvailabilityEventArgs)
+        private void OnInternalNetworkAvailabilityChanged(object sender, NetworkAvailabilityEventArgs networkAvailabilityEventArgs)
         {
             if (networkAvailabilityEventArgs.IsAvailable)
             {
                 m_WaitForNetwork.Set();
             }
+
+            OnInternalNetworkAvailabilityChanged(this, networkAvailabilityEventArgs.IsAvailable);
         }
 
         /// <summary>
@@ -168,7 +217,6 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// </returns>
         public DateTime GetNetworkTime(string hostName = "time-a.nist.gov")
         {
-            DateTime serverTime = new DateTime(1900, 1, 1);
             DateTime networkDateTime = new DateTime(1900, 1, 1);
 
             var hostEntry = Dns.GetHostEntry(hostName);
