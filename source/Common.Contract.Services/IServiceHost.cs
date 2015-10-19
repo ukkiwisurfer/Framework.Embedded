@@ -16,16 +16,43 @@
 
 namespace Ignite.Framework.Micro.Common.Contract.Services
 {
+    /// <summary>
+    /// Provides the means to start and stop multiple services.
+    /// </summary>
     public interface IServiceHost
     {
         /// <summary>
-        /// Starts the host.
+        /// Starts all services.
         /// </summary>
         void Start();
 
         /// <summary>
-        /// Stops the host.
+        /// Stops all services.
         /// </summary>
         void Stop();
+
+        /// <summary>
+        /// Adds a new instance of a service. 
+        /// </summary>
+        /// <param name="service">
+        /// The service to add.
+        /// </param>
+        void AddService(IThreadedService service);
+
+        /// <summary>
+        /// Removes all previously added services
+        /// </summary>
+        void Clear();
+
+        /// <summary>
+        /// Returns the named service managed by the host.
+        /// </summary>
+        /// <param name="serviceName">
+        /// The name of the service to query for.
+        /// </param>
+        /// <returns>
+        /// The service instance if found, otherwise null.
+        /// </returns>
+        IThreadedService GetServiceByName(string serviceName);
     }
 }
