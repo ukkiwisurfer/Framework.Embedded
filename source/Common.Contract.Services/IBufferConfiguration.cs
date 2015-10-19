@@ -23,7 +23,7 @@ namespace Ignite.Framework.Micro.Common.Contract.Services
     public interface IBufferConfiguration
     {
         /// <summary>
-        /// The size of the buffer to define (in bytes).
+        /// The size of the buffer to create (in bytes).
         /// </summary>
         int BufferSizeInBytes { get; set; }
 

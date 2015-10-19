@@ -19,7 +19,7 @@ namespace Ignite.Framework.Micro.Common.Contract.Services
     using System;
 
     /// <summary>
-    /// Defines the operations applicable to managing a service instance.
+    /// Povides the ability to manage and configure a service instance.
     /// </summary>
     public interface IService : IDisposable
     {

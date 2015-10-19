@@ -17,7 +17,7 @@
 namespace Ignite.Framework.Micro.Common.Contract.Services
 {
     /// <summary>
-    /// Defines the operations and properties for batch management.
+    /// Defines properties for controlling batch management.
     /// </summary>
     public interface IBatchConfiguration
     {
