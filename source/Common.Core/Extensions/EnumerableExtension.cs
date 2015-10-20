@@ -112,5 +112,41 @@ namespace Ignite.Framework.Micro.Common.Core.Extensions
 
             return total;
         }
+
+        /// <summary>
+        /// Returns the first item in an enumerable collection.
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public static object First(this IEnumerable e)
+        {
+            object match = null;
+
+            var enumerator = e.GetEnumerator();
+            if (enumerator.MoveNext())
+            {
+                match = enumerator.Current;
+            }
+
+            return match;
+        }
+
+        /// <summary>
+        /// Returns the first item in an enumerable collection.
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public static object Last(this IEnumerable e)
+        {
+            object match = null;
+
+            var enumerator = e.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                match = enumerator.Current;
+            }
+
+            return match;
+        }
     }
 }
