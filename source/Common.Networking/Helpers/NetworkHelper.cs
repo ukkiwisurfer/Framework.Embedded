@@ -174,26 +174,31 @@ namespace Ignite.Framework.Micro.Common.Networking
         }
 
         /// <summary>
-        /// Queries a network device for details about its state.
+        /// Queries a network device for details about its connection state.
         /// </summary>
         /// <param name="interfaceIndex">
         /// The index of the device to query.
         /// </param>
-        /// <returns></returns>
-        private NetworkInformation QueryInterface(int interfaceIndex)
+        /// <returns>
+        /// The status information on the network device.
+        /// </returns>
+        public NetworkInformation QueryInterface(int interfaceIndex)
         {
             NetworkInformation information = null;
 
-            var networkInterface = GetInterface(interfaceIndex);
-            if (networkInterface != null)
+            if ((interfaceIndex >= 0) && (interfaceIndex < m_Interfaces.Length))
             {
-                // Then capture the network details. 
-                information = new NetworkInformation();
-                information.IpAddress = networkInterface.IPAddress;
-                information.IsDHCPEnabled = networkInterface.IsDhcpEnabled;
-                information.SubnetMask = networkInterface.SubnetMask;
-                information.MacAddress = networkInterface.PhysicalAddress;
-                information.NetworkInterfaceType = networkInterface.NetworkInterfaceType.ToString();
+                var networkInterface = GetInterface(interfaceIndex);
+                if (networkInterface != null)
+                {
+                    // Then capture the network details. 
+                    information = new NetworkInformation();
+                    information.IpAddress = networkInterface.IPAddress;
+                    information.IsDHCPEnabled = networkInterface.IsDhcpEnabled;
+                    information.SubnetMask = networkInterface.SubnetMask;
+                    information.MacAddress = networkInterface.PhysicalAddress;
+                    information.NetworkInterfaceType = networkInterface.NetworkInterfaceType.ToString();
+                }
             }
 
             return information;
