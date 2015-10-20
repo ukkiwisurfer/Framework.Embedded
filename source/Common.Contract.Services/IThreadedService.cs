@@ -22,8 +22,25 @@ namespace Ignite.Framework.Micro.Common.Contract.Services
     public interface IThreadedService : IService
     {
         /// <summary>
-        /// The identifier of the service.
+        /// Indicates whether processing of incoming requests is enabled.
         /// </summary>
-         string ServiceId{ get; }
+        bool IsProcessingEnabled { get; set; }
+
+        /// <summary>
+        /// Provides the ability to turn off and on logging, when a logging provider
+        /// has been provided at construction time.
+        /// </summary>
+        bool IsLoggingEnabled { get; set; }
+
+        /// <summary>
+        /// The duration to sleep for before rechecking the cancellation token.
+        /// </summary>
+        int SleepPeriodInMilliseconds { get; set; }
+
+        /// <summary>
+        /// The duration to wait for before forcing shutdown.
+        /// </summary>
+        int WaitForShutdownPeriodInMilliseconds { get; set; }
+       
     }
 }

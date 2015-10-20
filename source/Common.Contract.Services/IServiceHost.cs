@@ -16,8 +16,16 @@
 
 namespace Ignite.Framework.Micro.Common.Contract.Services
 {
-    public interface IServiceHost : IService
+    public interface IServiceHost
     {
-        
+        /// <summary>
+        /// Starts the host.
+        /// </summary>
+        void Start();
+
+        /// <summary>
+        /// Stops the host.
+        /// </summary>
+        void Stop();
     }
 }

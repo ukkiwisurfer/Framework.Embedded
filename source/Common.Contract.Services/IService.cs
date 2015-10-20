@@ -24,6 +24,21 @@ namespace Ignite.Framework.Micro.Common.Contract.Services
     public interface IService : IDisposable
     {
         /// <summary>
+        /// The identifier of the service.
+        /// </summary>
+        string ServiceId { get; }
+
+        /// <summary>
+        /// The service name to associate with the service.
+        /// </summary>
+        string ServiceName { get; }
+
+        /// <summary>
+        /// Indicates whether the servce is running
+        /// </summary>
+        bool IsRunning { get; }
+
+        /// <summary>
         /// Starts the host.
         /// </summary>
         void Start();
