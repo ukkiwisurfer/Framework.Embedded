@@ -49,7 +49,7 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <summary>
         /// Event handler for when the network availability changes.
         /// </summary>
-        public event NetworkAvailabilityChangedEvent OnNetworkAvailabilityChanged
+        public event NetworkAvailabilityChangedEvent NetworkAvailabilityChanged
         {
             add
             {
