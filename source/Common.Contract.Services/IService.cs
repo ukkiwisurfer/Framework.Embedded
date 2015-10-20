@@ -31,7 +31,7 @@ namespace Ignite.Framework.Micro.Common.Contract.Services
         /// <summary>
         /// The service name to associate with the service.
         /// </summary>
-        string ServiceName { get; }
+        string ServiceName { get; set; }
 
         /// <summary>
         /// Indicates whether the servce is running
