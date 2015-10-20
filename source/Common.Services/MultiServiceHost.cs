@@ -170,14 +170,14 @@ namespace Ignite.Framework.Micro.Common.Services
         /// <returns>
         /// The service matching the given search criteria. 
         /// </returns>
-        public IService GetServiceByName(string serviceName)
+        public IThreadedService GetServiceByName(string serviceName)
         {
-            IService service = null;
+            IThreadedService service = null;
 
             try
             {
                 var matches = m_ServiceEntries.Where(x => x.Equals(serviceName));
-                service = matches.First() as IService;
+                service = matches.First() as IThreadedService;
             }
             catch (Exception)
             {                

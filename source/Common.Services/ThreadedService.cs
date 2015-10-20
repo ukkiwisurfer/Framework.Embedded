@@ -165,7 +165,7 @@ namespace Ignite.Framework.Micro.Common.Services
         public string ServiceName
         {
             get { return m_ServiceName; }
-            protected set { m_ServiceName = value; }
+            set { m_ServiceName = value; }
         }
 
         /// <summary>
