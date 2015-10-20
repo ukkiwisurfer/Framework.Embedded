@@ -16,10 +16,12 @@
 
 namespace Ignite.Framework.Micro.Common.Contract.Services
 {
+    using System;
+
     /// <summary>
     /// Provides the means to start and stop multiple services.
     /// </summary>
-    public interface IServiceHost
+    public interface IServiceHost : IDisposable
     {
         /// <summary>
         /// Starts all services.
