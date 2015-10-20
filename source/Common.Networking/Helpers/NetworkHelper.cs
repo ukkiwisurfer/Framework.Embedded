@@ -37,6 +37,7 @@ namespace Ignite.Framework.Micro.Common.Networking
         private readonly AutoResetEvent m_WaitForNetwork;
         private readonly AutoResetEvent m_WaitForAddressChange;
         private readonly object m_SyncLock;
+        private int m_WaitForNetworkEventInMilliseconds;
       
         /// <summary>
         /// The number of interfaces this device supports.
@@ -44,6 +45,15 @@ namespace Ignite.Framework.Micro.Common.Networking
         public int Count
         {
             get { return m_Interfaces.Length; }
+        }
+
+        /// <summary>
+        /// Specifies the period to wait in milliseconds for a network change event.
+        /// </summary>
+        public int WaitForNetworkEventInMilliseconds
+        {
+            get { return m_WaitForNetworkEventInMilliseconds; }
+            set { m_WaitForNetworkEventInMilliseconds = value; }
         }
 
         /// <summary>
@@ -79,7 +89,8 @@ namespace Ignite.Framework.Micro.Common.Networking
             m_Interfaces = NetworkInterface.GetAllNetworkInterfaces();
             m_WaitForNetwork = new AutoResetEvent(false);
             m_WaitForAddressChange = new AutoResetEvent(false);
-            m_SyncLock = new object();  
+            m_SyncLock = new object();
+            m_WaitForNetworkEventInMilliseconds = 2000;
         }
 
         /// <summary>
@@ -104,6 +115,20 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <summary>
         /// Returns the IP address of the device.
         /// </summary>
+        /// <remarks>
+        /// On the Netduino Plus 2, the Ethernet is initialised way before the software starts
+        /// running. On the Netduino 3 (WiFi) it takes considerably longer to initialise.
+        /// <para></para>
+        /// The consequence is that for this to work on both boards we need to test to see if the
+        /// IP address has already been configured. otherwise the WaitHandle.WaitAll() will wait
+        /// indefinitely as the event handlers are too late in terms of signalling - the network
+        /// has already been configured.
+        /// <para></para>
+        /// This demonstrates a weakness in this approach in that we could have a race condition -
+        /// the network has already been configured before the event handlers are set up. We must 
+        /// therefore periodically timeout from the WaitHandle.WaitAll() and query the status
+        /// of the network interface. 
+        /// </remarks>
         /// <param name="interfaceIndex">
         /// The index of the network interface to query.
         /// </param>
@@ -118,11 +143,47 @@ namespace Ignite.Framework.Micro.Common.Networking
             NetworkChange.NetworkAvailabilityChanged += OnInternalNetworkAvailabilityChanged;
             NetworkChange.NetworkAddressChanged += OnNetworkAddressChanged;
 
-            //// Wait for the network to become availableand for a DHCP address to be allocated.
-            //WaitHandle.WaitAll(new[] { m_WaitForAddressChange, m_WaitForNetwork });
-            //WaitHandle.WaitAny(new[] { m_WaitForAddressChange, m_WaitForNetwork });
+            try
+            {
+                // Wait for the network to become available and for a DHCP address to be allocated.
+                bool isWaitingToInitialise = true;
+                while (isWaitingToInitialise)
+                {
+                    var isSignalled = WaitHandle.WaitAll(new[] { m_WaitForAddressChange, m_WaitForNetwork }, m_WaitForNetworkEventInMilliseconds, false);
+                    if (!isSignalled)
+                    {
+                        // Retrieve network interface details to see if the initialisation had already occurred.
+                        information = QueryInterface(interfaceIndex);
+                        if ((information.IsDHCPEnabled) && (information.IpAddress != "0.0.0.0"))
+                        {
+                            isWaitingToInitialise = false;
+                        }
+                    }
+                    else isWaitingToInitialise = false;
+                }
 
-            // Retrieve network interface details.
+                information = QueryInterface(interfaceIndex);
+            }
+            finally
+            {
+                m_WaitForAddressChange.Reset();
+                m_WaitForNetwork.Reset();
+            }
+
+            return information;
+        }
+
+        /// <summary>
+        /// Queries a network device for details about its state.
+        /// </summary>
+        /// <param name="interfaceIndex">
+        /// The index of the device to query.
+        /// </param>
+        /// <returns></returns>
+        private NetworkInformation QueryInterface(int interfaceIndex)
+        {
+            NetworkInformation information = null;
+
             var networkInterface = GetInterface(interfaceIndex);
             if (networkInterface != null)
             {
