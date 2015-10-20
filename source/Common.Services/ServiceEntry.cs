@@ -5,7 +5,7 @@ namespace Ignite.Framework.Micro.Common.Services
     using Ignite.Framework.Micro.Common.Contract.Services;
 
     /// <summary>
-    /// Describes the name of a service and the service associated with it.
+    /// Captures the name of a service and the service associated with it.
     /// </summary>
     internal class ServiceEntry
     {
