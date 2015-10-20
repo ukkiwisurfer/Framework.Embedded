@@ -19,6 +19,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     using System;
     using System.Collections;
     using System.IO;
+
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
@@ -34,7 +35,6 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     public abstract class BufferedDataService : ThreadedService, IBufferConfiguration, IBatchConfiguration
     {
         private readonly IFileHelper m_FileHelper;
-        private readonly BufferedConfiguration m_Configuration;
         private readonly string m_WorkingFilePath;
         private readonly string m_TargetFilePath;
         private readonly string m_TargetFileExtension;
@@ -138,7 +138,6 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             m_BufferSize = 1024;
 
             m_FileHelper = fileHelper;
-            m_Configuration = configuration;
             m_WorkingFilePath = configuration.WorkingPath;
             m_TargetFilePath = configuration.TargetPath;
             m_TargetFileExtension = configuration.TargetFileExtension;
@@ -148,9 +147,15 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <summary>
         /// Initialises an instance of the <see cref="BufferedDataService"/> class. 
         /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="fileHelper"></param>
-        /// <param name="configuration"></param>
+        /// <param name="logger">
+        /// Logging provider.
+        /// </param>
+        /// <param name="fileHelper">
+        /// Helper for working with files.
+        /// </param>
+        /// <param name="configuration">
+        /// Configuration parameters for persisting data (buffered data). 
+        /// </param>
         protected BufferedDataService(ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration) : base(logger)
         {
             fileHelper.ShouldNotBeNull();
@@ -162,7 +167,6 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             m_BufferSize = 1024;
 
             m_FileHelper = fileHelper;
-            m_Configuration = configuration;
             m_WorkingFilePath = configuration.WorkingPath;
             m_TargetFilePath = configuration.TargetPath;
             m_TargetFileExtension = configuration.TargetFileExtension;
@@ -204,13 +208,25 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <summary>
         /// Returns the stream used to write logging entries to.
         /// </summary>
+        /// <param name="sourceFilePath">
+        /// The file path where the source file is located.
+        /// </param>
+        /// <param name="targetFilePath">
+        /// The file path to where the completed file will be persisted.
+        /// </param>
+        /// <param name="fileName">
+        /// The name of the file.
+        /// </param>
         /// <remarks>
+        /// Expects source files to be in an separate directory with a different extension.
+        /// In order for files to be processed, they must be renamed and moved to the target
+        /// directory.
+        /// <para></para>
         /// If the new file doesn't exist we have just crossed a transition boundary.
-        /// Rename any files that end in .raw to .log.
         /// <para></para>
         /// This indicates that the file can now safely be processed. This supports
         /// the scenario where a raw file can be amended multiple times - in which case
-        /// we do not want the log transfer service to process the file (as we might
+        /// we do not want the transfer service to process the file (as we might
         /// be potentially writing to it at the same time).
         /// </remarks>
         /// <returns>
@@ -244,7 +260,16 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// See <see cref="ThreadedService.DoWork"/> for more details.
         /// </summary>
         /// <remarks>
-        /// Main processing logic for when work is detected.
+        /// Main processing logic for when work is detected. Looks for messages and if there are any, dequeues them
+        /// and writes them to the file system.
+        /// <para></para>
+        /// There is a possibility that the messages in the memory queue are lost if the process is restarted before
+        /// the messages are dequeued and persisted. That trade-off can be mitigated by reudcing the value of the 
+        /// BatchSize property. It also means a corresponding increase in latency when processing incoming messages 
+        /// in order to persist the messages to the underlying filesystem.
+        /// <para></para>
+        /// Given the environment is a memory constrained one, at this point 
+        /// the trade-off is deemed acceptible for the current requirements of how the framework will be used.
         /// </remarks>
         protected override void DoWork()
         {
@@ -278,7 +303,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// Adds a new data item.
         /// </summary>
         /// <remarks>
-        /// Will add a new data item in a thread safe manner.
+        /// Will add a new data item in a thread safe manner. If the number of items in the memory
+        /// queue is larger or equal to the BatchSize property, the service will signal that the
+        /// messages need to be persisted.
         /// </remarks>
         /// <param name="dataItem">
         /// The data item to add.
