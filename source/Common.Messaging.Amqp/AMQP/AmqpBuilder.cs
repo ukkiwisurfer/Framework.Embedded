@@ -30,6 +30,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
     public class AmqpBuilder : IMessageBrokerFactory
     {
         private readonly AmqpConnection m_Connection;
+        private readonly QueueEndpointAddress m_EndpointAddress;
         private bool m_IsDisposed;
 
         /// <summary>
@@ -48,6 +49,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             endpointAddress.ShouldNotBeNull();
 
             m_Connection = BuildConnection(endpointAddress);
+            m_EndpointAddress = endpointAddress;
         }
 
         /// <summary>
@@ -60,6 +62,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             endpointAddress.ShouldNotBeNull();
 
             m_Connection = BuildConnection(endpointAddress, closedEventHandler);
+            m_EndpointAddress = endpointAddress;
         }
 
         /// <summary>
@@ -142,7 +145,8 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// </returns>
         public IMessagePublisher BuildPublisher(string topicName, string linkName)
         {
-            var publisher = new AmqpMessagePublisher(m_Connection, topicName, linkName);
+            //var publisher = new AmqpMessagePublisher(m_Connection, topicName, linkName);
+            var publisher = new AmqpPublisherProxy(this, m_EndpointAddress, topicName, linkName, true);
             return publisher;
         }
 
