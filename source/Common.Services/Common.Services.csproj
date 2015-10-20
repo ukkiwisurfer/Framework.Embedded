@@ -34,6 +34,7 @@
     </Compile>
     <Compile Include="Data\BufferedDataService.cs" />
     <Compile Include="Data\DataTransferService.cs" />
+    <Compile Include="ServiceEntry.cs" />
     <Compile Include="IResourceLoader.cs" />
     <Compile Include="MultiServiceHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

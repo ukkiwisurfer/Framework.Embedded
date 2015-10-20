@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using Ignite.Framework.Micro.Common.Core.Extensions;
+
 namespace Ignite.Framework.Micro.Common.Services
 {
     using System;
@@ -29,7 +31,7 @@ namespace Ignite.Framework.Micro.Common.Services
     public class MultiServiceHost : IServiceHost
     {
         private IResourceLoader m_ResourceLoader;
-        private readonly ArrayList m_Hosts;
+        private readonly Hashtable m_ServiceEntries;
         private readonly ILogger m_Logger;
         private bool m_IsDisposed;
 
@@ -43,7 +45,7 @@ namespace Ignite.Framework.Micro.Common.Services
         {
             logger.ShouldNotBeNull();
 
-            m_Hosts = new ArrayList();
+            m_ServiceEntries = new Hashtable();
             m_Logger = logger;
             m_ResourceLoader = new ServicesResourceLoader();
         }
@@ -62,13 +64,13 @@ namespace Ignite.Framework.Micro.Common.Services
         /// </summary>
         public void Start()
         {
-            m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.StartingHosts), m_Hosts.Count);
-            foreach (var host in m_Hosts)
+            m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.StartingHosts), m_ServiceEntries.Count);
+            foreach (var entry in m_ServiceEntries.Values)
             {
-                var cast = host as IThreadedService;
+                var cast = entry as ServiceEntry;
                 if (cast != null)
                 {
-                    cast.Start();
+                    cast.Service.Start();
                 }
             }
         }
@@ -78,13 +80,13 @@ namespace Ignite.Framework.Micro.Common.Services
         /// </summary>
         public void Stop()
         {
-            m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.StoppingHosts), m_Hosts.Count);
-            foreach (var host in m_Hosts)
+            m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.StoppingHosts), m_ServiceEntries.Count);
+            foreach (var entry in m_ServiceEntries.Values)
             {
-                var cast = host as IThreadedService;
+                var cast = entry as ServiceEntry;
                 if (cast != null)
                 {
-                    cast.Stop();
+                    cast.Service.Stop();
                 }
             }
         }
@@ -99,7 +101,9 @@ namespace Ignite.Framework.Micro.Common.Services
         {
             service.ShouldNotBeNull();
 
-            m_Hosts.Add(service);
+            var entry = new ServiceEntry(service.ServiceId, service); 
+            m_ServiceEntries.Add(entry.ServiceName, entry);
+
             m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.AddedNewHost), service.ServiceId );
         }
 
@@ -108,11 +112,11 @@ namespace Ignite.Framework.Micro.Common.Services
         /// </summary>
         public void Clear()
         {
-            m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.ClearingHosts), m_Hosts.Count);
+            m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.ClearingHosts), m_ServiceEntries.Count);
 
-            foreach (var host in m_Hosts)
+            foreach (var entry in m_ServiceEntries.Values)
             {
-                var cast = host as IThreadedService;
+                var cast = entry as ServiceEntry;
                 if (cast != null)
                 {
                     try
@@ -126,7 +130,7 @@ namespace Ignite.Framework.Micro.Common.Services
                 }
             }
 
-            m_Hosts.Clear();
+            m_ServiceEntries.Clear();
             m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.AllHostsRemoved));
         }
 
@@ -155,6 +159,31 @@ namespace Ignite.Framework.Micro.Common.Services
                     m_IsDisposed = true;
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns the first service with the matching name as the supplied criteria.
+        /// </summary>
+        /// <param name="serviceName">
+        /// The name of the service to search for.
+        /// </param>
+        /// <returns>
+        /// The service matching the given search criteria. 
+        /// </returns>
+        public IService GetServiceByName(string serviceName)
+        {
+            IService service = null;
+
+            try
+            {
+                var matches = m_ServiceEntries.Where(x => x.Equals(serviceName));
+                service = matches.First() as IService;
+            }
+            catch (Exception)
+            {                
+            }
+
+            return service;
         }
     }
 }
