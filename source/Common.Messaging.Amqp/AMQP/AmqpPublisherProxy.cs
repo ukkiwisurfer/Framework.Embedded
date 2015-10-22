@@ -141,7 +141,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
                 connection = m_Connection;
             }
             else connection = m_Builder.BuildConnection(m_Address, ClosedEventHandler);
-
+            
             return connection;
         }
 
