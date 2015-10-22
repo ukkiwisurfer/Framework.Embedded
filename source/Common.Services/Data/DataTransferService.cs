@@ -35,8 +35,6 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     /// </remarks>
     public class DataTransferService : ThreadedService, IBatchConfiguration
     {
-        private const string CN_ServiceName = "DataTransferService";
-
         private readonly IResourceLoader m_ResourceLoader;
         private readonly IMessagePublisher m_Publisher;
         private readonly BufferedConfiguration m_Configuration;
@@ -105,13 +103,11 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="bufferSize">
         /// The size of the read buffer to use when loading each data file's contents.
         /// </param>
-        public DataTransferService(IMessagePublisher publisher, IFileHelper fileHelper, BufferedConfiguration configuration, int bufferSize = 512) : base()
+        public DataTransferService(IMessagePublisher publisher, IFileHelper fileHelper, BufferedConfiguration configuration, int bufferSize = 512) : base(typeof(DataTransferService))
         {
             publisher.ShouldNotBeNull();
             fileHelper.ShouldNotBeNull();
             configuration.ShouldNotBeNull();
-
-            ServiceName = CN_ServiceName;
 
             m_ResourceLoader = new ServicesResourceLoader();
             m_FileHelper = fileHelper;
@@ -144,8 +140,6 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             publisher.ShouldNotBeNull();
             fileHelper.ShouldNotBeNull();
             configuration.ShouldNotBeNull();
-
-            ServiceName = CN_ServiceName;
 
             m_ResourceLoader = new ServicesResourceLoader();
             m_FileHelper = fileHelper;
@@ -274,7 +268,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// </summary>
         public override bool IsServiceActive
         {
-            get { return m_Publisher.IsConnected; }
+            get { return m_IsOpen; }
         }
 
         /// <summary>

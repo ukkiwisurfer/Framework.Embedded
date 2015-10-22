@@ -101,7 +101,7 @@ namespace Ignite.Framework.Micro.Common.Services
         {
             service.ShouldNotBeNull();
 
-            var entry = new ServiceEntry(service.ServiceId, service); 
+            var entry = new ServiceEntry(service.ServiceName, service); 
             m_ServiceEntries.Add(entry.ServiceName, entry);
 
             m_Logger.Info(m_ResourceLoader.GetString(Resources.StringResources.AddedNewHost), service.ServiceId );
