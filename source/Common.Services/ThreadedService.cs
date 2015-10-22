@@ -384,8 +384,9 @@ namespace Ignite.Framework.Micro.Common.Services
         /// <summary>
         /// Processes the signalled event to determine if work needs to be performed.
         /// </summary>
-        /// <param name="signalled"></param>
-        /// <returns></returns>
+        /// <param name="signalled">
+        /// Indicates the resource handle that indicated it was triggered.
+        /// </param>
         protected virtual void DetermineIfWorkDetected(int signalled)
         {
             if (signalled == WaitHandle.WaitTimeout)
@@ -513,14 +514,19 @@ namespace Ignite.Framework.Micro.Common.Services
         /// <summary>
         /// Checks to see if work exists
         /// </summary>
+        /// <param name="hasWork">
+        /// Flag to indicate whether there is work to be performed.
+        /// </param>
         public virtual void CheckIfWorkExists(bool hasWork = false)
         {
         }
 
         /// <summary>
-        /// Handles when 
+        /// Event handler that is triggered when the processing state is changed. 
         /// </summary>
-        /// <param name="processingState"></param>
+        /// <param name="processingState">
+        /// Indicates the new processing flag state.
+        /// </param>
         protected virtual void OnProcessingStateChanged(bool processingState)
         {
             
