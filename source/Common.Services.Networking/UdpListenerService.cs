@@ -33,7 +33,7 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         /// <param name="socket">
         /// The socket instance to use for listening to Owl electricity monitoring broadcasts.
         /// </param>
-        public UdpListenerService(UdpSocket socket)
+        public UdpListenerService(UdpSocket socket) : base(typeof(UdpListenerService))
         {
             socket.ShouldNotBeNull();
             m_Socket = socket;

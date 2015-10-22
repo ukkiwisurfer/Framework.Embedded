@@ -63,7 +63,7 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         /// <param name="machineName">
         /// The name associated with the device.
         /// </param>
-        public StatusService(IMessagePublisher publisher, string ipAddress, string machineName) : base()
+        public StatusService(IMessagePublisher publisher, string ipAddress, string machineName) : base(typeof(StatusService))
         {
             m_Publisher = publisher;
             m_IPAddress = ipAddress;

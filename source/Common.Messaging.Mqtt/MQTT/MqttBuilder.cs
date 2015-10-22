@@ -15,6 +15,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
     public class MqttBuilder : IMessageBrokerFactory
     {
         private readonly MqttConnection m_Connection;
+        private readonly RegistrationData m_EndpointAddress;
         private bool m_IsDisposed;
 
      
@@ -26,7 +27,9 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         {
             endpointAddress.ShouldNotBeNull();
 
-            m_Connection = new MqttConnection(endpointAddress);
+            m_EndpointAddress = endpointAddress;
+
+            //m_Connection = new MqttConnection(endpointAddress);
         }
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
             {
                 if (isDisposing)
                 {
-                    m_Connection.Dispose();
+                    //m_Connection.Dispose();
                 }
 
                 m_IsDisposed = true;
@@ -70,7 +73,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
             }
         }
 
-          /// <summary>
+        /// <summary>
         /// Builds an AMQP publisher.
         /// </summary>
         /// <param name="topicName">
@@ -84,7 +87,9 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         /// </returns>
         public IMessagePublisher BuildPublisher(string topicName, string linkName)
         {
-            var publisher = new MqttMessagePublisher(m_Connection, topicName, linkName);
+            var connection = new MqttConnection(m_EndpointAddress);
+            var publisher = new MqttMessagePublisher(connection, topicName, linkName);
+            
             return publisher;
         }
 
@@ -105,7 +110,9 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         /// </returns>
         public IMessageSubscriber BuildSubscriber(string topicName, string linkName, IMessageHandler messageHandler)
         {
-            var subscriber = new MqttMessageSubscriber(m_Connection, topicName, linkName, messageHandler);
+            var connection = new MqttConnection(m_EndpointAddress);
+            var subscriber = new MqttMessageSubscriber(connection, topicName, linkName, messageHandler);
+
             return subscriber;
         }
 
@@ -126,7 +133,9 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         /// </returns>
         public IMessageSubscriber BuildSubscriber(string topicName, string linkName, IMessageHandler messageHandler, int windowSize)
         {
-            var subscriber = new MqttMessageSubscriber(m_Connection, topicName, linkName, messageHandler);
+            var connection = new MqttConnection(m_EndpointAddress);
+            var subscriber = new MqttMessageSubscriber(connection, topicName, linkName, messageHandler);
+
             return subscriber;
         }
     }

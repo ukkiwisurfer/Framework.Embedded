@@ -127,7 +127,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="fileHelper">
         /// Helper for working with files.
         /// </param>
-        protected BufferedDataService(IFileHelper fileHelper, BufferedConfiguration configuration)
+        protected BufferedDataService(IFileHelper fileHelper, BufferedConfiguration configuration) : base(typeof(BufferedDataService))
         {
             fileHelper.ShouldNotBeNull();
             configuration.ShouldNotBeNull();

@@ -193,10 +193,10 @@ namespace Ignite.Framework.Micro.Common.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="ThreadedService"/> class. 
         /// </summary>
-        protected ThreadedService()
+        protected ThreadedService(Type serviceType)
         {
             m_ServiceId = Guid.NewGuid().ToString();
-            m_ServiceName = m_ServiceId;
+            m_ServiceName = serviceType.Name;
 
             m_CancellationRequestEvent = new ManualResetEvent(false);
             m_CancellationCompleteEvent = new ManualResetEvent(false);
@@ -217,7 +217,7 @@ namespace Ignite.Framework.Micro.Common.Services
         /// <param name="logger">
         /// A logging provider.
         /// </param>
-        protected ThreadedService(ILogger logger) : this()
+        protected ThreadedService(ILogger logger) : this(typeof(ThreadedService))
         {
             logger.ShouldNotBeNull();
 

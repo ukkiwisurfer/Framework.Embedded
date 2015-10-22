@@ -41,6 +41,10 @@
       <Project>{5FF19D7E-0827-4297-8FB1-2B51791F89D8}</Project>
       <Name>Common.Assertions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common.Contract.Logging\Common.Contract.Logging.csproj">
+      <Project>{98C02320-FBEE-4F0D-B3B4-F3D8D0318643}</Project>
+      <Name>Common.Contract.Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common.Contract.Messaging\Common.Contract.Messaging.csproj">
       <Project>{01EEB893-DCF0-45AF-A084-61A6F5FFCCCF}</Project>
       <Name>Common.Contract.Messaging</Name>
