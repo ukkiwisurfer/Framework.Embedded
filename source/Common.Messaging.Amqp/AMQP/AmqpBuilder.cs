@@ -17,7 +17,6 @@
 namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
     using System;
-    using System.Collections;
 
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Messaging;
