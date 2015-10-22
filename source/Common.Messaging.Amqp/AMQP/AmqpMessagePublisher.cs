@@ -130,7 +130,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         {
             try
             {
-                Connect();
+                if (!IsConnected) Connect();
 
                 if (IsConnected)
                 {
@@ -143,13 +143,13 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
                     message.ApplicationProperties = new ApplicationProperties();
                     message.BodySection = new Data() { Binary = payload };
 
-
                     m_Sender.Send(message);
                 }
+                else Disconnect();
             }
             catch (AmqpException e)
             {
-                IsConnected = false;
+                Disconnect();
             }
         }
 
