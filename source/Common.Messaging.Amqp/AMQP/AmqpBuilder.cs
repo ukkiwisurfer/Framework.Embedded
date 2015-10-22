@@ -145,8 +145,8 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// </returns>
         public IMessagePublisher BuildPublisher(string topicName, string linkName)
         {
-            //var publisher = new AmqpMessagePublisher(m_Connection, topicName, linkName);
-            var publisher = new AmqpPublisherProxy(this, m_EndpointAddress, topicName, linkName, true);
+            var publisher = new AmqpMessagePublisher(m_Connection, topicName, linkName);
+            //var publisher = new AmqpPublisherProxy(this, m_EndpointAddress, topicName, linkName, isDurable: true);
             return publisher;
         }
 
@@ -167,7 +167,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// </returns>
         public IMessageSubscriber BuildSubscriber(string topicName, string linkName, IMessageHandler messageHandler)
         {
-            var subscriber = new AmqpMessageSubscriber(m_Connection, topicName, linkName, messageHandler, 20);
+            var subscriber = new AmqpMessageSubscriber(m_Connection, topicName, linkName, messageHandler, windowSize: 20);
             return subscriber;
         }
 
