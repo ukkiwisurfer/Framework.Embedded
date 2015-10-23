@@ -21,12 +21,12 @@ namespace Ignite.Framework.Micro.Common.FileManagement
     using System.IO;
     using System.Text;
 
-    using Ignite.Framework.Micro.Common.Core.Extensions;
+    using Ignite.Framework.Micro.Common.Contract.FileManagement;
 
     /// <summary>
     /// Supports file operations.
     /// </summary>
-    public class FileHelper : IFileHelper
+    public class NoOpFileSystemHelper : IFileHelper
     {
         /// <summary>
         /// Sets the current directory.
@@ -34,7 +34,6 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <param name="path"></param>
         public void SetCurrentDirectory(string path)
         {
-            Directory.SetCurrentDirectory(path);
         }
 
         /// <summary>
@@ -45,11 +44,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// </param>
         public void CreateDirectory(string path)
         {
-            var info = new DirectoryInfo(path);
-            if (!info.Exists)
-            {
-                info.Create();
-            }
+            
         }
 
         /// <summary>
@@ -78,12 +73,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// </param>
         public void RenameFile(string rawFileName, string targetFileName)
         {
-            if (File.Exists(targetFileName))
-            {
-                DeleteFile(targetFileName);
-            }
-
-            File.Move(rawFileName, targetFileName);
+            
         }
 
         /// <summary>
@@ -93,16 +83,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <returns></returns>
         public long GetFileSize(string targetPath, string fileName)
         {
-            long fileSize = 0;
-
-            string filePath = Path.Combine(targetPath, fileName);
-            if (File.Exists(filePath))
-            {
-                var info = new FileInfo(filePath);
-                fileSize = info.Length;
-            }
-
-            return fileSize;
+            return 0;
         }
 
         /// <summary>
@@ -122,26 +103,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// </param>
         public void RenameAllFilesMatchingExtension(string sourcePath, string targetPath, string oldExtension, string newExtension)
         {
-            try
-            {
-                var fileNames = Directory.EnumerateFiles(sourcePath);
-                var patternCriteria = @"." + oldExtension;
-
-                foreach (string oldFileNameWithPath in fileNames)
-                {
-                    if (oldFileNameWithPath.LastIndexOf(patternCriteria) > 0)
-                    {
-                        string oldFileName = Path.GetFileName(oldFileNameWithPath);
-                        string newFileName = Path.GetFileNameWithoutExtension(oldFileName) + "." + newExtension;
-                        string newFileNameWithPath = this.BuildFilePath(targetPath, newFileName);
-
-                        RenameFile(oldFileNameWithPath, newFileNameWithPath);
-                    }
-                }
-            }
-            catch (Exception)
-            {
-            }
+           
         }
 
         /// <summary>
@@ -159,8 +121,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <returns></returns>
         public virtual Stream OpenStream(string filePath, string fileName, int bufferSize = 512)
         {
-            var fileNameWithPath = Path.Combine(filePath, fileName);
-            return new FileStream(fileNameWithPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, bufferSize);
+            return new MemoryStream();
         }
 
         /// <summary>
@@ -180,45 +141,16 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// </returns>
         public IEnumerable GetAllFilesMatchingPattern(string folder, string pattern, int fileLimit = 5)
         {
-            var patternCriteria = @"." + pattern;
             var matches = new ArrayList();
 
-            try
+            for (int fileIndex = 0; fileIndex < fileLimit; fileIndex++)
             {
-                var fileNames = Directory.EnumerateFiles(folder);
-
-                var fileCount = fileNames.Count();
-                if (fileCount > 0)
-                {
-                    var iterator = fileNames.GetEnumerator();
-                    var isValid = iterator.MoveNext();
-
-                    if (isValid)
-                    {
-                        var limit = (fileCount < fileLimit) ? fileCount : fileLimit;
-                        for (int fileIndex = 0; fileIndex < limit; fileIndex++)
-                        {
-                            if (!isValid) break;
-
-                            var oldFileNameWithPath = iterator.Current as string;
-                            if (oldFileNameWithPath != null)
-                            {
-                                var foundIndex = oldFileNameWithPath.LastIndexOf(patternCriteria);
-                                if (foundIndex > 0)
-                                {
-                                    matches.Add(Path.GetFileName(oldFileNameWithPath));
-                                }
-                            }
-
-                            isValid = iterator.MoveNext();
-                        }
-                    }
-                }
+                var fileName = GenerateFileName(DateTime.UtcNow, ".data");
+                var filePath = BuildFilePath(folder, fileName);
+                
+                matches.Add(filePath);             
             }
-            catch (Exception)
-            {
-            }
-
+   
             return matches;
         }
 
@@ -236,8 +168,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// </returns>
         public bool DeleteFile(string path, string fileName)
         {
-            var filePath = BuildFilePath(path, fileName);
-            return DeleteFile(filePath); 
+            return true;
         }
 
         /// <summary>
@@ -251,25 +182,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// </returns>
         public bool DeleteFile(string filePath)
         {
-            bool isDeleted = false;
-
-            try
-            {
-
-                File.SetAttributes(filePath, FileAttributes.Normal);
-
-                FileInfo info = new FileInfo(filePath);
-                info.Delete();
-
-                isDeleted = info.Exists;
-
-            }
-            catch (Exception)
-            {
-                isDeleted = false;
-            }
-
-            return isDeleted;
+            return true;
         }
 
         /// <summary>
@@ -298,7 +211,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// </returns>
         public bool DoesDirectoryExist(string path)
         {
-            return Directory.Exists(path);
+            return true;
         }
     }
 }

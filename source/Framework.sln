@@ -58,6 +58,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Messaging.Mqtt", "Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Contract.Networking", "Common.Contract.Networking\Common.Contract.Networking.csproj", "{8E002AAE-5331-4A3E-96BC-9AA187FC1B52}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Contract.FileManagement", "Common.Contract.FileManagement\Common.Contract.FileManagement.csproj", "{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -294,6 +296,16 @@ Global
 		{8E002AAE-5331-4A3E-96BC-9AA187FC1B52}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{8E002AAE-5331-4A3E-96BC-9AA187FC1B52}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8E002AAE-5331-4A3E-96BC-9AA187FC1B52}.Release|x86.ActiveCfg = Release|Any CPU
+		{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -319,6 +331,7 @@ Global
 		{B492B7F3-EED3-49AC-B6E7-0EA57BA77A94} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{AA3E3BCB-D0F4-4B86-BF22-C6756C418E9D} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{8E002AAE-5331-4A3E-96BC-9AA187FC1B52} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
+		{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82} = {055EAADB-DCCD-43E0-A923-1A5EAF8305A4}
 		{0451BAEF-DF2E-4B98-8644-94EE9415E389} = {07ABF418-4E2A-4B9D-B4B3-817CD5FE302E}
 		{10C28CC8-AF4B-4FDB-8586-59D6CDBCBAEE} = {2D7EA4B5-93DB-40C5-879C-FA73076AEFC3}
 	EndGlobalSection

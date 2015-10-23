@@ -14,8 +14,6 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-using Ignite.Framework.Micro.Common.Contract.Networking;
-
 namespace Ignite.Framework.Micro.Common.Networking
 {
     using System;
@@ -26,6 +24,8 @@ namespace Ignite.Framework.Micro.Common.Networking
     using Microsoft.SPOT;
     using Microsoft.SPOT.Hardware;
     using Microsoft.SPOT.Net.NetworkInformation;
+
+    using Ignite.Framework.Micro.Common.Contract.Networking;
 
     /// <summary>
     /// Helper class for accessing networking details from the local device.

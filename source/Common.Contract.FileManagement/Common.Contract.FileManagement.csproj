@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
-    <AssemblyName>Ignite.Framework.Micro.Common.Services.Logging</AssemblyName>
+    <AssemblyName>Ignite.Framework.Micro.Common.Contract.FileManagement</AssemblyName>
     <OutputType>Library</OutputType>
-    <RootNamespace>Ignite.Framework.Micro.Common.Services.Logging</RootNamespace>
+    <RootNamespace>Ignite.Framework.Micro.Common.Contract.FileManagement</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F903B514-15F6-4297-9300-97D8B2D3A39F}</ProjectGuid>
+    <ProjectGuid>{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}</ProjectGuid>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
   </PropertyGroup>
@@ -32,37 +32,11 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="BufferedLoggingService.cs" />
-    <Compile Include="LoggingProvider.cs" />
+    <Compile Include="IFileHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.IO" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common.Assertions\Common.Assertions.csproj">
-      <Project>{5FF19D7E-0827-4297-8FB1-2B51791F89D8}</Project>
-      <Name>Common.Assertions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common.Contract.FileManagement\Common.Contract.FileManagement.csproj">
-      <Project>{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}</Project>
-      <Name>Common.Contract.FileManagement</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common.Contract.Logging\Common.Contract.Logging.csproj">
-      <Project>{98C02320-FBEE-4F0D-B3B4-F3D8D0318643}</Project>
-      <Name>Common.Contract.Logging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common.Contract.Services\Common.Contract.Services.csproj">
-      <Project>{9DEBF422-3666-446C-8D0B-FA60CCF8EC54}</Project>
-      <Name>Common.Contract.Services</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common.Services\Common.Services.csproj">
-      <Project>{22CD62C7-1D35-444F-86E2-FBB206828E5B}</Project>
-      <Name>Common.Services</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <Reference Include="Microsoft.SPOT.Native" />
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <Import Condition="!EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

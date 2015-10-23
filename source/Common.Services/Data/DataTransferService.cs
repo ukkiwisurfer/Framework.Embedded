@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+
+
 namespace Ignite.Framework.Micro.Common.Services.Data
 {
     using System;
@@ -23,7 +25,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Messaging;
     using Ignite.Framework.Micro.Common.Contract.Services;
-    using Ignite.Framework.Micro.Common.FileManagement;
+    using Ignite.Framework.Micro.Common.Contract.FileManagement;
     using Ignite.Framework.Micro.Common.Core.Extensions;
 
     /// <summary>

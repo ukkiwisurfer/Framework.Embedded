@@ -14,7 +14,7 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-namespace Ignite.Framework.Micro.Common.FileManagement
+namespace Ignite.Framework.Micro.Common.Contract.FileManagement
 {
     using System;
     using System.Collections;
