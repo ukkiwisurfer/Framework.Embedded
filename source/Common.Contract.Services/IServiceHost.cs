@@ -29,9 +29,25 @@ namespace Ignite.Framework.Micro.Common.Contract.Services
         void Start();
 
         /// <summary>
+        /// Starts a specific service.
+        /// </summary>
+        /// <param name="serviceName">
+        /// THe name of the service to start.
+        /// </param>
+        void Start(string serviceName);
+
+        /// <summary>
         /// Stops all services.
         /// </summary>
         void Stop();
+
+        /// <summary>
+        /// Stops a specific service.
+        /// </summary>
+        /// <param name="serviceName">
+        /// THe name of the service to stop.
+        /// </param>
+        void Stop(string serviceName);
 
         /// <summary>
         /// Adds a new instance of a service. 

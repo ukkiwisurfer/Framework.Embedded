@@ -70,7 +70,30 @@ namespace Ignite.Framework.Micro.Common.Services
                 var cast = entry as ServiceEntry;
                 if (cast != null)
                 {
-                    cast.Service.Start();
+                    if (!cast.Service.IsRunning)
+                    {
+                        cast.Service.Start();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Stops a named service.
+        /// </summary>
+        /// <param name="serviceName">
+        /// The name of the service to stop.
+        /// </param>
+        public void Start(string serviceName)
+        {
+            serviceName.ShouldNotBeEmpty();
+
+            var service = GetServiceByName(serviceName);
+            if (service != null)
+            {
+                if (!service.IsRunning)
+                {
+                    service.Start();
                 }
             }
         }
@@ -88,6 +111,23 @@ namespace Ignite.Framework.Micro.Common.Services
                 {
                     cast.Service.Stop();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Stops a named service.
+        /// </summary>
+        /// <param name="serviceName">
+        /// The name of the service to stop.
+        /// </param>
+        public void Stop(string serviceName)
+        {
+            serviceName.ShouldNotBeEmpty();
+
+            var service = GetServiceByName(serviceName);
+            if (service != null)
+            {
+                service.Stop();
             }
         }
 

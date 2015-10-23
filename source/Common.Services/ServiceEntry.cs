@@ -32,8 +32,12 @@ namespace Ignite.Framework.Micro.Common.Services
         /// <summary>
         /// Initialises an instance of the <see cref="ServiceEntry"/> class.
         /// </summary>
-        /// <param name="serviceName"></param>
-        /// <param name="service"></param>
+        /// <param name="serviceName">
+        /// The name of the service. 
+        /// </param>
+        /// <param name="service">
+        /// The service instance.
+        /// </param>
         public ServiceEntry(string serviceName, IService service)
         {
             m_ServiceName = serviceName;
