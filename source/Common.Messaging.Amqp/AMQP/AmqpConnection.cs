@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using Amqp.Sasl;
+
 namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
     using System;
@@ -125,16 +127,22 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// </summary>
         public void Connect()
         {
-            m_ConnectionId = Guid.NewGuid().ToString();
+            try
+            {
+                m_ConnectionId = Guid.NewGuid().ToString();
 
-            var address = new Address(m_Address.GetUrl());
+                var address = new Address(m_Address.GetUrl());
 
-            m_Connection = new Connection(address);
-            m_Connection.Closed += OnClosedConnection;
+                m_Connection = new Connection(address);
+                m_Connection.Closed += OnClosedConnection;
+                m_Session = new Session(m_Connection);
 
-            m_Session = new Session(m_Connection);
-
-            m_IsConnected = true;
+                m_IsConnected = true;
+            }
+            catch (Exception e)
+            {
+                m_IsConnected = false;
+            }
         }
 
         /// <summary>

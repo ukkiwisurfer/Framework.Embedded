@@ -125,6 +125,10 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
                     }
 
                 }
+                catch (Exception e)
+                {
+                    m_IsConnected = false;
+                }
                 finally
                 {
                     m_IsConnecting = false;

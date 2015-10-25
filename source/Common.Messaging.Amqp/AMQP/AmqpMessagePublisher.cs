@@ -174,12 +174,15 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
                     if (!m_Connection.IsConnected)
                     {
                         m_Connection.Connect();
-                        m_ConnectionId = m_Connection.ConnectionId;
+                        if (m_Connection.IsConnected)
+                        {
+                            m_ConnectionId = m_Connection.ConnectionId;
+                            m_Sender = new SenderLink(m_Connection.Session, m_Name, m_TopicName);
+
+                            IsConnected = true;
+                        }
                     }
-
-                    m_Sender = new SenderLink(m_Connection.Session, m_Name, m_TopicName);
-
-                    IsConnected = true;
+                    else Disconnect();
                 }
             }
             catch (AmqpException e)
