@@ -202,7 +202,14 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// </returns>
         protected virtual Stream OpenStream(string filePath, string fileName)
         {
-            return this.m_FileHelper.OpenStream(filePath, fileName);
+            var stream = this.m_FileHelper.OpenStream(filePath, fileName);
+            if (stream == null)
+            {
+                // Stream failed to be allocated.
+                LogDebug("Failed to allocate file stream");
+            }
+
+            return stream;
         }
 
         /// <summary>

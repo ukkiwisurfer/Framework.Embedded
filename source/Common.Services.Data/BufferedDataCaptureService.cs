@@ -120,38 +120,45 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         {
             using (var stream = this.GetFileStream(WorkingPath, TargetPath))
             {
-                using (var writer = new StreamWriter(stream))
-                {                             
-                    writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-                    writer.WriteLine("<DataCapture>");
-
-                    AddDeviceMetadata(writer);
-
-                    writer.WriteLine("<DataItems>");
-                    foreach (var item in dataItems)
+                if (stream != null)
+                {
+                    using (var writer = new StreamWriter(stream))
                     {
-                        var dataItem = item as DataItem;
-                        if (dataItem != null)
+                        writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+                        writer.WriteLine("<DataCapture>");
+
+                        AddDeviceMetadata(writer);
+
+                        writer.WriteLine("<DataItems>");
+                        foreach (var item in dataItems)
                         {
-                            writer.WriteLine("<DataItem>");
+                            var dataItem = item as DataItem;
+                            if (dataItem != null)
+                            {
+                                writer.WriteLine("<DataItem>");
 
-                            writer.Write("<CaptureTimeStamp>");
-                            writer.Write(dataItem.CaptureTimestamp.ToString("u"));
-                            writer.WriteLine("</CaptureTimeStamp>");
+                                writer.Write("<CaptureTimeStamp>");
+                                writer.Write(dataItem.CaptureTimestamp.ToString("u"));
+                                writer.WriteLine("</CaptureTimeStamp>");
 
-                            writer.WriteLine("<Payload>");
-                            writer.WriteLine(Encoding.UTF8.GetChars(dataItem.Payload));
-                            writer.WriteLine("</Payload>");
+                                writer.WriteLine("<Payload>");
+                                writer.WriteLine(Encoding.UTF8.GetChars(dataItem.Payload));
+                                writer.WriteLine("</Payload>");
 
-                            writer.WriteLine("</DataItem>");
+                                writer.WriteLine("</DataItem>");
 
-                            writer.Flush();
+                                writer.Flush();
+                            }
                         }
-                    }
-                    writer.WriteLine("</DataItems>");
+                        writer.WriteLine("</DataItems>");
 
-                    writer.WriteLine("</DataCapture>");
-                    writer.Flush();
+                        writer.WriteLine("</DataCapture>");
+                        writer.Flush();
+                    }
+                }
+                else
+                {
+                    // Failed to allocate file stream
                 }
             }
         }
