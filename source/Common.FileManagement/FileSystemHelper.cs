@@ -62,6 +62,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         public string GenerateFileName(DateTime timestamp, string extension)
         {
             var builder = new StringBuilder(timestamp.ToString("yyyyMMddHHmmss"));
+            builder.Append(timestamp.Millisecond.ToString("D3"));
             builder.Append(".");
             builder.Append(extension);
 
