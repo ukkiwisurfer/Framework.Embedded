@@ -14,6 +14,9 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System;
+using System.Text;
+
 namespace Ignite.Framework.Micro.Common.Core.Extensions
 {
     /// <summary>
@@ -51,7 +54,48 @@ namespace Ignite.Framework.Micro.Common.Core.Extensions
             returning.Append(workingString);
 
             return returning.ToString();
+        }
 
+        /// <summary>
+        /// Converts a string to a byte array
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="encoding"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static byte[] ToByteArray(this string content, Encoding encoding, int length)
+        {
+            byte[] bytes = new byte[length];
+
+            var conversion = encoding.GetBytes(content);
+            foreach (var element in bytes)
+            {
+                bytes[element] = conversion[element];
+            }
+
+            return bytes;
+        }
+
+        /// <summary>
+        /// Converts a string to a byte array
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public static byte[] ToByteArray(this string content)
+        {
+            return ToByteArray(content, new UTF8Encoding(), content.Length);
+        }
+
+        /// <summary>
+        /// Converts a string to a byte array
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public static byte[] ToByteArray(this string content, int length)
+        {
+            return ToByteArray(content, new UTF8Encoding(), length);
         }
 
        
