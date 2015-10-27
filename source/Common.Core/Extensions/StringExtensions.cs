@@ -68,10 +68,12 @@ namespace Ignite.Framework.Micro.Common.Core.Extensions
             byte[] bytes = new byte[length];
 
             var conversion = encoding.GetBytes(content);
-            foreach (var element in bytes)
+            if (length < conversion.Length)
             {
-                bytes[element] = conversion[element];
+                throw new ArgumentException("Length parameter is smaller than the byte array length required for content.");
             }
+
+            Array.Copy(bytes, conversion, conversion.Length);
 
             return bytes;
         }
