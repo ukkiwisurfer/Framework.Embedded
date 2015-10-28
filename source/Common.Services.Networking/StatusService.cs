@@ -20,9 +20,9 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
     using System.IO;
     using System.Threading;
 
-    using Ignite.Framework.Micro.Common.Contract.Messaging;
-    
     using Microsoft.SPOT;
+
+    using Ignite.Framework.Micro.Common.Contract.Messaging;
 
     /// <summary>
     /// A service that publishes details about the status of the device.
@@ -221,6 +221,7 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         }
 
         /// <summary>
+        /// <summary>
         /// Adds metadata on how much free memory is available for outgoing control messages.
         /// </summary>
         /// <param name="writer">
@@ -236,7 +237,6 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
             writer.WriteLine("</FreeMemory>");
             writer.WriteLine("</Memory>");
         }
-
 
         /// <summary>
         /// Publishes a message to a MQ queue.
