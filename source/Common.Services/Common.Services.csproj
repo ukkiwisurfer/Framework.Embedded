@@ -62,6 +62,10 @@
       <Project>{1BC4C79D-54DA-4C4C-9282-5E0DA4AA5E82}</Project>
       <Name>Common.Contract.FileManagement</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common.Contract.Hardware\Common.Contract.Hardware.csproj">
+      <Project>{B9833484-3BDB-458B-8237-58B9669B8A10}</Project>
+      <Name>Common.Contract.Hardware</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common.Contract.Logging\Common.Contract.Logging.csproj">
       <Project>{98C02320-FBEE-4F0D-B3B4-F3D8D0318643}</Project>
       <Name>Common.Contract.Logging</Name>

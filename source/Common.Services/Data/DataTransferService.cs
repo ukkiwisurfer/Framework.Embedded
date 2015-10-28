@@ -14,7 +14,7 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-
+using System.Text;
 
 namespace Ignite.Framework.Micro.Common.Services.Data
 {
@@ -27,6 +27,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.Contract.FileManagement;
     using Ignite.Framework.Micro.Common.Core.Extensions;
+    using Ignite.Framework.Micro.Common.Contract.Hardware;
 
     /// <summary>
     /// Transfers data that has been persisted locally to a remote machine via pub/sub mechanism.
@@ -35,38 +36,17 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     /// Finds any unsent local data files and sends them to a message 
     /// broker for processing.
     /// </remarks>
-    public class DataTransferService : ThreadedService, IBatchConfiguration
+    public class DataTransferService : ThreadedService
     {
         private readonly IResourceLoader m_ResourceLoader;
         private readonly IMessagePublisher m_Publisher;
         private readonly BufferedConfiguration m_Configuration;
         private readonly IFileHelper m_FileHelper;
+        private readonly ILed m_Led;
         private readonly object m_SyncObject;
         private readonly int m_BufferSize;
 
         private bool m_IsOpen;
-
-        private int m_MessageBatchSize;
-        /// <summary>
-        /// The number of files to batch up before attempting to send.
-        /// </summary>
-        public int BatchSize
-        {
-            get
-            {
-                lock (m_SyncObject)
-                {
-                    return m_MessageBatchSize;
-                }
-            }
-            set
-            {
-                lock (m_SyncObject)
-                {
-                    m_MessageBatchSize = value;
-                }
-            }
-        }
 
         private int m_TransferLimit;
         /// <summary>
@@ -90,6 +70,28 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             }
         }
 
+        private int m_PulsePeriodInMilliseconds;
+        /// <summary>
+        /// The period that the LED should pulse for to indicate life.
+        /// </summary>
+        public int PulsePeriodInMilliseconds
+        {
+            get
+            {
+                lock (m_SyncObject)
+                {
+                    return m_PulsePeriodInMilliseconds;
+                }
+            }
+            set
+            {
+                lock (m_SyncObject)
+                {
+                    m_PulsePeriodInMilliseconds = value;
+                }
+            }
+        }
+
         /// <summary>
         /// Initialises an instance of the <see cref="DataTransferService"/> class.
         /// </summary>
@@ -105,7 +107,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="bufferSize">
         /// The size of the read buffer to use when loading each data file's contents.
         /// </param>
-        public DataTransferService(IMessagePublisher publisher, IFileHelper fileHelper, BufferedConfiguration configuration, int bufferSize = 512) : base(typeof(DataTransferService))
+        public DataTransferService(IMessagePublisher publisher, IFileHelper fileHelper, ILed led, BufferedConfiguration configuration, int bufferSize = 512) : base(typeof(DataTransferService))
         {
             publisher.ShouldNotBeNull();
             fileHelper.ShouldNotBeNull();
@@ -117,8 +119,10 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             m_Publisher = publisher;
             m_BufferSize = bufferSize;
             m_Configuration = configuration;
+            m_Led = led;
+            m_PulsePeriodInMilliseconds = 1000;
 
-            m_MessageBatchSize = 5;
+            m_TransferLimit = 5;
         }
 
         /// <summary>
@@ -150,7 +154,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             m_BufferSize = bufferSize;
             m_Configuration = configuration;
 
-            m_MessageBatchSize = 5;
+            m_TransferLimit = 5;
         }
 
         /// <summary>
@@ -160,7 +164,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         public override void CheckIfWorkExists(bool hasWork = false)
         {
             var files = m_FileHelper.GetAllFilesMatchingPattern(m_Configuration.TargetPath, m_Configuration.TargetFileExtension, m_TransferLimit);
-            if (files.Count() >= BatchSize)
+            if (files.Count() > 0)
             {
                 this.SignalWorkToBeDone();
             }
@@ -200,6 +204,8 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         {
             try
             {
+                m_Led.On();
+
                 if (!m_Publisher.IsConnected) m_Publisher.Connect();
 
                 if (m_Publisher.IsConnected)
@@ -238,7 +244,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                                                 memoryStream.Write(buffer, 0, bytesRead);
                                             }
 
-                                            m_Publisher.Publish(memoryStream.ToArray());
+                                            m_Publisher.Publish(memoryStream);
                                         }
 
                                         fileStream.Close();
@@ -262,6 +268,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             finally
             {
                 SignalWorkCompleted();
+                m_Led.Off();
             }
         }
 
