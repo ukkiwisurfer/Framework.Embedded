@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System.IO;
+
 namespace Ignite.Framework.Micro.Common.Contract.Messaging
 {
     using System;
@@ -37,10 +39,29 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
         /// <param name="payload">
         /// The payload to publish.
         /// </param>
+        void Publish(MemoryStream payload);
+
+        /// <summary>
+        /// Publishes a message to a MQ broker.
+        /// </summary>
+        /// <param name="payload">
+        /// The payload to publish.
+        /// </param>
         /// <param name="isDurable">
         /// Indicates whether the message should be persisted by the queue.
         /// </param>
         void Publish(byte[] payload, bool isDurable);
+
+        /// <summary>
+        /// Publishes a message to a MQ broker.
+        /// </summary>
+        /// <param name="payload">
+        /// The payload to publish.
+        /// </param>
+        /// <param name="isDurable">
+        /// Indicates whether the message should be persisted by the queue.
+        /// </param>
+        void Publish(MemoryStream payload, bool isDurable);
 
     }
 }

@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System.IO;
+
 namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
     using System;
@@ -196,6 +198,20 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <summary>
         /// Publishes a message to a topic.
         /// </summary>
+        /// <remarks>
+        /// By default each message will be set to honour the publisher level durability settings.
+        /// </remarks>
+        /// <param name="payload">
+        /// The message payload to send.
+        /// </param>
+        public virtual void Publish(MemoryStream payload)
+        {
+            Publish(payload, m_IsDurable);
+        }
+
+        /// <summary>
+        /// Publishes a message to a topic.
+        /// </summary>
         /// <param name="payload">
         /// The message payload to send.
         /// </param>
@@ -211,6 +227,28 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
                 if (m_IsConnected)
                 {
                     if (payload.Length > 0) 
+                    {
+                        m_Publisher.Publish(payload, isDurable);
+                    }
+
+                    if (CloseAfterSend) Disconnect();
+                }
+            }
+            catch (Exception)
+            {
+                Disconnect();
+            }
+        }
+
+        public virtual void Publish(MemoryStream payload, bool isDurable)
+        {
+            try
+            {
+                Connect();
+
+                if (m_IsConnected)
+                {
+                    if (payload.Length > 0)
                     {
                         m_Publisher.Publish(payload, isDurable);
                     }

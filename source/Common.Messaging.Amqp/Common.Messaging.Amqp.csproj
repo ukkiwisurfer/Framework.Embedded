@@ -74,6 +74,7 @@
     </Reference>
     <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="Microsoft.SPOT.TinyCore" />
+    <Reference Include="System.IO" />
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <Import Condition="!EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

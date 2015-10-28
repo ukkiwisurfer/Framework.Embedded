@@ -15,6 +15,8 @@
 //----------------------------------------------------------------------------- 
 
 
+using System.IO;
+
 namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
     using System;
@@ -120,6 +122,20 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <summary>
         /// Publishes a message to a topic.
         /// </summary>
+        /// <remarks>
+        /// By default each message will be set to honour the publisher level durability settings.
+        /// </remarks>
+        /// <param name="payload">
+        /// The message payload to send.
+        /// </param>
+        public virtual void Publish(MemoryStream payload)
+        {
+            Publish(payload, m_IsDurable);
+        }
+
+        /// <summary>
+        /// Publishes a message to a topic.
+        /// </summary>
         /// <param name="payload">
         /// The message payload to send.
         /// </param>
@@ -152,6 +168,34 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
                 Disconnect();
             }
         }
+
+        public virtual void Publish(MemoryStream payload, bool isDurable)
+        {
+            try
+            {
+                if (!IsConnected) Connect();
+
+                if (IsConnected)
+                {
+                    var message = new Message();
+
+                    message.Header = new Header();
+                    message.Header.Durable = isDurable;
+
+                    message.Properties = new Properties();
+                    message.ApplicationProperties = new ApplicationProperties();
+                    message.BodySection = new Data() { Binary = payload.ToArray() };
+
+                    m_Sender.Send(message);
+                }
+                else Disconnect();
+            }
+            catch (AmqpException e)
+            {
+                Disconnect();
+            }
+        }
+
 
         /// <summary>
         /// Indicates whether the connection to the AMQP server is established.
