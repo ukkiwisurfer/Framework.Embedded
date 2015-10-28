@@ -256,7 +256,7 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <summary>
         /// Sets the local time on the device as the same as that derived from a NTP server.
         /// </summary>
-        public void SetNetworkTime()
+        public void SetNetworkTime(string ntpserver = "pool.ntp.org")
         {
             //var settings = new TimeServiceSettings();
             //settings.ForceSyncAtWakeUp = true;
@@ -271,7 +271,7 @@ namespace Ignite.Framework.Micro.Common.Networking
 
             //TimeService.Start();
 
-            var networkTime = GetNetworkTime();
+            var networkTime = GetNetworkTime(ntpserver);
             Utility.SetLocalTime(networkTime); 
         }
 
