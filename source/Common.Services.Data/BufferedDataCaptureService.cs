@@ -14,7 +14,7 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-
+using Ignite.Framework.Micro.Common.Data;
 
 namespace Ignite.Framework.Micro.Common.Services.Data
 {
@@ -113,52 +113,126 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <summary>
         /// Persists data items to a file.
         /// </summary>
+        /// <remarks>
+        /// CHUNK ID:   {12 bytes}
+        /// CHUNK SIZE: {4 bytes}
+        /// CHUNK TYPE: {4 bytes}
+        /// CHUNK DATA: {N bytes}
+        /// <para></para>
+        /// 
+        /// HEADER CHUNK
+        ///   ID:   OWLDATA
+        ///   SIZE: 24
+        ///   TYPE: {HEADER}
+        ///   DATA:
+        ///         PRODUCT: {INTUITION} {20 bytes}
+        ///         DEVICE:  {IP} {4 byes}
+        /// 
+        /// DATA CHUNK
+        ///   ID:   SENSOR HEADER
+        ///   SIZE: 34
+        ///   TYPE: {METADATA}
+        ///   DATA:
+        ///         ITEM COUNT         {2 bytes}
+        ///         METADATA OFFSET    {8 bytes}
+        ///         DATA OFFSET        {8 bytes}
+        ///         NEXT HEADER OFFSET {8 bytes}
+        /// 
+        /// PAYLOAD CHUNK
+        ///   ID:   OWL SENSOR METADATA
+        ///   SIZE: 30 bytes
+        ///   TYPE: {SENSOR METADATA}
+        ///   DATA:
+        ///         SENSORID          {12 bytes}
+        ///         RSSI              {6 bytes}
+        ///         LQI               {6 bytes}
+        ///         BATTERY LEVEL     {2 bytes}
+        ///         CHANNEL NUMBER    {2 bytes}
+        /// 
+        /// PAYLOAD CHUNK
+        ///   ID:   OWL SENSOR DATA
+        ///   SIZE: 26 bytes
+        ///   TYPE: {ELECTRICITY CONSUMPTION}
+        ///   DATA:
+        ///         SENSORID          {12 bytes}
+        ///         TIMESTAMP         {8 bytes}
+        ///         UNIT OF MEASURE   {2 bytes}
+        ///         CURRENT UNITS     {8 bytes}
+        ///         DAY UNITS         {8 bytes}
+        /// 
+        /// </remarks>
         /// <param name="dataItems">
         /// The collection of log messages to persist.
         /// </param>
+        //protected override void WriteData(object[] dataItems)
+        //{
+        //    using (var stream = this.GetFileStream(WorkingPath, TargetPath))
+        //    {
+        //        if (stream != null)
+        //        {
+        //            using (var writer = new StreamWriter(stream))
+        //            {
+        //                writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        //                writer.WriteLine("<DataCapture>");
+
+        //                AddDeviceMetadata(writer);
+
+        //                writer.WriteLine("<DataItems>");
+        //                foreach (var item in dataItems)
+        //                {
+        //                    var dataItem = item as DataItem;
+        //                    if (dataItem != null)
+        //                    {
+        //                        writer.WriteLine("<DataItem>");
+
+        //                        writer.Write("<CaptureTimeStamp>");
+        //                        writer.Write(dataItem.CaptureTimestamp.ToString("u"));
+        //                        writer.WriteLine("</CaptureTimeStamp>");
+
+        //                        writer.WriteLine("<Payload>");
+        //                        writer.WriteLine(Convert.ToBase64String(dataItem.Payload));
+        //                        writer.WriteLine("</Payload>");
+
+        //                        writer.WriteLine("</DataItem>");
+
+        //                        writer.Flush();
+        //                    }
+        //                }
+        //                writer.WriteLine("</DataItems>");
+
+        //                writer.WriteLine("</DataCapture>");
+        //                writer.Flush();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            // Failed to allocate file stream
+        //        }
+        //    }
+        //}
+
         protected override void WriteData(object[] dataItems)
         {
             using (var stream = this.GetFileStream(WorkingPath, TargetPath))
             {
                 if (stream != null)
                 {
-                    using (var writer = new StreamWriter(stream))
+                    var builder = new OwlStreamBuilder(stream);
+
+                    foreach (var item in dataItems)
                     {
-                        writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-                        writer.WriteLine("<DataCapture>");
-
-                        AddDeviceMetadata(writer);
-
-                        writer.WriteLine("<DataItems>");
-                        foreach (var item in dataItems)
+                        var dataItem = item as DataItem;
+                        if (dataItem != null)
                         {
-                            var dataItem = item as DataItem;
-                            if (dataItem != null)
-                            {
-                                writer.WriteLine("<DataItem>");
+                            builder.SetIPAddress(m_IPAddress);
+                            builder.SetTimestamp(dataItem.CaptureTimestamp);
+                            builder.SetPayload(dataItem.Payload);
 
-                                writer.Write("<CaptureTimeStamp>");
-                                writer.Write(dataItem.CaptureTimestamp.ToString("u"));
-                                writer.WriteLine("</CaptureTimeStamp>");
-
-                                writer.WriteLine("<Payload>");
-                                writer.WriteLine(Encoding.UTF8.GetChars(dataItem.Payload));
-                                writer.WriteLine("</Payload>");
-
-                                writer.WriteLine("</DataItem>");
-
-                                writer.Flush();
-                            }
+                            builder.Build();
                         }
-                        writer.WriteLine("</DataItems>");
-
-                        writer.WriteLine("</DataCapture>");
-                        writer.Flush();
                     }
-                }
-                else
-                {
-                    // Failed to allocate file stream
+
+                    stream.Flush();                   
                 }
             }
         }
