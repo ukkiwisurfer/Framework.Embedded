@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System;
+
 namespace Ignite.Framework.Micro.Common.Core.Extensions
 {
     /// <summary>
@@ -36,6 +38,21 @@ namespace Ignite.Framework.Micro.Common.Core.Extensions
             }
 
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// Copies 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        public static void CopyTo(this byte[] source, byte[] destination)
+        {
+            if (source.Length > destination.Length)
+            {
+                throw new ArgumentException("Source array is larger than the destination byte array required for copying.");
+            }
+
+            Array.Copy(source,destination,source.Length);
         }
     }
 }
