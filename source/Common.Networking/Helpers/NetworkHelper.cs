@@ -14,6 +14,10 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using Ignite.Framework.Micro.Common.Assertions;
+using Ignite.Framework.Micro.Common.Contract.Logging;
+using Ignite.Framework.Micro.Common.Core;
+
 namespace Ignite.Framework.Micro.Common.Networking
 {
     using System;
@@ -36,6 +40,7 @@ namespace Ignite.Framework.Micro.Common.Networking
         private readonly NetworkInterface[] m_Interfaces;
         private readonly AutoResetEvent m_WaitForNetwork;
         private readonly AutoResetEvent m_WaitForAddressChange;
+        private readonly ILogger m_Logger;
         private readonly object m_SyncLock;
         private int m_WaitForNetworkEventInMilliseconds;
       
@@ -84,12 +89,18 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <summary>
         /// Initialises an instance of the <see cref="NetworkHelper"/> class.
         /// </summary>
-        public NetworkHelper()
+        /// <param name="logger">
+        /// A logging provider.
+        /// </param>
+        public NetworkHelper(ILogger logger)
         {
+            logger.ShouldNotBeNull();
+
             m_Interfaces = NetworkInterface.GetAllNetworkInterfaces();
             m_WaitForNetwork = new AutoResetEvent(false);
             m_WaitForAddressChange = new AutoResetEvent(false);
             m_SyncLock = new object();
+            m_Logger = logger;
             m_WaitForNetworkEventInMilliseconds = 2000;
         }
 
@@ -117,14 +128,14 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// </summary>
         /// <remarks>
         /// On the Netduino Plus 2, the Ethernet is initialised way before the software starts
-        /// running. On the Netduino 3 (WiFi) it takes considerably longer to initialise.
+        /// running. On the Netduino 3 (WiFi and Ethernet) it takes considerably longer to initialise.
         /// <para></para>
-        /// The consequence is that for this to work on both boards we need to test to see if the
-        /// IP address has already been configured. otherwise the WaitHandle.WaitAll() will wait
-        /// indefinitely as the event handlers are too late in terms of signalling - the network
-        /// has already been configured.
+        /// The consequence is that for the following attempt to get network details to work on all of the
+        /// above mentioned boards we need to test to see if the IP address has already been configured. 
+        /// Otherwise the WaitHandle.WaitAll() will wait indefinitely as the event handlers are too late in 
+        /// terms of signalling - the network has already been configured.
         /// <para></para>
-        /// This demonstrates a weakness in this approach in that we could have a race condition -
+        /// This demonstrates a weakness in the original approach in that we could have a race condition -
         /// the network has already been configured before the event handlers are set up. We must 
         /// therefore periodically timeout from the WaitHandle.WaitAll() and query the status
         /// of the network interface. 
@@ -142,6 +153,8 @@ namespace Ignite.Framework.Micro.Common.Networking
             // Set up event handlers for network state changes.
             NetworkChange.NetworkAvailabilityChanged += OnInternalNetworkAvailabilityChanged;
             NetworkChange.NetworkAddressChanged += OnNetworkAddressChanged;
+
+            m_Logger.Debug("Waiting for network to become available.");
 
             try
             {
@@ -161,6 +174,8 @@ namespace Ignite.Framework.Micro.Common.Networking
                     }
                     else isWaitingToInitialise = false;
                 }
+
+                m_Logger.Debug("Network connection detected.");
 
                 information = QueryInterface(interfaceIndex);
             }
@@ -258,19 +273,6 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// </summary>
         public void SetNetworkTime(string ntpserver = "pool.ntp.org")
         {
-            //var settings = new TimeServiceSettings();
-            //settings.ForceSyncAtWakeUp = true;
-            //settings.AutoDayLightSavings = true;
-
-            //var primary = GetHostEntry("time-a.nist.gov");
-            //if (primary != null)
-            //{
-            //    settings.PrimaryServer = primary.GetAddressBytes();
-            //}
-
-
-            //TimeService.Start();
-
             var networkTime = GetNetworkTime(ntpserver);
             Utility.SetLocalTime(networkTime); 
         }
@@ -285,17 +287,23 @@ namespace Ignite.Framework.Micro.Common.Networking
         {
             DateTime networkDateTime = new DateTime(1900, 1, 1);
 
+            m_Logger.Debug(StringUtility.Format("Retrieving NTP details from host: '{0}'.",hostName));
+
             var hostEntry = Dns.GetHostEntry(hostName);
             if (hostEntry.AddressList.Length > 0)
             {
                 IPEndPoint endpoint = new IPEndPoint(hostEntry.AddressList[0],123);
                 using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
                 {
+                    m_Logger.Debug(StringUtility.Format("Connecting to NTP host: '{0}'.", hostName));
+                    
                     socket.Connect(endpoint);
 
                     var ntpData = BuildNtpRequest();
                     socket.Send(ntpData);
                     socket.Receive(ntpData);
+
+                    m_Logger.Debug(StringUtility.Format("Parsing timestamp details from host: '{0}'.", hostName));
 
                     networkDateTime = BuildNetworkTime(ntpData);
                    
@@ -339,7 +347,8 @@ namespace Ignite.Framework.Micro.Common.Networking
         {
             var datetime = new DateTime(1900, 1, 1);
 
-            byte offsetTransmitTime = 40;
+            const byte offsetTransmitTime = 40;
+
             ulong intpart = 0;
             ulong fractpart = 0;
 
