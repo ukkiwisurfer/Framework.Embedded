@@ -14,11 +14,10 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-using System.IO;
-
 namespace Ignite.Framework.Micro.Common.Messaging.MQTT
 {
     using System;
+    using System.IO;
 
     using uPLibrary.Networking.M2Mqtt;
 
@@ -137,7 +136,25 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         /// </param>
         public virtual void Publish(MemoryStream payload)
         {
-            Publish(payload, m_IsDurable);
+            payload.ShouldNotBeNull();
+
+            Publish(payload.ToArray(), m_IsDurable);
+        }
+
+        /// <summary>
+        /// Publishes a message to a topic.
+        /// </summary>
+        /// <param name="payload">
+        /// The message payload to send.
+        /// </param>
+        /// <param name="isDurable">
+        /// Indicates whether the message should be persisted by the underlying queue.
+        /// </param>
+        public virtual void Publish(MemoryStream payload, bool isDurable)
+        {
+            payload.ShouldNotBeNull();
+
+            Publish(payload.ToArray(), isDurable);
         }
 
         /// <summary>
@@ -164,20 +181,6 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
             {
                 IsConnected = false;
             }
-        }
-
-        /// <summary>
-        /// Publishes a message to a topic.
-        /// </summary>
-        /// <param name="payload">
-        /// The message payload to send.
-        /// </param>
-        /// <param name="isDurable">
-        /// Indicates whether the message should be persisted by the underlying queue.
-        /// </param>
-        public virtual void Publish(MemoryStream payload, bool isDurable)
-        {
-           Publish(payload.ToArray(), isDurable);
         }
 
         /// <summary>

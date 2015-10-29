@@ -189,7 +189,6 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                     }
                 }
             }
-
         }
 
         /// <summary>

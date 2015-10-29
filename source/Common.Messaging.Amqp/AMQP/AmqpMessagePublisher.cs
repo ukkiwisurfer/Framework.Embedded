@@ -14,12 +14,10 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-
-using System.IO;
-
 namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
     using System;
+    using System.IO;
 
     using Amqp;
     using Amqp.Framing;
@@ -130,6 +128,8 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// </param>
         public virtual void Publish(MemoryStream payload)
         {
+            payload.ShouldNotBeNull();
+
             Publish(payload, m_IsDurable);
         }
 
@@ -142,8 +142,27 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <param name="isDurable">
         /// Indicates whether the message should be persisted by the underlying queue.
         /// </param>
+        public virtual void Publish(MemoryStream payload, bool isDurable)
+        {
+            payload.ShouldNotBeNull();
+
+            Publish(payload.ToArray(), isDurable);
+        }
+
+
+        /// <summary>
+        /// Publishes a message to a topic.
+        /// </summary>
+        /// <param name="payload">
+        /// The message payload to send.
+        /// </param>
+        /// <param name="isDurable">
+        /// Indicates whether the message should be persisted by the underlying queue.
+        /// </param>
         public virtual void Publish(byte[] payload, bool isDurable)
         {
+            payload.ShouldNotBeEmpty();
+
             try
             {
                 if (!IsConnected) Connect();
@@ -161,24 +180,14 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         }
 
         /// <summary>
-        /// Publishes a message to a topic.
+        /// Publishes a message via AMQP
         /// </summary>
         /// <param name="payload">
-        /// The message payload to send.
+        /// The raw data to send.
         /// </param>
         /// <param name="isDurable">
         /// Indicates whether the message should be persisted by the underlying queue.
         /// </param>
-        public virtual void Publish(MemoryStream payload, bool isDurable)
-        {
-           Publish(payload.ToArray(), isDurable);                    
-        }
-
-        /// <summary>
-        /// Publishes a message via AMQP
-        /// </summary>
-        /// <param name="payload"></param>
-        /// <param name="isDurable"></param>
         private void PublishMessage(byte[] payload, bool isDurable)
         {
             var message = new Message();
@@ -192,7 +201,6 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 
             m_Sender.Send(message);
         }
-
 
         /// <summary>
         /// Indicates whether the connection to the AMQP server is established.
