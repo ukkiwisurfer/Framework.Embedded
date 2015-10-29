@@ -150,16 +150,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 
                 if (IsConnected)
                 {
-                    var message = new Message();
-
-                    message.Header = new Header();
-                    message.Header.Durable = isDurable;
-
-                    message.Properties = new Properties();
-                    message.ApplicationProperties = new ApplicationProperties();
-                    message.BodySection = new Data() { Binary = payload };
-
-                    m_Sender.Send(message);
+                    PublishMessage(payload, isDurable);    
                 }
                 else Disconnect();
             }
@@ -169,31 +160,37 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             }
         }
 
+        /// <summary>
+        /// Publishes a message to a topic.
+        /// </summary>
+        /// <param name="payload">
+        /// The message payload to send.
+        /// </param>
+        /// <param name="isDurable">
+        /// Indicates whether the message should be persisted by the underlying queue.
+        /// </param>
         public virtual void Publish(MemoryStream payload, bool isDurable)
         {
-            try
-            {
-                if (!IsConnected) Connect();
+           Publish(payload.ToArray(), isDurable);                    
+        }
 
-                if (IsConnected)
-                {
-                    var message = new Message();
+        /// <summary>
+        /// Publishes a message via AMQP
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <param name="isDurable"></param>
+        private void PublishMessage(byte[] payload, bool isDurable)
+        {
+            var message = new Message();
 
-                    message.Header = new Header();
-                    message.Header.Durable = isDurable;
+            message.Header = new Header();
+            message.Header.Durable = isDurable;
 
-                    message.Properties = new Properties();
-                    message.ApplicationProperties = new ApplicationProperties();
-                    message.BodySection = new Data() { Binary = payload.ToArray() };
+            message.Properties = new Properties();
+            message.ApplicationProperties = new ApplicationProperties();
+            message.BodySection = new Data() { Binary = payload };
 
-                    m_Sender.Send(message);
-                }
-                else Disconnect();
-            }
-            catch (AmqpException e)
-            {
-                Disconnect();
-            }
+            m_Sender.Send(message);
         }
 
 

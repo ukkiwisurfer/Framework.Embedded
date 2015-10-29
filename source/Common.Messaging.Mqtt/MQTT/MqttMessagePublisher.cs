@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System.IO;
+
 namespace Ignite.Framework.Micro.Common.Messaging.MQTT
 {
     using System;
@@ -127,6 +129,20 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         /// <summary>
         /// Publishes a message to a topic.
         /// </summary>
+        /// <remarks>
+        /// By default each message will be set to honour the publisher level durability settings.
+        /// </remarks>
+        /// <param name="payload">
+        /// The message payload to send.
+        /// </param>
+        public virtual void Publish(MemoryStream payload)
+        {
+            Publish(payload, m_IsDurable);
+        }
+
+        /// <summary>
+        /// Publishes a message to a topic.
+        /// </summary>
         /// <param name="payload">
         /// The message payload to send.
         /// </param>
@@ -148,6 +164,20 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
             {
                 IsConnected = false;
             }
+        }
+
+        /// <summary>
+        /// Publishes a message to a topic.
+        /// </summary>
+        /// <param name="payload">
+        /// The message payload to send.
+        /// </param>
+        /// <param name="isDurable">
+        /// Indicates whether the message should be persisted by the underlying queue.
+        /// </param>
+        public virtual void Publish(MemoryStream payload, bool isDurable)
+        {
+           Publish(payload.ToArray(), isDurable);
         }
 
         /// <summary>

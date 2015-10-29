@@ -59,6 +59,10 @@
       <Project>{9DEBF422-3666-446C-8D0B-FA60CCF8EC54}</Project>
       <Name>Common.Contract.Services</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common.Data\Common.Data.csproj">
+      <Project>{FA5169A2-683A-4464-8442-7F1CD2C0CC14}</Project>
+      <Name>Common.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common.Logging\Common.Logging.csproj">
       <Project>{5BBF275D-57F6-41EE-9626-1250E0BEAE46}</Project>
       <Name>Common.Logging</Name>

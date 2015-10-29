@@ -33,7 +33,58 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     /// <remarks>
     /// The batch size determines how many entries are buffered before being written
     /// to disk.
+    /// <para></para>
+    /// 
+    /// CHUNK ID:   {12 bytes}
+    /// CHUNK SIZE: {4 bytes}
+    /// CHUNK TYPE: {4 bytes}
+    /// CHUNK DATA: {N bytes}
+    /// <para></para>
+    /// 
+    /// HEADER CHUNK
+    ///   ID:   OWLDATA
+    ///   SIZE: 24
+    ///   TYPE: {HEADER}
+    ///   DATA:
+    ///         PRODUCT: {INTUITION} {20 bytes}
+    ///         DEVICE:  {IP} {4 byes}
+    /// 
+    /// DATA CHUNK
+    ///   ID:   SENSOR HEADER
+    ///   SIZE: 34
+    ///   TYPE: {METADATA}
+    ///   DATA:
+    ///         ITEM COUNT         {2 bytes}
+    ///         METADATA OFFSET    {8 bytes}
+    ///         DATA OFFSET        {8 bytes}
+    ///         NEXT HEADER OFFSET {8 bytes}
+    /// 
+    /// PAYLOAD CHUNK
+    ///   ID:   OWL SENSOR METADATA
+    ///   SIZE: 30 bytes
+    ///   TYPE: {SENSOR METADATA}
+    ///   DATA:
+    ///         SENSORID          {12 bytes}
+    ///         RSSI              {6 bytes}
+    ///         LQI               {6 bytes}
+    ///         BATTERY LEVEL     {2 bytes}
+    ///         CHANNEL NUMBER    {2 bytes}
+    /// 
+    /// PAYLOAD CHUNK
+    ///   ID:   OWL SENSOR DATA
+    ///   SIZE: 26 bytes
+    ///   TYPE: {ELECTRICITY CONSUMPTION}
+    ///   DATA:
+    ///         SENSORID          {12 bytes}
+    ///         TIMESTAMP         {8 bytes}
+    ///         UNIT OF MEASURE   {2 bytes}
+    ///         CURRENT UNITS     {8 bytes}
+    ///         DAY UNITS         {8 bytes}
+    /// 
     /// </remarks>
+    /// <param name="dataItems">
+    /// The collection of log messages to persist.
+    /// </param>    /// </remarks>
     public class BufferedDataCaptureService : BufferedDataService
     {
         private readonly string m_IPAddress;
@@ -111,106 +162,11 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         }
 
         /// <summary>
-        /// Persists data items to a file.
+        /// Writes the data to a file.
         /// </summary>
-        /// <remarks>
-        /// CHUNK ID:   {12 bytes}
-        /// CHUNK SIZE: {4 bytes}
-        /// CHUNK TYPE: {4 bytes}
-        /// CHUNK DATA: {N bytes}
-        /// <para></para>
-        /// 
-        /// HEADER CHUNK
-        ///   ID:   OWLDATA
-        ///   SIZE: 24
-        ///   TYPE: {HEADER}
-        ///   DATA:
-        ///         PRODUCT: {INTUITION} {20 bytes}
-        ///         DEVICE:  {IP} {4 byes}
-        /// 
-        /// DATA CHUNK
-        ///   ID:   SENSOR HEADER
-        ///   SIZE: 34
-        ///   TYPE: {METADATA}
-        ///   DATA:
-        ///         ITEM COUNT         {2 bytes}
-        ///         METADATA OFFSET    {8 bytes}
-        ///         DATA OFFSET        {8 bytes}
-        ///         NEXT HEADER OFFSET {8 bytes}
-        /// 
-        /// PAYLOAD CHUNK
-        ///   ID:   OWL SENSOR METADATA
-        ///   SIZE: 30 bytes
-        ///   TYPE: {SENSOR METADATA}
-        ///   DATA:
-        ///         SENSORID          {12 bytes}
-        ///         RSSI              {6 bytes}
-        ///         LQI               {6 bytes}
-        ///         BATTERY LEVEL     {2 bytes}
-        ///         CHANNEL NUMBER    {2 bytes}
-        /// 
-        /// PAYLOAD CHUNK
-        ///   ID:   OWL SENSOR DATA
-        ///   SIZE: 26 bytes
-        ///   TYPE: {ELECTRICITY CONSUMPTION}
-        ///   DATA:
-        ///         SENSORID          {12 bytes}
-        ///         TIMESTAMP         {8 bytes}
-        ///         UNIT OF MEASURE   {2 bytes}
-        ///         CURRENT UNITS     {8 bytes}
-        ///         DAY UNITS         {8 bytes}
-        /// 
-        /// </remarks>
         /// <param name="dataItems">
-        /// The collection of log messages to persist.
+        /// The collection of items 
         /// </param>
-        //protected override void WriteData(object[] dataItems)
-        //{
-        //    using (var stream = this.GetFileStream(WorkingPath, TargetPath))
-        //    {
-        //        if (stream != null)
-        //        {
-        //            using (var writer = new StreamWriter(stream))
-        //            {
-        //                writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-        //                writer.WriteLine("<DataCapture>");
-
-        //                AddDeviceMetadata(writer);
-
-        //                writer.WriteLine("<DataItems>");
-        //                foreach (var item in dataItems)
-        //                {
-        //                    var dataItem = item as DataItem;
-        //                    if (dataItem != null)
-        //                    {
-        //                        writer.WriteLine("<DataItem>");
-
-        //                        writer.Write("<CaptureTimeStamp>");
-        //                        writer.Write(dataItem.CaptureTimestamp.ToString("u"));
-        //                        writer.WriteLine("</CaptureTimeStamp>");
-
-        //                        writer.WriteLine("<Payload>");
-        //                        writer.WriteLine(Convert.ToBase64String(dataItem.Payload));
-        //                        writer.WriteLine("</Payload>");
-
-        //                        writer.WriteLine("</DataItem>");
-
-        //                        writer.Flush();
-        //                    }
-        //                }
-        //                writer.WriteLine("</DataItems>");
-
-        //                writer.WriteLine("</DataCapture>");
-        //                writer.Flush();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            // Failed to allocate file stream
-        //        }
-        //    }
-        //}
-
         protected override void WriteData(object[] dataItems)
         {
             foreach (var item in dataItems)
@@ -222,7 +178,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                     {
                         if (stream != null)
                         {
-                            var builder = new OwlStreamBuilder(stream);
+                            var builder = new DataStreamBuilder(stream);
 
                             builder.SetIPAddress(m_IPAddress);
                             builder.SetTimestamp(dataItem.CaptureTimestamp);
