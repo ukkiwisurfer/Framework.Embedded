@@ -213,17 +213,17 @@ namespace Ignite.Framework.Micro.Common.Services.Data
 
         protected override void WriteData(object[] dataItems)
         {
-            using (var stream = this.GetFileStream(WorkingPath, TargetPath))
+            foreach (var item in dataItems)
             {
-                if (stream != null)
+                var dataItem = item as DataItem;
+                if (dataItem != null)
                 {
-                    var builder = new OwlStreamBuilder(stream);
-
-                    foreach (var item in dataItems)
+                    using (var stream = this.GetFileStream(WorkingPath, TargetPath))
                     {
-                        var dataItem = item as DataItem;
-                        if (dataItem != null)
+                        if (stream != null)
                         {
+                            var builder = new OwlStreamBuilder(stream);
+
                             builder.SetIPAddress(m_IPAddress);
                             builder.SetTimestamp(dataItem.CaptureTimestamp);
                             builder.SetPayload(dataItem.Payload);
@@ -231,10 +231,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                             builder.Build();
                         }
                     }
-
-                    stream.Flush();                   
                 }
             }
+
         }
 
         /// <summary>
