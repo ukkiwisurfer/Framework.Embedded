@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using Microsoft.SPOT;
+
 namespace Ignite.Framework.Micro.Common.Logging
 {
     using Ignite.Framework.Micro.Common.Contract.Logging;
@@ -21,7 +23,7 @@ namespace Ignite.Framework.Micro.Common.Logging
     /// <summary>
     /// A log provider that does nothing.
     /// </summary>
-    public class NoOpLogger : ILogProvider
+    public class ConsoleLogger : ILogProvider
     {
         /// <summary>
         /// See <see cref="ILogProvider.IsDebugEnabled"/> for more details.
@@ -47,7 +49,7 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public void Log(LogEntry entry)
         {
-            
+            Debug.Print(entry.Message);
         }
     }
 }
