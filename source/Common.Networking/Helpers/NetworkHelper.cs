@@ -283,7 +283,7 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <returns>
         /// The calculated timestamp to associate to the device.
         /// </returns>
-        public DateTime GetNetworkTime(string hostName = "time-a.nist.gov")
+        public DateTime GetNetworkTime(string hostName = "pool.ntp.org")
         {
             DateTime networkDateTime = new DateTime(1900, 1, 1);
 
