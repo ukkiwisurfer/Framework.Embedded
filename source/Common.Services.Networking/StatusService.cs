@@ -126,7 +126,7 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
                 {
                     AddHeader(writer);
 
-                    writer.WriteLine("<HeartBeat>");
+                    writer.WriteLine("<HeartBeat version=\"1.0\">");
 
                     AddDeviceMetadata(writer);
                     AddMemoryUsage(writer);
@@ -150,7 +150,7 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
                 {
                     AddHeader(writer);
 
-                    writer.WriteLine("<Startup>");
+                    writer.WriteLine("<Startup version=\"1.0\">");
 
                     AddDeviceMetadata(writer);
                     AddMemoryUsage(writer);
@@ -174,7 +174,7 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
                 {
                     AddHeader(writer);
 
-                    writer.WriteLine("<Shutdown>");
+                    writer.WriteLine("<Shutdown version=\"1.0\">");
 
                     AddDeviceMetadata(writer);
                     AddMemoryUsage(writer);
