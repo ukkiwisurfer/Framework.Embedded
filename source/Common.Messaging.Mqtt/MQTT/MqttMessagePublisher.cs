@@ -138,7 +138,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         {
             payload.ShouldNotBeNull();
 
-            Publish(payload.ToArray(), m_IsDurable);
+            Publish(payload, m_IsDurable);
         }
 
         /// <summary>
