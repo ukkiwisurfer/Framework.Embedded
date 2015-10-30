@@ -14,7 +14,6 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-
 namespace Ignite.Framework.Micro.Common.Services.Logging
 {
     using System;
@@ -85,7 +84,7 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
         /// Persists log messages to a file.
         /// </summary>
         /// <param name="dataItems">
-        /// The collection of log messages to persist.
+        /// A collection of log messages to persist.
         /// </param>
         protected override void WriteData(object[] dataItems)
         {
