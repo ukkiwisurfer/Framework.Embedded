@@ -16,6 +16,7 @@
 
 namespace Ignite.Framework.Micro.Common.Services.Logging
 {
+    using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Logging;
 
     /// <summary>
@@ -33,6 +34,8 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
         /// </param>
         public LoggingProvider(BufferedLoggingService loggingService)
         {
+            loggingService.ShouldNotBeNull();
+
             this.m_LoggingService = loggingService;
         }
     
@@ -60,6 +63,8 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
         /// </param>
         public void Log(LogEntry entry)
         {
+            entry.ShouldNotBeNull();
+
  	        this.m_LoggingService.AddLogEntry(entry);
         }
     }
