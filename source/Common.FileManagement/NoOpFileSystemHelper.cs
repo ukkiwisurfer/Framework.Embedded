@@ -119,10 +119,29 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// The size of the read buffer to associate with the file stream.
         /// </param>
         /// <returns></returns>
-        public virtual Stream OpenStream(string filePath, string fileName, int bufferSize = 512)
+        public virtual Stream OpenStreamForRead(string filePath, string fileName, int bufferSize = 512)
         {
             return new MemoryStream();
         }
+
+        /// <summary>
+        /// Opens/creates an existing/new file stream.
+        /// </summary>
+        /// <param name="filePath">
+        /// The path to the file.
+        /// </param>
+        /// <param name="fileName">
+        /// The name of the file.
+        /// </param>
+        /// <param name="bufferSize">
+        /// The size of the read buffer to associate with the file stream.
+        /// </param>
+        /// <returns></returns>
+        public virtual Stream OpenStreamForWrite(string filePath, string fileName, int bufferSize = 512)
+        {
+            return new MemoryStream();
+        }
+
 
         /// <summary>
         /// Returns all files matching the given search pattern for the specified folder.

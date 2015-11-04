@@ -147,7 +147,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         }
 
         /// <summary>
-        /// Opens/creates an existing/new file stream.
+        /// Opens/creates an existing file stream.
         /// </summary>
         /// <param name="filePath">
         /// The path to the file.
@@ -159,10 +159,29 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// The size of the read buffer to associate with the file stream.
         /// </param>
         /// <returns></returns>
-        public virtual Stream OpenStream(string filePath, string fileName, int bufferSize = 512)
+        public virtual Stream OpenStreamForRead(string filePath, string fileName, int bufferSize = 512)
         {
             var fileNameWithPath = Path.Combine(filePath, fileName);
-            return new FileStream(fileNameWithPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, bufferSize);
+            return new FileStream(fileNameWithPath, FileMode.Open, FileAccess.Read, FileShare.None, bufferSize);
+        }
+
+        /// <summary>
+        /// Opens/creates an new file stream.
+        /// </summary>
+        /// <param name="filePath">
+        /// The path to the file.
+        /// </param>
+        /// <param name="fileName">
+        /// The name of the file.
+        /// </param>
+        /// <param name="bufferSize">
+        /// The size of the read buffer to associate with the file stream.
+        /// </param>
+        /// <returns></returns>
+        public virtual Stream OpenStreamForWrite(string filePath, string fileName, int bufferSize = 512)
+        {
+            var fileNameWithPath = Path.Combine(filePath, fileName);
+            return new FileStream(fileNameWithPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, bufferSize);
         }
 
         /// <summary>
