@@ -230,24 +230,34 @@ namespace Ignite.Framework.Micro.Common.Services.Data
 
                                 var fileName = iterator.Current as string;
                                 if (fileName != null)
-                                {                                   
-                                    // Open file and read payload.
-                                    using (var fileStream = m_FileHelper.OpenStream(m_Configuration.TargetPath, fileName, m_BufferSize))
+                                {
+                                    long fileSize = m_FileHelper.GetFileSize(m_Configuration.TargetPath, fileName);
+                                    if (fileSize < 1024)
                                     {
-                                        using (var memoryStream = new MemoryStream())
+                                        // Open file and read payload.
+                                        using (var fileStream = m_FileHelper.OpenStreamForRead(m_Configuration.TargetPath, fileName, m_BufferSize))
                                         {
-                                            int bytesRead = 0;
-
-                                            // While there is data to read from the file add it to the buffer.
-                                            while ((bytesRead = fileStream.Read(buffer, 0, m_BufferSize)) > 0)
+                                            using (var memoryStream = new MemoryStream())
                                             {
-                                                memoryStream.Write(buffer, 0, bytesRead);
+                                                int offset = 0;
+                                                int bytesRead = 0;
+
+                                                // While there is data to read from the file add it to the buffer.
+                                                while (offset < fileSize)
+                                                {
+                                                    fileStream.Seek(offset, SeekOrigin.Begin);
+
+                                                    bytesRead = fileStream.Read(buffer, 0, buffer.Length);
+                                                    offset += bytesRead;
+
+                                                    memoryStream.Write(buffer, 0, bytesRead);
+                                                }
+
+                                                m_Publisher.Publish(memoryStream);
                                             }
 
-                                            m_Publisher.Publish(memoryStream);
+                                            fileStream.Close();
                                         }
-
-                                        fileStream.Close();
                                     }
 
                                     // Once sent, delete the file.
