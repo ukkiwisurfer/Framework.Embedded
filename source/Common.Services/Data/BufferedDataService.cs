@@ -202,7 +202,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// </returns>
         protected virtual Stream OpenStream(string filePath, string fileName)
         {
-            var stream = this.m_FileHelper.OpenStream(filePath, fileName);
+            var stream = this.m_FileHelper.OpenStreamForWrite(filePath, fileName);
             if (stream == null)
             {
                 // Stream failed to be allocated.
@@ -253,7 +253,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                     this.m_FileHelper.RenameAllFilesMatchingExtension(sourceFilePath, targetFilePath, m_WorkingFileExtension, m_TargetFileExtension);
                 }
 
-                fileStream = this.m_FileHelper.OpenStream(sourceFilePath, generatedFileName);
+                fileStream = this.m_FileHelper.OpenStreamForWrite(sourceFilePath, generatedFileName);
                 fileStream.Seek(0, SeekOrigin.End);
             }
             catch (Exception ex)
