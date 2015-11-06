@@ -19,6 +19,7 @@ using System.Text;
 namespace Ignite.Framework.Micro.Common.Services.Data
 {
     using System;
+    using System.Threading;
     using System.IO;
 
     using Ignite.Framework.Micro.Common.Assertions;
@@ -45,6 +46,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         private readonly ILed m_Led;
         private readonly object m_SyncObject;
         private readonly int m_BufferSize;
+        private int m_Semaphore;
 
         private bool m_IsOpen;
 
@@ -202,83 +204,86 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// </remarks>
         protected override void DoWork()
         {
-            try
+            var isRunning = Interlocked.CompareExchange(ref m_Semaphore, 1, 0);
+
+            if (isRunning != 1)
             {
-                m_Led.On();
-
-                if (!m_Publisher.IsConnected) m_Publisher.Connect();
-
-                if (m_Publisher.IsConnected)
+                try
                 {
-                    var pathExists = m_FileHelper.DoesDirectoryExist(m_Configuration.TargetPath);
-                    if (pathExists)
+                    m_Led.On();
+
+                    if (!m_Publisher.IsConnected) m_Publisher.Connect();
+
+                    if (m_Publisher.IsConnected)
                     {
-                        // Find all files under the target path and with the specified file extension.
-                        var fileNames = m_FileHelper.GetAllFilesMatchingPattern(m_Configuration.TargetPath, m_Configuration.TargetFileExtension, m_TransferLimit);
-                        var fileCount = fileNames.Count();
-                        if (fileCount > 0)
+                        var pathExists = m_FileHelper.DoesDirectoryExist(m_Configuration.TargetPath);
+                        if (pathExists)
                         {
-                            var iterator = fileNames.GetEnumerator();
-                            var isValid = iterator.MoveNext();
-
-                            byte[] buffer = new byte[m_BufferSize];
-
-                            // For each file, read it and publish its contents via a message broker.
-                            for(int fileIndex = 0; fileIndex < fileCount; fileIndex++)
+                            // Find all files under the target path and with the specified file extension.
+                            var fileNames = m_FileHelper.GetAllFilesMatchingPattern(m_Configuration.TargetPath, m_Configuration.TargetFileExtension, m_TransferLimit);
+                            var fileCount = fileNames.Count();
+                            if (fileCount > 0)
                             {
-                                if (!isValid) break;
+                                var iterator = fileNames.GetEnumerator();
+                                var isValid = iterator.MoveNext();
 
-                                var fileName = iterator.Current as string;
-                                if (fileName != null)
+                                byte[] buffer = new byte[m_BufferSize];
+
+                                // For each file, read it and publish its contents via a message broker.
+                                for (int fileIndex = 0; fileIndex < fileCount; fileIndex++)
                                 {
-                                    long fileSize = m_FileHelper.GetFileSize(m_Configuration.TargetPath, fileName);
-                                    if (fileSize < 1024)
+                                    if (!isValid) break;
+
+                                    var fileName = iterator.Current as string;
+                                    if (fileName != null)
                                     {
-                                        // Open file and read payload.
-                                        using (var fileStream = m_FileHelper.OpenStreamForRead(m_Configuration.TargetPath, fileName, m_BufferSize))
+                                        long fileSize = m_FileHelper.GetFileSize(m_Configuration.TargetPath, fileName);
+                                        if (fileSize < 1024)
                                         {
-                                            using (var memoryStream = new MemoryStream())
+                                            // Open file and read payload.
+                                            using (var fileStream = m_FileHelper.OpenStreamForRead(m_Configuration.TargetPath, fileName, m_BufferSize))
                                             {
-                                                int offset = 0;
-                                                int bytesRead = 0;
-
-                                                // While there is data to read from the file add it to the buffer.
-                                                while (offset < fileSize)
+                                                using (var memoryStream = new MemoryStream())
                                                 {
-                                                    fileStream.Seek(offset, SeekOrigin.Begin);
+                                                    int bytesRead = 0;
+                                                    int offset = 0;
 
-                                                    bytesRead = fileStream.Read(buffer, 0, buffer.Length);
-                                                    offset += bytesRead;
+                                                    while (offset < fileSize)
+                                                    {
+                                                        fileStream.Seek(offset, SeekOrigin.Begin);
+                                                        bytesRead = fileStream.Read(buffer, 0, buffer.Length);
+                                                        offset += bytesRead;
 
-                                                    memoryStream.Write(buffer, 0, bytesRead);
+                                                        memoryStream.Write(buffer, 0, bytesRead);
+                                                    }
+
+                                                    m_Publisher.Publish(memoryStream);
                                                 }
-
-                                                m_Publisher.Publish(memoryStream);
                                             }
-
-                                            fileStream.Close();
                                         }
+
+                                        // Once sent, delete the file.
+                                        m_FileHelper.DeleteFile(m_Configuration.TargetPath, fileName);
                                     }
 
-                                    // Once sent, delete the file.
-                                    m_FileHelper.DeleteFile(m_Configuration.TargetPath, fileName);
+                                    isValid = iterator.MoveNext();
                                 }
-
-                                isValid = iterator.MoveNext();
                             }
-                        }
 
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                this.LogFatal(m_ResourceLoader.GetString(Resources.StringResources.ErrorOccuredWhileTransferringData), ex);
-            }
-            finally
-            {
-                SignalWorkCompleted();
-                m_Led.Off();
+                catch (Exception ex)
+                {
+                    this.LogFatal(m_ResourceLoader.GetString(Resources.StringResources.ErrorOccuredWhileTransferringData), ex);
+                }
+                finally
+                {
+                    SignalWorkCompleted();
+                    m_Led.Off();
+
+                    Interlocked.CompareExchange(ref m_Semaphore, 0, 1);
+                }
             }
         }
 

@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System.Threading;
+
 namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
     using System;
@@ -35,9 +37,11 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         private readonly string m_TopicName;
         private readonly string m_Name;
         private string m_ConnectionId;
+        private int m_SendTimeoutInMilliseconds;
         private bool m_IsDisposed;
         private bool m_IsConnected;
         private bool m_IsDurable;
+        private int m_IsDisconnectPending;
 
         /// <summary>
         /// Returns the unique identifier of the connection.
@@ -45,6 +49,15 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         public string ConnectionId
         {
             get { return m_ConnectionId; }
+        }
+
+        /// <summary>
+        /// Timeout period in milliseconds.
+        /// </summary>
+        public int SendTimeoutInMilliseconds
+        {
+            get { return m_SendTimeoutInMilliseconds; }
+            set { m_SendTimeoutInMilliseconds = value; }
         }
 
         /// <summary>
@@ -73,6 +86,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             m_TopicName = topicName;
             m_Name = name;
             m_IsDurable = isDurable;
+            m_SendTimeoutInMilliseconds = 3000;
         }
 
         /// <summary>
@@ -165,7 +179,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 
             try
             {
-                if (!IsConnected) Connect();
+                Connect();
 
                 if (IsConnected)
                 {
@@ -173,7 +187,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
                 }
                 else Disconnect();
             }
-            catch (AmqpException e)
+            catch (Exception e)
             {
                 Disconnect();
             }
@@ -199,7 +213,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             message.ApplicationProperties = new ApplicationProperties();
             message.BodySection = new Data() { Binary = payload };
 
-            m_Sender.Send(message);
+            m_Sender.Send(message, m_SendTimeoutInMilliseconds);
         }
 
         /// <summary>
@@ -218,23 +232,20 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         {
             try
             {
-                if (!IsConnected)
+                if (!IsConnected || !m_Connection.IsConnected)
                 {
-                    if (!m_Connection.IsConnected)
+                    m_Connection.Connect();
+                    if (m_Connection.IsConnected)
                     {
-                        m_Connection.Connect();
-                        if (m_Connection.IsConnected)
-                        {
-                            m_ConnectionId = m_Connection.ConnectionId;
-                            m_Sender = new SenderLink(m_Connection.Session, m_Name, m_TopicName);
+                        m_ConnectionId = m_Connection.ConnectionId;
+                        m_Sender = new SenderLink(m_Connection.Session, m_Name, m_TopicName);
 
-                            IsConnected = true;
-                        }
+                        IsConnected = true;
                     }
                     else Disconnect();
                 }
             }
-            catch (AmqpException e)
+            catch (Exception e)
             {
                 Disconnect();
             }
@@ -247,16 +258,14 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         {
             try
             {
-                if (IsConnected)
+                if (m_Sender != null)
                 {
-                    if (m_Sender != null)
-                    {
-                        m_Sender.Close();
-                        m_Sender = null;
-                    }
+                    m_Sender.Close();
+                    m_Sender = null;
                 }
+                
             }
-            catch (AmqpException e)
+            catch (Exception e)
             {
             }
             finally
