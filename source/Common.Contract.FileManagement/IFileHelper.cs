@@ -52,6 +52,23 @@ namespace Ignite.Framework.Micro.Common.Contract.FileManagement
         /// <summary>
         /// Renames an existing file to a new file name.
         /// </summary>
+        /// <param name="sourcePath">
+        /// The source path.
+        /// </param>
+        /// <param name="sourceFileName">
+        /// The name of the source file.
+        /// </param>
+        /// <param name="targetPath">
+        /// The target path.
+        /// </param>
+        /// <param name="targetFileName">
+        /// The name of the target file.
+        /// </param>
+        void RenameFile(string sourcePath, string sourceFileName, string targetPath, string targetFileName);
+
+        /// <summary>
+        /// Renames an existing file to a new file name.
+        /// </summary>
         /// <param name="filePath">
         /// The path where the files can be found.
         /// </param>

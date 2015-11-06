@@ -89,6 +89,25 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         }
 
         /// <summary>
+        /// Renames an existing file to a new file name.
+        /// </summary>
+        /// <param name="sourcePath"></param>
+        /// <param name="sourceFileName">
+        /// The name of the source file.
+        /// </param>
+        /// <param name="targetPath"></param>
+        /// <param name="targetFileName">
+        /// The name of the target file.
+        /// </param>
+        public void RenameFile(string sourcePath, string sourceFileName, string targetPath, string targetFileName)
+        {
+            var source = Path.Combine(sourcePath, sourceFileName);
+            var target = Path.Combine(targetPath, targetFileName);
+
+            RenameFile(source, target);
+        }
+
+        /// <summary>
         /// Returns the size of the file
         /// </summary>
         /// <param name="fileName"></param>
@@ -276,13 +295,10 @@ namespace Ignite.Framework.Micro.Common.FileManagement
 
             try
             {
-
-                File.SetAttributes(filePath, FileAttributes.Normal);
-
-                FileInfo info = new FileInfo(filePath);
+                var info = new FileInfo(filePath);
                 info.Delete();
 
-                isDeleted = info.Exists;
+                isDeleted = !info.Exists;
 
             }
             catch (Exception)

@@ -62,6 +62,14 @@ namespace Ignite.Framework.Micro.Common.FileManagement
             return builder.ToString();
         }
 
+        public void RenameFile(string sourcePath, string sourceFileName, string targetPath, string targetFileName)
+        {
+            var source = Path.Combine(sourcePath, sourceFileName);
+            var target = Path.Combine(targetPath, targetFileName);
+
+            RenameFile(source, target);
+        }
+
         /// <summary>
         /// Renames an existing file to a new file name.
         /// </summary>
