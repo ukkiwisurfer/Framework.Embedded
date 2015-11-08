@@ -21,6 +21,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
     using System.IO;
     using System.Text;
 
+    using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Core.Extensions;
     using Ignite.Framework.Micro.Common.Contract.FileManagement;
 
@@ -29,6 +30,17 @@ namespace Ignite.Framework.Micro.Common.FileManagement
     /// </summary>
     public class FileSystemHelper : IFileHelper
     {
+        private readonly ILogger m_Logger;
+
+        /// <summary>
+        /// Initialises an instance of the <see cref="FileSystemHelper"/> class.
+        /// </summary>
+        /// <param name="logger"></param>
+        public FileSystemHelper(ILogger logger)
+        {
+            m_Logger = logger;
+        }
+
         /// <summary>
         /// Sets the current directory.
         /// </summary>
@@ -72,20 +84,20 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <summary>
         /// Renames an existing file to a new file name.
         /// </summary>
-        /// <param name="rawFileName">
+        /// <param name="sourceFileName">
         /// The name of the source file.
         /// </param>
         /// <param name="targetFileName">
         /// The name of the target file.
         /// </param>
-        public void RenameFile(string rawFileName, string targetFileName)
+        public void RenameFile(string sourceFileName, string targetFileName)
         {
             if (File.Exists(targetFileName))
             {
                 DeleteFile(targetFileName);
             }
 
-            File.Move(rawFileName, targetFileName);
+            File.Move(sourceFileName, targetFileName);
         }
 
         /// <summary>
@@ -95,16 +107,27 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <param name="sourceFileName">
         /// The name of the source file.
         /// </param>
-        /// <param name="targetPath"></param>
-        /// <param name="targetFileName">
+        /// <param name="targetPath">
+        /// 
+        /// </param>
+        /// <param name="targetExtension">
         /// The name of the target file.
         /// </param>
-        public void RenameFile(string sourcePath, string sourceFileName, string targetPath, string targetFileName)
+        public void MoveFile(string sourcePath, string sourceFileName, string targetPath, string targetExtension)
         {
             var source = Path.Combine(sourcePath, sourceFileName);
+            var targetFileName = Path.ChangeExtension(sourceFileName, targetExtension);
             var target = Path.Combine(targetPath, targetFileName);
 
-            RenameFile(source, target);
+            m_Logger.Debug("Attempting to move file. Source filename: '{0}', Target filename: '{1}'", source, target);
+
+            File.Move(source, target);
+
+            var info = new FileInfo(target);
+            var isMoved = info.Exists;
+
+            m_Logger.Debug("File move. Source filename: '{0}', Target filename: '{1}', HasMoved: {2}.", source, target, isMoved);
+
         }
 
         /// <summary>
@@ -225,9 +248,12 @@ namespace Ignite.Framework.Micro.Common.FileManagement
 
             try
             {
-                var fileNames = Directory.EnumerateFiles(folder);
+                m_Logger.Debug("Searching for files to process. Folder: '{0}', Pattern: '{1}', FileLimit: {2}.", folder, pattern, fileLimit);
 
+                var fileNames = Directory.EnumerateFiles(folder);
                 var fileCount = fileNames.Count();
+
+                m_Logger.Debug("Found {0} files. Limited to processing {1} files per invocation.", fileCount, fileLimit);
                 if (fileCount > 0)
                 {
                     var iterator = fileNames.GetEnumerator();
@@ -236,6 +262,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
                     if (isValid)
                     {
                         var limit = (fileCount < fileLimit) ? fileCount : fileLimit;
+
                         for (int fileIndex = 0; fileIndex < limit; fileIndex++)
                         {
                             if (!isValid) break;
@@ -246,6 +273,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
                                 var foundIndex = oldFileNameWithPath.LastIndexOf(patternCriteria);
                                 if (foundIndex > 0)
                                 {
+                                    m_Logger.Debug("File matches pattern. File: '{0}'.", oldFileNameWithPath);
                                     matches.Add(Path.GetFileName(oldFileNameWithPath));
                                 }
                             }
@@ -255,8 +283,9 @@ namespace Ignite.Framework.Micro.Common.FileManagement
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                m_Logger.Error("Exception encountered searching for files.", ex);
             }
 
             return matches;
@@ -296,7 +325,10 @@ namespace Ignite.Framework.Micro.Common.FileManagement
             try
             {
                 var info = new FileInfo(filePath);
-                info.Delete();
+                if (info.Exists)
+                {
+                    info.Delete();
+                }
 
                 isDeleted = !info.Exists;
 

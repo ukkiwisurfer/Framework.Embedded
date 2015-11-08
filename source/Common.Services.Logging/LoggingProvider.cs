@@ -56,6 +56,22 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
         }
 
         /// <summary>
+        /// See <see cref="ILogProvider.IsErrorEnabled"/> for more details.
+        /// </summary>
+        public bool IsErrorEnabled
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// See <see cref="ILogProvider.IsFatalEnabled"/> for more details.
+        /// </summary>
+        public bool IsFatalEnabled
+        {
+            get { return true; }
+        }
+
+        /// <summary>
         /// See <see cref="ILogProvider.Log"/> for more details.
         /// </summary>
         /// <param name="entry">

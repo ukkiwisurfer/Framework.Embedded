@@ -31,6 +31,10 @@ namespace Ignite.Framework.Micro.Common.Contract.Logging
         /// </summary>
         bool IsInfoEnabled { get; }
 
+        bool IsErrorEnabled { get; }
+
+        bool IsFatalEnabled { get; }
+
         /// <summary>
         /// Logs a message.
         /// </summary>

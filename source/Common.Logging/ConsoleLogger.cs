@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System;
+using System.Text;
 using Microsoft.SPOT;
 
 namespace Ignite.Framework.Micro.Common.Logging
@@ -25,6 +27,8 @@ namespace Ignite.Framework.Micro.Common.Logging
     /// </summary>
     public class ConsoleLogger : ILogProvider
     {
+        private readonly string m_LoggerName;
+
         /// <summary>
         /// See <see cref="ILogProvider.IsDebugEnabled"/> for more details.
         /// </summary>
@@ -42,6 +46,31 @@ namespace Ignite.Framework.Micro.Common.Logging
         }
 
         /// <summary>
+        /// See <see cref="ILogProvider.IsErrorEnabled"/> for more details.
+        /// </summary>
+        public bool IsErrorEnabled
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// See <see cref="ILogProvider.IsFatalEnabled"/> for more details.
+        /// </summary>
+        public bool IsFatalEnabled
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Initialises an instance of the <see cref="ConsoleLogger"/> class.
+        /// </summary>
+        /// <param name="loggerName"></param>
+        public ConsoleLogger(string loggerName)
+        {
+            m_LoggerName = loggerName;
+        }
+
+        /// <summary>
         /// See <see cref="ILogProvider.Log"/> for more details.
         /// </summary>
         /// <param name="entry">
@@ -49,7 +78,18 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public void Log(LogEntry entry)
         {
-            Debug.Print(entry.Message);
+            var timestamp = entry.TimeStamp;
+
+            var builder = new StringBuilder(timestamp.ToString("yyyy-MM-dd HH:mm:ss:"));
+            builder.Append(timestamp.Millisecond.ToString("D3"));
+            builder.Append("  ");
+            builder.Append(entry.Win32ThreadId);
+            builder.Append("  ");
+            builder.Append(m_LoggerName);
+            builder.Append("  ");
+            builder.Append(entry.Message);
+
+            Debug.Print(builder.ToString());
         }
     }
 }

@@ -61,10 +61,10 @@ namespace Ignite.Framework.Micro.Common.Contract.FileManagement
         /// <param name="targetPath">
         /// The target path.
         /// </param>
-        /// <param name="targetFileName">
-        /// The name of the target file.
+        /// <param name="targetExtension">
+        /// The new file extension.
         /// </param>
-        void RenameFile(string sourcePath, string sourceFileName, string targetPath, string targetFileName);
+        void MoveFile(string sourcePath, string sourceFileName, string targetPath, string targetExtension);
 
         /// <summary>
         /// Renames an existing file to a new file name.
@@ -72,13 +72,13 @@ namespace Ignite.Framework.Micro.Common.Contract.FileManagement
         /// <param name="filePath">
         /// The path where the files can be found.
         /// </param>
-        /// <param name="rawFileName">
+        /// <param name="sourceFileName">
         /// The name of the source file.
         /// </param>
         /// <param name="targetFileName">
         /// The name of the target file.
         /// </param>
-        void RenameFile(string rawFileName, string targetFileName);
+        void RenameFile(string sourceFileName, string targetFileName);
 
         /// <summary>
         /// Renames all files ending with the supplied extension to end with '.log' extension.

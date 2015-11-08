@@ -16,6 +16,7 @@
 
 namespace Ignite.Framework.Micro.Common.Logging
 {
+    using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Core;
     using Ignite.Framework.Micro.Common.Errors;
@@ -49,6 +50,22 @@ namespace Ignite.Framework.Micro.Common.Logging
         }
 
         /// <summary>
+        /// Returns the status of whether error level of logging is enabled.
+        /// </summary>
+        public bool IsErrorEnabled
+        {
+            get { return m_Implementation.IsErrorEnabled; }
+        }
+
+        /// <summary>
+        /// Returns the status of whether fatal level of logging is enabled.
+        /// </summary>
+        public bool IsFatalEnabled
+        {
+            get { return m_Implementation.IsFatalEnabled; }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Logger"/> class. 
         /// </summary>
         /// <param name="logProvider">
@@ -59,8 +76,8 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public Logger(ILogProvider logProvider, LogHelper helper)
         {
-            //logProvider.ShouldNotBeNull();
-            //helper.ShouldNotBeNull();
+            logProvider.ShouldNotBeNull();
+            helper.ShouldNotBeNull();
 
             m_Implementation = logProvider;
             m_Helper = helper;
@@ -74,8 +91,11 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public void Debug(string message)
         {
-            var logMessageEntry = m_Helper.DefineNoErrorLogMessage(message, ErrorCategory.None, ErrorType.None);
-            this.LogMessage(logMessageEntry);
+            if (IsDebugEnabled)
+            {
+                var logMessageEntry = m_Helper.DefineNoErrorLogMessage(message, ErrorCategory.None, ErrorType.None);
+                this.LogMessage(logMessageEntry);
+            }
         }
 
         /// <summary>
@@ -89,8 +109,11 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public void Debug(string message, params object[] formatting)
         {
-            var logMessageEntry = m_Helper.DefineNoErrorLogMessage(StringUtility.Format(message, formatting), ErrorCategory.None, ErrorType.None);
-            this.LogMessage(logMessageEntry);
+            if (IsDebugEnabled)
+            { 
+                var logMessageEntry = m_Helper.DefineNoErrorLogMessage(StringUtility.Format(message, formatting), ErrorCategory.None, ErrorType.None);
+                this.LogMessage(logMessageEntry);
+            }
         }       
 
         /// <summary>
@@ -101,8 +124,11 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public void Error(string message)
         {
-            var logMessageEntry = m_Helper.DefineErrorLogMessage(message, ErrorCategory.None, ErrorType.None);
-            this.LogMessage(logMessageEntry);
+            if (IsErrorEnabled)
+            {
+                var logMessageEntry = m_Helper.DefineErrorLogMessage(message, ErrorCategory.None, ErrorType.None);
+                this.LogMessage(logMessageEntry);
+            }
         }
 
         /// <summary>
@@ -116,8 +142,11 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public void Error(string message, BaseException ex)
         {
-            var logMessageEntry = m_Helper.DefineErrorLogMessage(message, ErrorCategory.None, ErrorType.None, ex);
-            this.LogMessage(logMessageEntry);
+            if (IsErrorEnabled)
+            {
+                var logMessageEntry = m_Helper.DefineErrorLogMessage(message, ErrorCategory.None, ErrorType.None, ex);
+                this.LogMessage(logMessageEntry);
+            }
         }
 
         /// <summary>
@@ -131,8 +160,11 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public void Error(string message, params object[] formatting)
         {
-            var logMessageEntry = m_Helper.DefineErrorLogMessage(StringUtility.Format(message, formatting), ErrorCategory.None, ErrorType.None);
-            this.LogMessage(logMessageEntry);
+            if (IsErrorEnabled)
+            {
+                var logMessageEntry = m_Helper.DefineErrorLogMessage(StringUtility.Format(message, formatting), ErrorCategory.None, ErrorType.None);
+                this.LogMessage(logMessageEntry);
+            }
         }
 
         /// <summary>
@@ -143,8 +175,11 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public void Info(string message)
         {
-            var logMessageEntry = m_Helper.DefineInformationLogMessage(message, ErrorCategory.None, ErrorType.None);
-            this.LogMessage(logMessageEntry);
+            if (IsInfoEnabled)
+            {
+                var logMessageEntry = m_Helper.DefineInformationLogMessage(message, ErrorCategory.None, ErrorType.None);
+                this.LogMessage(logMessageEntry);
+            }
         }
 
         /// <summary>
@@ -158,8 +193,11 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public void Info(string message, params object[] formatting)
         {
-            var logMessageEntry = m_Helper.DefineInformationLogMessage(StringUtility.Format(message, formatting), ErrorCategory.None, ErrorType.None);
-            this.LogMessage(logMessageEntry);
+            if (IsInfoEnabled)
+            {
+                var logMessageEntry = m_Helper.DefineInformationLogMessage(StringUtility.Format(message, formatting), ErrorCategory.None, ErrorType.None);
+                this.LogMessage(logMessageEntry);
+            }
         }
 
         /// <summary>
@@ -170,8 +208,11 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public void Fatal(string message)
         {
-            var logMessageEntry = m_Helper.DefineFatalLogMessage(message, ErrorCategory.None, ErrorType.None);
-            this.LogMessage(logMessageEntry);
+            if (IsFatalEnabled)
+            {
+                var logMessageEntry = m_Helper.DefineFatalLogMessage(message, ErrorCategory.None, ErrorType.None);
+                this.LogMessage(logMessageEntry);
+            }
         }
 
         /// <summary>
@@ -185,8 +226,11 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public void Fatal(string message, BaseException ex)
         {
-            var logMessageEntry = m_Helper.DefineFatalLogMessage(message, ErrorCategory.None, ErrorType.None, ex);
-            this.LogMessage(logMessageEntry);
+            if (IsFatalEnabled)
+            {
+                var logMessageEntry = m_Helper.DefineFatalLogMessage(message, ErrorCategory.None, ErrorType.None, ex);
+                this.LogMessage(logMessageEntry);
+            }
 
         }
 
@@ -201,8 +245,11 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// </param>
         public void Fatal(string message, params object[] formatting)
         {
-            var logMessageEntry = m_Helper.DefineFatalLogMessage(StringUtility.Format(message, formatting), ErrorCategory.None, ErrorType.None);
-            this.LogMessage(logMessageEntry);
+            if (IsFatalEnabled)
+            {
+                var logMessageEntry = m_Helper.DefineFatalLogMessage(StringUtility.Format(message, formatting), ErrorCategory.None, ErrorType.None);
+                this.LogMessage(logMessageEntry);
+            }
         }
 
         /// <summary>
@@ -218,7 +265,10 @@ namespace Ignite.Framework.Micro.Common.Logging
         {
             var logEntry = m_Helper.BuildLogEntry(logMessage);
 
-            m_Implementation.Log(logEntry);
+            if (m_Implementation != null)
+            {
+                m_Implementation.Log(logEntry);
+            }
 
             return logEntry.LogEntryId;
         }
