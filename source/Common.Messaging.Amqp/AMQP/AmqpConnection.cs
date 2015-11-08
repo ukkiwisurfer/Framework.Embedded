@@ -14,8 +14,6 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-using Amqp.Sasl;
-
 namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
     using System;
@@ -25,6 +23,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Messaging;
+    using Ignite.Framework.Micro.Common.Contract.Logging;
     
     using Microsoft.SPOT;
 
@@ -36,6 +35,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         private readonly QueueEndpointAddress m_Address;
         private readonly EventHandler m_OnClosedConnection;
         private readonly string m_ServiceName;
+        private readonly ILogger m_Logger;
         private Connection m_Connection;
         private Session m_Session;
         private bool m_IsDisposed;
@@ -66,31 +66,38 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             get { return m_ConnectionId; }
         }
 
-
         /// <summary>
         /// Initialises an instance of the <see cref="AmqpConnection"/> class.
         /// </summary>
+        /// <param name="logger">
+        /// </param>
         /// <param name="registration">
         /// Details required to connect to the queued message server.
         /// </param>
-        public AmqpConnection(RegistrationData registration)
+        public AmqpConnection(ILogger logger,  RegistrationData registration)
         {
             registration.ShouldNotBeNull();
+            logger.ShouldNotBeNull();
 
             m_Address = registration.Address;
+            m_Logger = logger;
         }
 
         /// <summary>
         /// Initialises an instance of the <see cref="AmqpConnection"/> class.
         /// </summary>
+        /// <param name="logger">
+        /// </param>
         /// <param name="registration">
         /// Details required to connect to the queued message server.
         /// </param>
         /// <param name="onCloseEventHandler">
         /// Event handler to fire when the connection is closed.
         /// </param>
-        public AmqpConnection(RegistrationData registration, EventHandler onCloseEventHandler) : this(registration)
+        public AmqpConnection(ILogger logger, RegistrationData registration, EventHandler onCloseEventHandler) : this(logger, registration)
         {
+            onCloseEventHandler.ShouldNotBeNull();
+
             m_OnClosedConnection = onCloseEventHandler;
         }
 
@@ -141,6 +148,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             }
             catch (Exception e)
             {
+                m_Logger.Fatal("Exception detected in attempt to connect.", e);
                 m_IsConnected = false;
             }
         }
@@ -156,6 +164,8 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// </param>
         private void OnClosedConnection(AmqpObject sender, Error error)
         {
+            m_Logger.Debug("Connection detected as being closed.");
+
             Disconnect();
             if (m_OnClosedConnection != null)
             {
@@ -170,8 +180,15 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         {
             try
             {
-                m_Session.Close();
-                m_Connection.Close();
+                if (m_Session != null)
+                {
+                    m_Session.Close();
+                    m_Connection.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                m_Logger.Fatal("Exception detected in attempt to disconnect.", e);
             }
             finally
             {

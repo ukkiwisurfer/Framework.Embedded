@@ -217,7 +217,7 @@ namespace Ignite.Framework.Micro.Common.Services
         /// <param name="logger">
         /// A logging provider.
         /// </param>
-        protected ThreadedService(ILogger logger) : this(typeof(ThreadedService))
+        protected ThreadedService(ILogger logger, Type serviceType) : this(serviceType)
         {
             logger.ShouldNotBeNull();
 

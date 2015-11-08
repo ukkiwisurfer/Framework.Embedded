@@ -15,6 +15,7 @@
 //----------------------------------------------------------------------------- 
 
 using System.Threading;
+using Ignite.Framework.Micro.Common.Contract.Logging;
 
 namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
@@ -36,12 +37,12 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         private SenderLink m_Sender;
         private readonly string m_TopicName;
         private readonly string m_Name;
+        private readonly ILogger m_Logger;
         private string m_ConnectionId;
         private int m_SendTimeoutInMilliseconds;
         private bool m_IsDisposed;
         private bool m_IsConnected;
         private bool m_IsDurable;
-        private int m_IsDisconnectPending;
 
         /// <summary>
         /// Returns the unique identifier of the connection.
@@ -63,6 +64,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <summary>
         /// Initialises an instance of the publisher.
         /// </summary>
+        /// <param name="logger"></param>
         /// <param name="connection">
         /// The AMQP connection to use.
         /// </param>
@@ -75,18 +77,20 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <param name="isDurable">
         /// Indicates whether the messages should be durable (Persistent).
         /// </param>
-        public AmqpMessagePublisher(AmqpConnection connection, string topicName, string name, bool isDurable = true)
+        public AmqpMessagePublisher(ILogger logger, AmqpConnection connection, string topicName, string name, bool isDurable = true)
         {
             connection.ShouldNotBeNull();
             topicName.ShouldNotBeEmpty();
             name.ShouldNotBeEmpty();
+            logger.ShouldNotBeNull();
 
+            m_Logger = logger;
             m_ConnectionId = string.Empty;
             m_Connection = connection;
             m_TopicName = topicName;
             m_Name = name;
             m_IsDurable = isDurable;
-            m_SendTimeoutInMilliseconds = 3000;
+            m_SendTimeoutInMilliseconds = 10000;
         }
 
         /// <summary>
@@ -183,9 +187,13 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 
                 if (IsConnected)
                 {
-                    PublishMessage(payload, isDurable);    
+                    PublishMessage(payload, isDurable);
                 }
-                else Disconnect();
+                else
+                {
+                    m_Logger.Error("Attempt to connect for Publish() failed. Forcing a disconnect.");
+                    Disconnect();
+                }
             }
             catch (Exception e)
             {
@@ -234,19 +242,29 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             {
                 if (!IsConnected || !m_Connection.IsConnected)
                 {
+                    m_Logger.Debug("Connection not open. Attempting connection to AMQP broker.");
+
                     m_Connection.Connect();
                     if (m_Connection.IsConnected)
                     {
+                        m_Logger.Debug("Connection open. Establishing AMQP SenderLink.");
+
                         m_ConnectionId = m_Connection.ConnectionId;
                         m_Sender = new SenderLink(m_Connection.Session, m_Name, m_TopicName);
+                        m_Logger.Debug("Connected AMQP publisher to broker. LinkName: '{0}', TopicName: '{1}'", m_Name, m_TopicName);
 
                         IsConnected = true;
                     }
-                    else Disconnect();
+                    else
+                    {
+                        m_Logger.Error("Attempt to connect failed. Forcing a disconnect.");
+                        Disconnect();
+                    }
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                m_Logger.Fatal("Exception raised during Connect() failed. Forcing disconnect.", ex);
                 Disconnect();
             }
         }

@@ -96,13 +96,15 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <param name="handler">
         /// Processes incoming messages from the AMQP server.
         /// </param>
-        public AmqpMessageSubscriber(AmqpConnection connection, string topicName, string name, IMessageHandler handler, int windowSize = 20)
+        public AmqpMessageSubscriber(ILogger logger, AmqpConnection connection, string topicName, string name, IMessageHandler handler, int windowSize = 20)
         {
             connection.ShouldNotBeNull();
             topicName.ShouldNotBeEmpty();
             handler.ShouldNotBeNull();
             name.ShouldNotBeEmpty();
+            logger.ShouldNotBeNull();
 
+            m_Logger = logger;
             m_Connection = connection;
             m_ConnectionId = string.Empty;
             m_TopicName = topicName;

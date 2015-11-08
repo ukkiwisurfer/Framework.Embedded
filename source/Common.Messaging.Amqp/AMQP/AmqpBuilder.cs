@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using Ignite.Framework.Micro.Common.Contract.Logging;
+
 namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 {
     using System;
@@ -30,20 +32,26 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
     {
         private readonly AmqpConnection m_Connection;
         private readonly QueueEndpointAddress m_EndpointAddress;
+        private readonly ILogFactory m_LogFactory;
         private bool m_IsDisposed;
 
         /// <summary>
         /// Initialises an instance of the <see cref="AmqpBuilder"/> class
         /// </summary>
-        private AmqpBuilder()
+        /// <param name="logFactory"></param>
+        private AmqpBuilder(ILogFactory logFactory)
         {
+            logFactory.ShouldNotBeNull();
+
+            m_LogFactory = logFactory;
         }
 
         /// <summary>
         /// Initialises an instance of the <see cref="AmqpBuilder"/> class.
         /// </summary>
+        /// <param name="logFactory"></param>
         /// <param name="endpointAddress"></param>
-        public AmqpBuilder(QueueEndpointAddress endpointAddress) : this()
+        public AmqpBuilder(ILogFactory logFactory, QueueEndpointAddress endpointAddress) : this(logFactory)
         {
             endpointAddress.ShouldNotBeNull();
 
@@ -54,9 +62,10 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <summary>
         /// Initialises an instance of the <see cref="AmqpBuilder"/> class.
         /// </summary>
+        /// <param name="logFactory"></param>
         /// <param name="endpointAddress"></param>
         /// <param name="closedEventHandler"></param>
-        public AmqpBuilder(QueueEndpointAddress endpointAddress, EventHandler closedEventHandler) : this()
+        public AmqpBuilder(ILogFactory logFactory, QueueEndpointAddress endpointAddress, EventHandler closedEventHandler) : this(logFactory)
         {
             endpointAddress.ShouldNotBeNull();
 
@@ -114,9 +123,10 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         public AmqpConnection BuildConnection(QueueEndpointAddress endpointAddress)
         {
             var configuration = new RegistrationData(endpointAddress);
-            return new AmqpConnection(configuration);
-        }
+            var logger = m_LogFactory.GetLogger(typeof(AmqpConnection));
 
+            return new AmqpConnection(logger , configuration);
+        }
 
         /// <summary>
         /// Builds an AMQP connection.
@@ -127,7 +137,9 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         public AmqpConnection BuildConnection(QueueEndpointAddress endpointAddress, EventHandler closedEventHandler)
         {
             var configuration = new RegistrationData(endpointAddress);
-            return new AmqpConnection(configuration, closedEventHandler);
+            var logger = m_LogFactory.GetLogger(typeof (AmqpConnection));
+
+            return new AmqpConnection(logger, configuration, closedEventHandler);
         }
 
         /// <summary>
@@ -146,9 +158,9 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         {
             //var publisher = new AmqpMessagePublisher(m_Connection, topicName, linkName);
             var connection = BuildConnection(m_EndpointAddress);
-            var publisher = new AmqpMessagePublisher(connection, topicName, linkName);
+            var logger = m_LogFactory.GetLogger(typeof(AmqpMessagePublisher));
+            var publisher = new AmqpMessagePublisher(logger, connection, topicName, linkName);
 
-            //var publisher = new AmqpPublisherProxy(this, m_EndpointAddress, topicName, linkName, isDurable: true);
             return publisher;
         }
 
@@ -169,7 +181,9 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// </returns>
         public IMessageSubscriber BuildSubscriber(string topicName, string linkName, IMessageHandler messageHandler)
         {
-            var subscriber = new AmqpMessageSubscriber(m_Connection, topicName, linkName, messageHandler, windowSize: 20);
+            var logger = m_LogFactory.GetLogger(typeof(AmqpMessageSubscriber));
+            var subscriber = new AmqpMessageSubscriber(logger, m_Connection, topicName, linkName, messageHandler, windowSize: 20);
+
             return subscriber;
         }
 
@@ -190,7 +204,9 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// </returns>
         public IMessageSubscriber BuildSubscriber(string topicName, string linkName, IMessageHandler messageHandler, int windowSize)
         {
-            var subscriber = new AmqpMessageSubscriber(m_Connection, topicName, linkName, messageHandler, windowSize);
+            var logger = m_LogFactory.GetLogger(typeof(AmqpMessageSubscriber));
+            var subscriber = new AmqpMessageSubscriber(logger, m_Connection, topicName, linkName, messageHandler, windowSize);
+
             return subscriber;
         }
     }
