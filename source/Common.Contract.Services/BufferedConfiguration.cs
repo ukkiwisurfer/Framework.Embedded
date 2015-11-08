@@ -40,5 +40,15 @@ namespace Ignite.Framework.Micro.Common.Contract.Services
         /// The file extension that completed data files are suffuxed with.
         /// </summary>
         public string TargetFileExtension { get; set; }
+
+        /// <summary>
+        /// The path where completed data files are stored.
+        /// </summary>
+        public string ArchivePath { get; set; }
+
+        /// <summary>
+        /// The file extension that completed data files are suffuxed with.
+        /// </summary>
+        public string ArchiveFileExtension { get; set; }
     }
 }
