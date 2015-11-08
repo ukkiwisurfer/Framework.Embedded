@@ -156,7 +156,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="configuration">
         /// Configuration parameters for persisting data (buffered data). 
         /// </param>
-        protected BufferedDataService(ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration) : base(logger)
+        protected BufferedDataService(ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration) : base(logger, typeof(BufferedDataService))
         {
             fileHelper.ShouldNotBeNull();
             configuration.ShouldNotBeNull();
@@ -280,7 +280,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// </remarks>
         protected override void DoWork()
         {
-            object[] messages = null;
+            var messages = new object[0];
 
             try
             {
@@ -295,7 +295,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                 }
 
                 // Sends the logged messages.
-                if (messages != null)
+                if (messages.Length > 0)
                 {
                     this.WriteData(messages);
                 }
