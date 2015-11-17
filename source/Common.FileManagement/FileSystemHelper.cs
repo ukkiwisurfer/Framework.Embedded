@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using Microsoft.SPOT.IO;
+
 namespace Ignite.Framework.Micro.Common.FileManagement
 {
     using System;
@@ -31,14 +33,16 @@ namespace Ignite.Framework.Micro.Common.FileManagement
     public class FileSystemHelper : IFileHelper
     {
         private readonly ILogger m_Logger;
+        private readonly VolumeInfo m_VolumeInfo;
 
         /// <summary>
         /// Initialises an instance of the <see cref="FileSystemHelper"/> class.
         /// </summary>
         /// <param name="logger"></param>
-        public FileSystemHelper(ILogger logger)
+        public FileSystemHelper(ILogger logger, VolumeInfo info)
         {
             m_Logger = logger;
+            m_VolumeInfo = info;
         }
 
         /// <summary>
@@ -62,6 +66,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
             if (!info.Exists)
             {
                 info.Create();
+                m_VolumeInfo.FlushAll();
             }
         }
 
@@ -90,7 +95,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <param name="targetFileName">
         /// The name of the target file.
         /// </param>
-        public void RenameFile(string sourceFileName, string targetFileName)
+        public void RenameFile(string sourceFileName, string targetFileName, bool flush = true)
         {
             if (File.Exists(targetFileName))
             {
@@ -98,6 +103,11 @@ namespace Ignite.Framework.Micro.Common.FileManagement
             }
 
             File.Move(sourceFileName, targetFileName);
+
+            if (flush)
+            {
+                m_VolumeInfo.FlushAll();
+            }
         }
 
         /// <summary>
@@ -113,7 +123,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <param name="targetExtension">
         /// The name of the target file.
         /// </param>
-        public void MoveFile(string sourcePath, string sourceFileName, string targetPath, string targetExtension)
+        public void MoveFile(string sourcePath, string sourceFileName, string targetPath, string targetExtension, bool flush = true)
         {
             var source = Path.Combine(sourcePath, sourceFileName);
             var targetFileName = Path.ChangeExtension(sourceFileName, targetExtension);
@@ -121,18 +131,31 @@ namespace Ignite.Framework.Micro.Common.FileManagement
 
             m_Logger.Debug("Attempting to move file. Source filename: '{0}', Target filename: '{1}'", source, target);
 
-            File.Move(source, target);
+            try
+            {
+                File.Move(source, target);
 
-            var info = new FileInfo(target);
-            var isMoved = info.Exists;
+                if (flush)
+                {
+                    m_VolumeInfo.FlushAll();
+                }
 
-            m_Logger.Debug("File move. Source filename: '{0}', Target filename: '{1}', HasMoved: {2}.", source, target, isMoved);
+                var info = new FileInfo(target);
+                var isMoved = info.Exists;
+
+                m_Logger.Debug("File move. Source filename: '{0}', Target filename: '{1}', HasMoved: {2}.", source, target, isMoved);
+            }
+            catch (Exception ex)
+            {
+                m_Logger.Debug("Exception encountered attempting to move file. Source filename: '{0}', Target filename: '{1}'.", source, target, ex);
+            }
 
         }
 
         /// <summary>
         /// Returns the size of the file
         /// </summary>
+        /// <param name="targetPath"></param>
         /// <param name="fileName"></param>
         /// <returns></returns>
         public long GetFileSize(string targetPath, string fileName)
@@ -140,10 +163,16 @@ namespace Ignite.Framework.Micro.Common.FileManagement
             long fileSize = 0;
 
             string filePath = Path.Combine(targetPath, fileName);
-            if (File.Exists(filePath))
+
+            var info = new FileInfo(filePath);
+            if (info.Exists)
             {
-                var info = new FileInfo(filePath);
                 fileSize = info.Length;
+                m_Logger.Debug("Interrogated file metadata. Filesize: {0} bytes, ArchivePath: '{1}', Filename: '{2}'", fileSize, targetPath, fileName);
+            }
+            else
+            {
+                m_Logger.Debug("File not found. ArchivePath: '{0}', Filename: '{1}'", fileSize, targetPath, fileName);         
             }
 
             return fileSize;
@@ -164,7 +193,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <param name="newExtension">
         /// The new file extension to rename to
         /// </param>
-        public void RenameAllFilesMatchingExtension(string sourcePath, string targetPath, string oldExtension, string newExtension)
+        public void RenameAllFilesMatchingExtension(string sourcePath, string targetPath, string oldExtension, string newExtension, bool flush = true)
         {
             try
             {
@@ -179,9 +208,11 @@ namespace Ignite.Framework.Micro.Common.FileManagement
                         string newFileName = Path.GetFileNameWithoutExtension(oldFileName) + "." + newExtension;
                         string newFileNameWithPath = this.BuildFilePath(targetPath, newFileName);
 
-                        RenameFile(oldFileNameWithPath, newFileNameWithPath);
+                        RenameFile(oldFileNameWithPath, newFileNameWithPath, flush);
                     }
                 }
+
+                m_VolumeInfo.FlushAll();
             }
             catch (Exception)
             {
@@ -220,7 +251,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// The size of the read buffer to associate with the file stream.
         /// </param>
         /// <returns></returns>
-        public virtual Stream OpenStreamForWrite(string filePath, string fileName, int bufferSize = 512)
+        public virtual Stream OpenStreamForWrite(string filePath, string fileName, int bufferSize = 0)
         {
             var fileNameWithPath = Path.Combine(filePath, fileName);
             return new FileStream(fileNameWithPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, bufferSize);
@@ -280,6 +311,8 @@ namespace Ignite.Framework.Micro.Common.FileManagement
 
                             isValid = iterator.MoveNext();
                         }
+
+                        m_Logger.Debug("{0} files matched for processing.", matches.Count);
                     }
                 }
             }
@@ -287,6 +320,8 @@ namespace Ignite.Framework.Micro.Common.FileManagement
             {
                 m_Logger.Error("Exception encountered searching for files.", ex);
             }
+
+            m_Logger.Debug("Completed looking for files to process.");
 
             return matches;
         }
@@ -303,10 +338,38 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <returns>
         /// True if the file was deleted.
         /// </returns>
-        public bool DeleteFile(string path, string fileName)
+        public bool DeleteFile(string path, string fileName, bool flush = true)
         {
+            bool isDeleted = false;
+
+            m_Logger.Debug("Attempting to delete file. Path: '{0}', Filename: '{1}'.", path, fileName);
+            
             var filePath = BuildFilePath(path, fileName);
-            return DeleteFile(filePath); 
+            try
+            {
+                var info = new FileInfo(filePath);
+                if (info.Exists)
+                {
+                    m_Logger.Debug("File found for deletion. Path: '{0}', Filename: '{1}'.", path, fileName);
+                    info.Delete();
+
+                    if (flush) m_VolumeInfo.FlushAll();
+                }
+                else
+                {
+                    m_Logger.Debug("File not found for deletion. Path: '{0}', Filename: '{1}'.", path, fileName);                    
+                }
+
+                isDeleted = !info.Exists;
+
+            }
+            catch (Exception ex)
+            {
+                m_Logger.Error("Failed to delete file '{0}'.", ex, filePath);
+                isDeleted = false;
+            }
+
+            return isDeleted; 
         }
 
         /// <summary>
@@ -318,27 +381,12 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <returns>
         /// True if the file was deleted.
         /// </returns>
-        public bool DeleteFile(string filePath)
+        public bool DeleteFile(string filePath, bool flush = true)
         {
-            bool isDeleted = false;
+            var path = Path.GetDirectoryName(filePath);
+            var fileName = Path.GetFileName(filePath);
 
-            try
-            {
-                var info = new FileInfo(filePath);
-                if (info.Exists)
-                {
-                    info.Delete();
-                }
-
-                isDeleted = !info.Exists;
-
-            }
-            catch (Exception)
-            {
-                isDeleted = false;
-            }
-
-            return isDeleted;
+            return DeleteFile(path, fileName, flush);
         }
 
         /// <summary>
@@ -368,6 +416,14 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         public bool DoesDirectoryExist(string path)
         {
             return Directory.Exists(path);
+        }
+
+        /// <summary>
+        /// See <see cref="IFileHelper.Flush"/> for more details.
+        /// </summary>
+        public void Flush()
+        {
+            m_VolumeInfo.FlushAll();
         }
     }
 }

@@ -64,7 +64,7 @@ namespace Ignite.Framework.Micro.Common.Contract.FileManagement
         /// <param name="targetExtension">
         /// The new file extension.
         /// </param>
-        void MoveFile(string sourcePath, string sourceFileName, string targetPath, string targetExtension);
+        void MoveFile(string sourcePath, string sourceFileName, string targetPath, string targetExtension, bool flush = true);
 
         /// <summary>
         /// Renames an existing file to a new file name.
@@ -78,7 +78,7 @@ namespace Ignite.Framework.Micro.Common.Contract.FileManagement
         /// <param name="targetFileName">
         /// The name of the target file.
         /// </param>
-        void RenameFile(string sourceFileName, string targetFileName);
+        void RenameFile(string sourceFileName, string targetFileName, bool flush = true);
 
         /// <summary>
         /// Renames all files ending with the supplied extension to end with '.log' extension.
@@ -95,7 +95,7 @@ namespace Ignite.Framework.Micro.Common.Contract.FileManagement
         /// <param name="newExtension">
         /// The new file extension to rename to
         /// </param>
-        void RenameAllFilesMatchingExtension(string sourcePath, string targetPath, string oldExtension, string newExtension);
+        void RenameAllFilesMatchingExtension(string sourcePath, string targetPath, string oldExtension, string newExtension, bool flush = true);
 
         /// <summary>
         /// Opens/creates an existing/new file stream.
@@ -165,7 +165,7 @@ namespace Ignite.Framework.Micro.Common.Contract.FileManagement
         /// <returns>
         /// True if the file was deleted.
         /// </returns>
-        bool DeleteFile(string path, string fileName);
+        bool DeleteFile(string path, string fileName, bool flush = true);
 
         /// <summary>
         /// Deletes a file.
@@ -176,7 +176,7 @@ namespace Ignite.Framework.Micro.Common.Contract.FileManagement
         /// <returns>
         /// True if the file was deleted.
         /// </returns>
-        bool DeleteFile(string filePath);
+        bool DeleteFile(string filePath, bool flush = true);
 
         /// <summary>
         /// Creates a file path.
@@ -200,5 +200,10 @@ namespace Ignite.Framework.Micro.Common.Contract.FileManagement
         /// True if the directory exists.
         /// </returns>
         bool DoesDirectoryExist(string path);
+
+        /// <summary>
+        /// Forces a full flush of any pending data in memory to the file system.
+        /// </summary>
+        void Flush();
     }
 }

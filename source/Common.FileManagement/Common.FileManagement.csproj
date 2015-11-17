@@ -37,6 +37,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.SPOT.IO" />
     <Reference Include="System.IO" />
   </ItemGroup>
   <ItemGroup>
