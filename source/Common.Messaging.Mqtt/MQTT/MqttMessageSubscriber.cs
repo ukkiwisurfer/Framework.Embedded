@@ -214,7 +214,8 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         /// </param>
         private void OnMessage(object sender, MqttMsgPublishEventArgs mqttMsgPublishEventArgs)
         {
-            m_MessageHandler.HandleMessage(mqttMsgPublishEventArgs.Message);
+            throw new NotImplementedException();
+            //m_MessageHandler.HandleMessage(ref mqttMsgPublishEventArgs.Message);
         }
 
         /// <summary>

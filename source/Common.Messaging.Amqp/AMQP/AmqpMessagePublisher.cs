@@ -31,7 +31,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
     /// <summary>
     /// Provides a message publishing capability (to an AMQP server).
     /// </summary>
-    public class AmqpMessagePublisher : IMessagePublisher, IMessageHandler, IDisposable
+    public class AmqpMessagePublisher : IMessagePublisher, IDisposable
     {
         private readonly AmqpConnection m_Connection;
         private SenderLink m_Sender;
@@ -130,9 +130,9 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <param name="payload">
         /// The message payload to send.
         /// </param>
-        public virtual void Publish(byte[] payload)
+        public virtual void Publish(ref byte[] payload)
         {
-           Publish(payload, m_IsDurable);
+           Publish(ref payload, m_IsDurable);
         }
 
         /// <summary>
@@ -164,7 +164,8 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         {
             payload.ShouldNotBeNull();
 
-            Publish(payload.ToArray(), isDurable);
+            var buffer = payload.ToArray();
+            Publish(ref buffer, isDurable);
         }
 
 
@@ -177,7 +178,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <param name="isDurable">
         /// Indicates whether the message should be persisted by the underlying queue.
         /// </param>
-        public virtual void Publish(byte[] payload, bool isDurable)
+        public virtual void Publish(ref byte[] payload, bool isDurable)
         {
             payload.ShouldNotBeEmpty();
 
@@ -187,7 +188,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
 
                 if (IsConnected)
                 {
-                    PublishMessage(payload, isDurable);
+                    PublishMessage(ref payload, isDurable);
                 }
                 else
                 {
@@ -210,7 +211,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// <param name="isDurable">
         /// Indicates whether the message should be persisted by the underlying queue.
         /// </param>
-        private void PublishMessage(byte[] payload, bool isDurable)
+        private void PublishMessage(ref byte[] payload, bool isDurable)
         {
             var message = new Message();
 
@@ -221,7 +222,9 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
             message.ApplicationProperties = new ApplicationProperties();
             message.BodySection = new Data() { Binary = payload };
 
+            m_Logger.Debug("Publishing message to AMQP broker with timeout. TimeoutPeriod: {0} millieconds.", m_SendTimeoutInMilliseconds);
             m_Sender.Send(message, m_SendTimeoutInMilliseconds);
+            m_Logger.Debug("Successfully published message to AMQP broker.");
         }
 
         /// <summary>
@@ -300,7 +303,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
         /// </param>
         public void HandleMessage(byte[] message)
         {
-            Publish(message);
+            Publish(ref message);
         }
     }
 }

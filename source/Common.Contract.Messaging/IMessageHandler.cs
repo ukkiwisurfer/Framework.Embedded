@@ -28,6 +28,6 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
         /// <param name="message">
         /// The raw message (as a byte stream).
         /// </param>
-        void HandleMessage(byte[] message);
+        void HandleMessage(ref byte[] message);
     }
 }

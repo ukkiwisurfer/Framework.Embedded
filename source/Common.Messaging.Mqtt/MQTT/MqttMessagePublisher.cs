@@ -120,9 +120,9 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         /// <param name="payload">
         /// The message payload to send.
         /// </param>
-        public virtual void Publish(byte[] payload)
+        public virtual void Publish(ref byte[] payload)
         {
-            Publish(payload, m_IsDurable);
+            Publish(ref payload, m_IsDurable);
         }
 
         /// <summary>
@@ -154,7 +154,8 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         {
             payload.ShouldNotBeNull();
 
-            Publish(payload.ToArray(), isDurable);
+            var buffer = payload.ToArray();
+            Publish(ref buffer, isDurable);
         }
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         /// <param name="isDurable">
         /// Indicates whether the message should be persisted by the underlying queue.
         /// </param>
-        public virtual void Publish(byte[] payload, bool isDurable)
+        public virtual void Publish(ref byte[] payload, bool isDurable)
         {
             try
             {
@@ -189,7 +190,7 @@ namespace Ignite.Framework.Micro.Common.Messaging.MQTT
         /// <param name="message"></param>
         public void HandleMessage(byte[] message)
         {
-           Publish(message);
+           Publish(ref message);
         }
 
         /// <summary>

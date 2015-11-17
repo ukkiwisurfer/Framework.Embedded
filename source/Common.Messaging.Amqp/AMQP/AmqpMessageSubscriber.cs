@@ -185,13 +185,14 @@ namespace Ignite.Framework.Micro.Common.Messaging.AMQP
                     payload.Decode(buffer);
                     if (buffer.Length > 0)
                     {
-                        m_MessageHandler.HandleMessage(buffer.Buffer);
+                        throw new NotImplementedException();
+                        //m_MessageHandler.HandleMessage(ref buffer.Buffer);
                     }
                 }
             }
             catch (Exception e)
             {                
-                //m_Logger.Error("Invalid message format" ,e.CreateApplicationException("Invalid message format"));
+                m_Logger.Error("Invalid message format" ,e.CreateApplicationException("Invalid message format"));
             }
         }
 

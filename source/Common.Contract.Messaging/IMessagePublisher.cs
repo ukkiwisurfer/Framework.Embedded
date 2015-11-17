@@ -23,7 +23,7 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
     /// <summary>
     /// Provides the means to publish messages to a MQ broker.
     /// </summary>
-    public interface IMessagePublisher : IQueuedConnection, IMessageHandler, IDisposable
+    public interface IMessagePublisher : IQueuedConnection, IDisposable
     {
         /// <summary>
         /// Publishes a message to a MQ broker.
@@ -31,7 +31,7 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
         /// <param name="payload">
         /// The payload to publish.
         /// </param>
-        void Publish(byte[] payload);
+        void Publish(ref byte[] payload);
 
         /// <summary>
         /// Publishes a message to a MQ broker.
@@ -50,7 +50,7 @@ namespace Ignite.Framework.Micro.Common.Contract.Messaging
         /// <param name="isDurable">
         /// Indicates whether the message should be persisted by the queue.
         /// </param>
-        void Publish(byte[] payload, bool isDurable);
+        void Publish(ref byte[] payload, bool isDurable);
 
         /// <summary>
         /// Publishes a message to a MQ broker.
