@@ -32,11 +32,13 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="ConsoleLogger.cs" />
     <Compile Include="LogContainer.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="LoggingFactory.cs" />
+    <Compile Include="LoggingProvider.cs" />
     <Compile Include="LogHelper.cs" />
-    <Compile Include="ConsoleLogger.cs" />
+    <Compile Include="NLogFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

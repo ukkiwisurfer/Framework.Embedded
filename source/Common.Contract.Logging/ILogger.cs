@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System;
+
 namespace Ignite.Framework.Micro.Common.Contract.Logging
 {
     using Ignite.Framework.Micro.Common.Exceptions;
@@ -81,6 +83,18 @@ namespace Ignite.Framework.Micro.Common.Contract.Logging
         /// Values to substitute for the formatting placeholders.
         /// </param>
         void Error(string message, params object[] formatting);
+
+        /// <summary>
+        /// Logs an error message with formatting.
+        /// </summary>
+        /// <param name="message">
+        /// The message to output including formatting placeholders.
+        /// </param>
+        /// <param name="formatting">
+        /// Values to substitute for the formatting placeholders.
+        /// </param>
+        /// <param name="ex"></param>
+        void Error(string message, BaseException ex, params object[] formatting);
 
         /// <summary>
         /// Logs an information message.

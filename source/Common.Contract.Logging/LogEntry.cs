@@ -18,6 +18,7 @@ namespace Ignite.Framework.Micro.Common.Contract.Logging
 {
     using System;
     using System.Collections;
+
     using Ignite.Framework.Micro.Common.Errors;
     using Ignite.Framework.Micro.Common.Exceptions;
 
@@ -26,6 +27,15 @@ namespace Ignite.Framework.Micro.Common.Contract.Logging
     /// </summary>
     public class LogEntry
     {
+        private string m_LoggerName;
+        /// <summary>
+        /// The name of the logger that recorded this entry.
+        /// </summary>
+        public string LoggerName
+        {
+            get { return m_LoggerName; }
+        }
+
         /// <summary>
         /// The unique identifier for the log entry.
         /// </summary>
@@ -100,10 +110,23 @@ namespace Ignite.Framework.Micro.Common.Contract.Logging
         /// </summary>
         public LogEntry(string logEntryId)
         {
-            this.LogEntryId = logEntryId;
+            LogEntryId = logEntryId;
 
-            this.m_ExtendedProperties = new Hashtable();
-            this.ExtendedProperties["logEntryNumber"] = logEntryId;
+            m_LoggerName = "Undefined";
+            m_ExtendedProperties = new Hashtable();
+
+            ExtendedProperties["logEntryNumber"] = logEntryId;
+        }
+
+        /// <summary>
+        /// Associates a given logger name with the entry.
+        /// </summary>
+        /// <param name="loggerName">
+        /// The name of the logger to associate with the entry.
+        /// </param>
+        public void SetLoggerName(string loggerName)
+        {
+            m_LoggerName = loggerName;
         }
     }
 

@@ -168,6 +168,27 @@ namespace Ignite.Framework.Micro.Common.Logging
         }
 
         /// <summary>
+        /// See <see cref="Errors.Error"/> for more details.
+        /// </summary>
+        /// <param name="message">
+        /// The message to output including formatting placeholders.
+        /// </param>
+        /// <param name="formatting">
+        /// Values to substitute for the formatting placeholders.
+        /// </param>
+        /// <param name="ex">
+        /// The exception that was encountered.
+        /// </param>
+        public void Error(string message, BaseException ex,  params object[] formatting)
+        {
+            if (IsErrorEnabled)
+            {
+                var logMessageEntry = m_Helper.DefineErrorLogMessage(StringUtility.Format(message, formatting), ErrorCategory.None, ErrorType.None, ex);
+                this.LogMessage(logMessageEntry);
+            }
+        }
+
+        /// <summary>
         /// See <see cref="ILogger.Info"/> for more details.
         /// </summary>
         /// <param name="message">

@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System.Threading;
+
 namespace Ignite.Framework.Micro.Common.Logging
 {
     using System.Collections;
@@ -26,17 +28,25 @@ namespace Ignite.Framework.Micro.Common.Logging
     /// </summary>
     public class LogContainer
     {
-        /// <summary>
-        /// Contains a collection of <see cref="LogEntry"/> items.
-        /// </summary>
-        private readonly ArrayList m_LogEntries;
+        private readonly Queue m_LogEntries;
+        private readonly object m_Synclock;
+        private int m_Count;
+
+        public int Count
+        {
+            get
+            {
+               return m_Count;
+            }
+        }
 
         /// <summary>
         /// Initialises an instance of the <see cref="LogContainer"/> class.
         /// </summary>
         public LogContainer()
         {
-            m_LogEntries = new ArrayList();
+            m_LogEntries = new Queue();
+            m_Synclock = new object();
         }
 
         /// <summary>
@@ -54,7 +64,7 @@ namespace Ignite.Framework.Micro.Common.Logging
                 var entry = item as LogEntry;
                 if (entry != null)
                 {
-                    AddLogEntry(entry);
+                    m_Count = AddLogEntry(entry);
                 }
             }
         }
@@ -71,7 +81,7 @@ namespace Ignite.Framework.Micro.Common.Logging
 
             foreach (var item in items)
             {
-                AddLogEntry(item);
+                m_Count = AddLogEntry(item);
             }
         }
 
@@ -81,29 +91,43 @@ namespace Ignite.Framework.Micro.Common.Logging
         /// <param name="entry">
         /// A single log entry to be added to the container.
         /// </param>
-        public void AddLogEntry(LogEntry entry)
+        public int AddLogEntry(LogEntry entry)
         {
+            int itemCount = 0;
+
             if (entry != null)
             {
-                m_LogEntries.Add(entry);
+                lock (m_Synclock)
+                {
+                    m_LogEntries.Enqueue(entry);
+
+                    itemCount = m_LogEntries.Count;
+                    m_Count = itemCount;
+                }
             }
+
+            return itemCount;
         }
 
         /// <summary>
         /// Returns all the log entries managed by this container.
         /// </summary>
-        /// <returns></returns>
-        public LogEntry[] GetLogEntries()
+        /// <returns>
+        /// The next log entry (FIFO) if one exists in the container.
+        /// </returns>
+        public LogEntry GetNextEntry()
         {
-            LogEntry[] items = new LogEntry[m_LogEntries.Count];
-
-            int index = 0;
-            foreach (var logItem in m_LogEntries)
+            LogEntry logEntry = null;
+            
+            lock (m_Synclock)
             {
-                items[index++] = (LogEntry) logItem;
+                if (m_LogEntries.Count > 0)
+                {
+                    logEntry =  m_LogEntries.Dequeue() as LogEntry;
+                }
             }
 
-            return items;
+            return logEntry;
         }
     }
 }

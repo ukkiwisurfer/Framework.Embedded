@@ -62,7 +62,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
             return builder.ToString();
         }
 
-        public void MoveFile(string sourcePath, string sourceFileName, string targetPath, string targetFileExtension)
+        public void MoveFile(string sourcePath, string sourceFileName, string targetPath, string targetFileExtension, bool flush = true)
         {
             var source = Path.Combine(sourcePath, sourceFileName);
             var targetFileName = Path.ChangeExtension(sourceFileName, targetFileExtension);
@@ -80,7 +80,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <param name="targetFileName">
         /// The name of the target file.
         /// </param>
-        public void RenameFile(string sourceFileName, string targetFileName)
+        public void RenameFile(string sourceFileName, string targetFileName, bool flush = true)
         {
             
         }
@@ -110,7 +110,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <param name="newExtension">
         /// The new file extension to rename to
         /// </param>
-        public void RenameAllFilesMatchingExtension(string sourcePath, string targetPath, string oldExtension, string newExtension)
+        public void RenameAllFilesMatchingExtension(string sourcePath, string targetPath, string oldExtension, string newExtension, bool flush = true)
         {
            
         }
@@ -194,7 +194,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <returns>
         /// True if the file was deleted.
         /// </returns>
-        public bool DeleteFile(string path, string fileName)
+        public bool DeleteFile(string path, string fileName, bool flush = true)
         {
             return true;
         }
@@ -208,7 +208,7 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         /// <returns>
         /// True if the file was deleted.
         /// </returns>
-        public bool DeleteFile(string filePath)
+        public bool DeleteFile(string filePath, bool flush = true)
         {
             return true;
         }
@@ -240,6 +240,13 @@ namespace Ignite.Framework.Micro.Common.FileManagement
         public bool DoesDirectoryExist(string path)
         {
             return true;
+        }
+
+        /// <summary>
+        /// See <see cref="IFileHelper.Flush"/> for more details.
+        /// </summary>
+        public void Flush()
+        {
         }
     }
 }

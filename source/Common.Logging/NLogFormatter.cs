@@ -14,31 +14,24 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
-namespace Ignite.Framework.Micro.Common.Services.Logging
+namespace Ignite.Framework.Micro.Common.Logging
 {
-    using Ignite.Framework.Micro.Common.Assertions;
+    using System.Text;
+
+    using Microsoft.SPOT;
+
     using Ignite.Framework.Micro.Common.Contract.Logging;
 
     /// <summary>
-    /// Provides the support to persist logging messages to a queued logging provider.
+    /// A log provider that does nothing.
     /// </summary>
-    public class LoggingProvider : ILogProvider
+    public class NLogFormatter : ILogProvider
     {
-        private readonly BufferedLoggingService m_LoggingService;
-
         /// <summary>
-        /// Initialises ans instance of the <see cref="LoggingProvider"/> class.
+        /// See <see cref="ILogProvider.IsLoggingEnabled"/> for more details.
         /// </summary>
-        /// <param name="loggingService">
-        /// Service that supports the queuing and persisting of log messages.
-        /// </param>
-        public LoggingProvider(BufferedLoggingService loggingService)
-        {
-            loggingService.ShouldNotBeNull();
+        public bool IsLoggingEnabled { get; set; }
 
-            this.m_LoggingService = loggingService;
-        }
-    
         /// <summary>
         /// See <see cref="ILogProvider.IsDebugEnabled"/> for more details.
         /// </summary>
@@ -75,13 +68,30 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
         /// See <see cref="ILogProvider.Log"/> for more details.
         /// </summary>
         /// <param name="entry">
-        /// The logging entry to add.
+        /// The log entry to process.
         /// </param>
         public void Log(LogEntry entry)
         {
-            entry.ShouldNotBeNull();
+            var timestamp = entry.TimeStamp;
 
- 	        this.m_LoggingService.AddLogEntry(entry);
+            var builder = new StringBuilder(timestamp.ToString("yyyy-MM-dd HH:mm:ss."));
+            builder.Append(timestamp.Millisecond.ToString("D3"));
+            builder.Append(" | ");
+            builder.Append(entry.Win32ThreadId);
+            builder.Append(" | ");
+            builder.Append(entry.LoggerName);
+            builder.Append(" | ");
+            builder.Append(entry.Message);
+
+            if (entry.BaseException != null)
+            {
+                builder.Append(" | ");
+                builder.Append(entry.BaseException.Message);
+                builder.Append(" | ");
+                builder.Append(entry.BaseException.StackTrace);
+            }
+
+            Debug.Print(builder.ToString());
         }
     }
 }

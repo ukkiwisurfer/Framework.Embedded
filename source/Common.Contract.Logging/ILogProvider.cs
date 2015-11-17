@@ -36,6 +36,11 @@ namespace Ignite.Framework.Micro.Common.Contract.Logging
         bool IsFatalEnabled { get; }
 
         /// <summary>
+        /// Controls whether logging 
+        /// </summary>
+        bool IsLoggingEnabled { get; set; }
+
+        /// <summary>
         /// Logs a message.
         /// </summary>
         /// <param name="entry">
