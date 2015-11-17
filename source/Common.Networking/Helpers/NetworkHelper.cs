@@ -178,6 +178,8 @@ namespace Ignite.Framework.Micro.Common.Networking
                 m_Logger.Debug("Network connection detected.");
 
                 information = QueryInterface(interfaceIndex);
+
+                m_Logger.Debug("Network address detected. IPAddress: '{0}', Subnet mask: '{1}'.", information.IpAddress, information.SubnetMask);
             }
             finally
             {
