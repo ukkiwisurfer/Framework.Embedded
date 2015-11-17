@@ -1,4 +1,6 @@
 ﻿
+using Ignite.Framework.Micro.Common.Contract.Messaging;
+
 namespace Ignite.Framework.Micro.Common.Networking
 {
     using System;
@@ -7,10 +9,10 @@ namespace Ignite.Framework.Micro.Common.Networking
     /// <summary>
     /// Holds connection state.
     /// </summary>
-    public class ConnectionState : IDisposable
+    public class MessageRequest : IDisposable
     {
         private byte[] m_Buffer;
-        private readonly Socket m_Socket;
+        private readonly IMessageHandler m_Handler;
         private bool m_IsDisposed;
 
         /// <summary>
@@ -19,18 +21,11 @@ namespace Ignite.Framework.Micro.Common.Networking
         public byte[] Buffer
         {
             get { return m_Buffer; }
+            set { m_Buffer = value; }
         }
 
         /// <summary>
-        /// The socket on which the data was received.
-        /// </summary>
-        public Socket Socket
-        {
-            get { return m_Socket; }   
-        }
-
-        /// <summary>
-        /// Creates an instance of the <see cref="ConnectionState"/> class.
+        /// Creates an instance of the <see cref="MessageRequest"/> class.
         /// </summary>
         /// <param name="socket">
         /// The network socket to read from.
@@ -38,9 +33,9 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <param name="bufferSize">
         /// The maximum size of the message buffer.
         /// </param>
-        public ConnectionState(Socket socket, int bufferSize = 1024)
+        public MessageRequest(IMessageHandler handler, int bufferSize = 1024)
         {
-            m_Socket = socket;
+            m_Handler = handler;
             m_Buffer = new byte[bufferSize];
         }
 
@@ -51,6 +46,14 @@ namespace Ignite.Framework.Micro.Common.Networking
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Execute()
+        {
+            m_Handler.HandleMessage(ref m_Buffer);
         }
 
         /// <summary>

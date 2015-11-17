@@ -32,7 +32,7 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="ConnectionState.cs" />
+    <Compile Include="MessageRequest.cs" />
     <Compile Include="Helpers\NetworkHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sockets\TcpSocket.cs" />
@@ -64,6 +64,14 @@
     <ProjectReference Include="..\Common.Core\Common.Core.csproj">
       <Project>{DF2512B0-02A8-4820-BCCF-72543FB9B1AC}</Project>
       <Name>Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common.Exceptions\Common.Exceptions.csproj">
+      <Project>{43755B10-302F-4BDC-B1AC-B64F132284F3}</Project>
+      <Name>Common.Exceptions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common.Logging\Common.Logging.csproj">
+      <Project>{5BBF275D-57F6-41EE-9626-1250E0BEAE46}</Project>
+      <Name>Common.Logging</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Condition="EXISTS('$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets')" Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />

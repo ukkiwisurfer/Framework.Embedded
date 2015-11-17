@@ -14,6 +14,11 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System.Threading;
+using Ignite.Framework.Micro.Common.Contract.Logging;
+using Ignite.Framework.Micro.Common.Core.Threading;
+using Ignite.Framework.Micro.Common.Logging;
+
 namespace Ignite.Framework.Micro.Common.Networking
 {
     using System;
@@ -32,12 +37,13 @@ namespace Ignite.Framework.Micro.Common.Networking
     /// </remarks>
     public class UdpSocket : IDisposable
     {
-        private readonly Socket m_Client;
+        private Socket m_Client;
         private readonly IPEndPoint m_Endpoint;
         private readonly IMessageHandler m_MessageHandler;
         private readonly object m_SyncLock;
-        private  bool m_IsOpen;
+        private bool m_IsOpen;
         private bool m_IsDisposed;
+        private ILogger m_Logger;
 
         /// <summary>
         /// Indicates if the socket is open.
@@ -73,13 +79,13 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <param name="handler">
         /// Hanlder for incoming data.
         /// </param>
-        public UdpSocket(string multicastAddress, int port, IMessageHandler handler)
+        public UdpSocket(ILogger logger, string multicastAddress, int port, IMessageHandler handler)
         {
-            m_Client = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             m_Endpoint = new IPEndPoint(IPAddress.Parse(multicastAddress), port);
             m_MessageHandler = handler;
 
             m_SyncLock = new object();
+            m_Logger = logger;
 
             BufferSizeInBytes = 1024;
             PeekTimeoutInMilliseconds = 500;
@@ -124,12 +130,24 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// </summary>
         public void Open()
         {
-            m_IsOpen = false;
-            lock (m_SyncLock)
+            if (!m_IsOpen)
             {
-                m_Client.Bind(new IPEndPoint(IPAddress.Any, m_Endpoint.Port));
+                lock (m_SyncLock)
+                {
+                    m_Logger.Debug("Opening UDP socket.");
 
-                m_IsOpen = true;
+                    try
+                    {
+                        m_Client = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                        m_Client.Bind(new IPEndPoint(IPAddress.Any, m_Endpoint.Port));
+                        m_IsOpen = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        m_Logger.Error("Exception occurred opening UDP socket.", ex);
+                        m_IsOpen = false;
+                    }
+                }
             }
         }
 
@@ -140,8 +158,18 @@ namespace Ignite.Framework.Micro.Common.Networking
         {
             lock (m_SyncLock)
             {
-                m_Client.Close();
-                m_IsOpen = false;
+                m_Logger.Debug("Closing UDP socket.");
+
+                try
+                {
+                    m_Client.Close();
+                    m_IsOpen = false;
+                }
+                catch (Exception ex)
+                {
+                    m_Logger.Error("Exception occurred closing UDP socket.", ex);
+                    m_IsOpen = false;
+                }
             }
         }
 
@@ -153,11 +181,31 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// </returns>
         public bool CheckForIncomingData()
         {
+            bool hasPayload = false;
+
             lock (m_SyncLock)
             {
-                bool hasPayload = m_Client.Poll(PeekTimeoutInMilliseconds, SelectMode.SelectRead);
-                return hasPayload;
+                try
+                {
+                    if (!m_IsOpen) Open();
+
+                    if (m_IsOpen)
+                    {
+                        hasPayload = m_Client.Poll(PeekTimeoutInMilliseconds, SelectMode.SelectRead);
+                    }
+                    else
+                    {
+                        m_Logger.Debug("UDP socket failed to open. Polling for data unavailable.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    m_Logger.Error("Exception occurred polling UDP socket.", ex);
+                    Close();
+                }
             }
+
+            return hasPayload;
         }
 
         /// <summary>
@@ -167,36 +215,51 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// Will not block indefinitely while waiting for data or throwing 
         /// an exception if a timeout was specified on the read.
         /// </remarks>
-        public void ListenForMessage()
+        public void ProcessMessage()
         {
-            EndPoint remoteendpoint = null;
-            ConnectionState connectionState = null;
+            MessageRequest messageRequest = null;
             int bytesRead = 0;
-            
+
+            var logger = new ConsoleLogger();
+
             lock (m_SyncLock)
             {
+                //logger.LogFreeMemory();
+
+                if (!m_IsOpen) Open();
                 if (m_IsOpen)
                 {
-                    remoteendpoint = new IPEndPoint(m_Endpoint.Address, m_Endpoint.Port);
-                    connectionState = new ConnectionState(m_Client, BufferSizeInBytes);
+                    logger.LogFreeMemory();
 
-                    bool hasPayload = m_Client.Poll(PeekTimeoutInMilliseconds, SelectMode.SelectRead);
-                    if (hasPayload)
+                    messageRequest = new MessageRequest(m_MessageHandler, BufferSizeInBytes);
+
+                    try
                     {
-                        bytesRead = m_Client.ReceiveFrom(connectionState.Buffer, 0, connectionState.Buffer.Length, SocketFlags.None, ref remoteendpoint);
+                        bool hasPayload = m_Client.Poll(PeekTimeoutInMilliseconds, SelectMode.SelectRead);
+                        if (hasPayload)
+                        {
+                            bytesRead = m_Client.Receive(messageRequest.Buffer, 0, messageRequest.Buffer.Length, SocketFlags.None);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        m_Logger.Error("Exception occurred receiving data from UDP socket.", ex);
+                        Close();
                     }
                 }
             }
 
-            if ((bytesRead > 0) && (remoteendpoint != null))
+            if (bytesRead > 0)
             {
-                this.OnMessageReceived(bytesRead, connectionState, remoteendpoint);
+                OnMessageReceived(bytesRead, messageRequest);
             }
 
-            if (connectionState != null)
+            if (messageRequest != null)
             {
-                connectionState.Dispose();
+                messageRequest.Dispose();
             }
+
+            //logger.LogFreeMemory();
         }
 
         /// <summary>
@@ -204,10 +267,10 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// </summary>
         /// <remarks>
         /// Assumed to be not running under a thread safe context. As long as we don's access
-        /// the socket referenced in the <see cref="ConnectionState"/> class we should be ok.
+        /// the socket referenced in the <see cref="MessageRequest"/> class we should be ok.
         /// <para></para>
         /// The buffer element is fine to access as it is created per call, regardless of which
-        /// thread context has entered the ListenForMessage() method.
+        /// thread context has entered the ProcessMessage() method.
         /// </remarks>
         /// <param name="receivedByteCount">
         /// The number of bytes available to read.
@@ -215,24 +278,28 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <param name="state">
         /// The buffer state. 
         /// </param>
-        /// <param name="remoteEndpoint">
-        /// The endpoint that the data was received from.
-        /// </param>
-        private void OnMessageReceived(int receivedByteCount, ConnectionState state, EndPoint remoteEndpoint)
+        private void OnMessageReceived(int receivedByteCount, MessageRequest state)
         {
             if (receivedByteCount > 0)
             {
-                // Copy message buffer as the smallest size it can be to accomodate message and send it the message handler.
-                var message = new byte[receivedByteCount];
                 try
                 {
-                    Array.Copy(state.Buffer, message, receivedByteCount);
-                    m_MessageHandler.HandleMessage(message);
+                    state.Execute();
                 }
-                finally
+                catch (Exception ex)
                 {
+                    m_Logger.Error("Exception detected handling message.", ex);
                 }
             }
+        }
+
+        /// <summary>
+        /// Sends a message via UDP on the specified UDP Multicast address/port.
+        /// </summary>
+        /// <param name="message"></param>
+        public void SendMessage(byte[] message)
+        {
+            m_Client.Send(message);
         }
     }
 }

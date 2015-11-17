@@ -220,7 +220,7 @@ namespace Ignite.Framework.Micro.Common.Networking
                 bool hasPayload = m_Socket.Poll(PeekTimeoutInMilliseconds, SelectMode.SelectRead);
                 if (hasPayload)
                 {
-                    var state = new ConnectionState(m_Socket, BufferSizeInBytes);
+                    var state = new MessageRequest(m_MessageHandler, BufferSizeInBytes);
                     EndPoint remoteendpoint = new IPEndPoint(IPAddress.Parse(m_HostName), m_Port);
 
                     int bytesRead = m_Socket.ReceiveFrom(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, ref remoteendpoint);
@@ -242,7 +242,7 @@ namespace Ignite.Framework.Micro.Common.Networking
         /// <param name="state">
         /// The buffer state. 
         /// </param>
-        private void OnMessageReceived(int receivedByteCount, ConnectionState state)
+        private void OnMessageReceived(int receivedByteCount, MessageRequest state)
         {
             if (receivedByteCount > 0)
             {
@@ -250,7 +250,7 @@ namespace Ignite.Framework.Micro.Common.Networking
                 var message = new byte[receivedByteCount];
                 Array.Copy(state.Buffer, message, receivedByteCount);
 
-                m_MessageHandler.HandleMessage(message);
+                m_MessageHandler.HandleMessage(ref message);
             }
         }
     }
