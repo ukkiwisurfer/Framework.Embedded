@@ -247,7 +247,7 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         private void PublishMessage(MemoryStream stream)
         {
             if (!m_Publisher.IsConnected) m_Publisher.Connect();
-            m_Publisher.Publish(stream.ToArray());
+            m_Publisher.Publish(stream);
         }
       
     }
