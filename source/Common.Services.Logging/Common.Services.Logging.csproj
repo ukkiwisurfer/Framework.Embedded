@@ -33,10 +33,10 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="BufferedLoggingService.cs" />
-    <Compile Include="LoggingProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="System.IO" />
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +55,14 @@
     <ProjectReference Include="..\Common.Contract.Services\Common.Contract.Services.csproj">
       <Project>{9DEBF422-3666-446C-8D0B-FA60CCF8EC54}</Project>
       <Name>Common.Contract.Services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common.Logging\Common.Logging.csproj">
+      <Project>{5BBF275D-57F6-41EE-9626-1250E0BEAE46}</Project>
+      <Name>Common.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common.Services.Data\Common.Services.Data.csproj">
+      <Project>{89DF34BC-B018-4C36-A75B-655433953485}</Project>
+      <Name>Common.Services.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common.Services\Common.Services.csproj">
       <Project>{22CD62C7-1D35-444F-86E2-FBB206828E5B}</Project>

@@ -14,6 +14,8 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using Ignite.Framework.Micro.Common.Exceptions;
+
 namespace Ignite.Framework.Micro.Common.Services
 {
     using System;
@@ -99,7 +101,7 @@ namespace Ignite.Framework.Micro.Common.Services
         public bool IsRunning
         {
             get { return m_IsRunning; }
-            internal set { m_IsRunning = value; }
+            protected set { m_IsRunning = value; }
         }
 
         private int m_SleepPeriodInMilliseconds;
@@ -330,14 +332,14 @@ namespace Ignite.Framework.Micro.Common.Services
         /// <summary>
         /// Carries out the main processing.
         /// </summary>
-        private void PerformWork()
+        protected virtual void PerformWork()
         {
             IsRunning = true;
 
             try
             {
                 LogInfo(m_ResourceLoader.GetString(Resources.StringResources.StartingService), m_ServiceId, m_ServiceName);
-                
+
                 OnOpening();
 
                 // If the sensor platform is active.
@@ -355,6 +357,10 @@ namespace Ignite.Framework.Micro.Common.Services
 
                     LogDebug(m_ResourceLoader.GetString(Resources.StringResources.CancellationRequest), m_ServiceId, m_ServiceName);
                 }
+            }
+            catch (Exception ex)
+            {
+                LogError("Unhandled exception occurred in service {0}'s PerformWork. StackTrace: '{1}'", ex, ServiceName);
             }
             finally
             {
@@ -391,7 +397,7 @@ namespace Ignite.Framework.Micro.Common.Services
         {
             if (signalled == WaitHandle.WaitTimeout)
             {
-                LogDebug(m_ResourceLoader.GetString(Resources.StringResources.TimeoutEventOccurred), m_ServiceId, m_ServiceName);
+                LogDebug(m_ResourceLoader.GetString(Resources.StringResources.TimeoutEventOccurred), m_ServiceId);
             }
 
             // If the work detected event has been signalled, perform the task.
@@ -429,6 +435,23 @@ namespace Ignite.Framework.Micro.Common.Services
             if (m_IsLoggingEnabled)
             {
                 m_Logger.Debug(message, formatting);
+            }
+        }
+
+        /// <summary>
+        /// Logs a debugging message.
+        /// </summary>
+        /// <param name="message">
+        /// The message to log.
+        /// </param>
+        /// <param name="formatting">
+        /// Formatting parameters associated with the logging message.
+        /// </param>
+        protected void LogError(string message, Exception ex, params object[] formatting)
+        {
+            if (m_IsLoggingEnabled)
+            {
+                m_Logger.Error(message, ex.CreateApplicationException("Unexpected exception"), formatting);
             }
         }
 
@@ -499,12 +522,18 @@ namespace Ignite.Framework.Micro.Common.Services
         /// <summary>
         /// On the request to open the sensor platform perform this action.
         /// </summary>
-        protected abstract void OnOpening();
+        protected virtual void OnOpening()
+        {
+            LogDebug("Starting service '{0}'", ServiceName);
+        }
 
         /// <summary>
         /// On the request to close the sensor platform, perform this action.
         /// </summary>
-        protected abstract void OnClosing();
+        protected virtual void OnClosing()
+        {
+            LogDebug("Stopping service '{0}'", ServiceName);
+        }
 
         /// <summary>
         /// Is the service currently active.

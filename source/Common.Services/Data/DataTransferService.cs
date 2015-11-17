@@ -15,6 +15,7 @@
 //----------------------------------------------------------------------------- 
 
 using System.Text;
+using Microsoft.SPOT;
 
 namespace Ignite.Framework.Micro.Common.Services.Data
 {
@@ -131,7 +132,8 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="bufferSize">
         /// The size of the read buffer to use when loading each data file's contents.
         /// </param>
-        public DataTransferService(IMessagePublisher publisher, IFileHelper fileHelper, ILed led, BufferedConfiguration configuration, int bufferSize = 512) : base(typeof(DataTransferService))
+        public DataTransferService(IMessagePublisher publisher, IFileHelper fileHelper, ILed led, BufferedConfiguration configuration, int bufferSize = 512)
+            : base(typeof(DataTransferService))
         {
             publisher.ShouldNotBeNull();
             fileHelper.ShouldNotBeNull();
@@ -166,7 +168,8 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="bufferSize">
         /// The size of the read buffer to use when loading each data file's contents.
         /// </param>
-        public DataTransferService(ILogger logger, IMessagePublisher publisher, IFileHelper fileHelper, ILed led, BufferedConfiguration configuration, int bufferSize = 400) : base(logger, typeof(DataTransferService))
+        public DataTransferService(ILogger logger, IMessagePublisher publisher, IFileHelper fileHelper, ILed led, BufferedConfiguration configuration, int bufferSize = 400)
+            : base(logger, typeof(DataTransferService))
         {
             publisher.ShouldNotBeNull();
             fileHelper.ShouldNotBeNull();
@@ -202,7 +205,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// On attempting to open the service, initialises the connection to the real logging service.
         /// </summary>
         protected override void OnOpening()
-        { 
+        {
+            base.OnOpening();
+
             m_FileHelper.CreateDirectory(m_Configuration.TargetPath);
             m_IsOpen = true;
         }
@@ -220,6 +225,8 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             {
                 m_IsOpen = false;
             }
+
+            base.OnClosing();
         }
 
         /// <summary>
@@ -237,6 +244,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                 LogDebug("Starting processing.");
                 try
                 {
+                    var free = Debug.GC(true);
+                    LogDebug("Memory free: {0} bytes.", free);
+
                     m_Led.On();
 
                     if (!m_Publisher.IsConnected) m_Publisher.Connect();
@@ -254,93 +264,56 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                                 var iterator = fileNames.GetEnumerator();
                                 var isValid = iterator.MoveNext();
 
-                                byte[] buffer = new byte[m_BufferSize];
+
 
                                 // For each file, read it and publish its contents via a message broker.
                                 for (int fileIndex = 0; fileIndex < fileCount; fileIndex++)
                                 {
-                                    if (!isValid) break;
+                                   if (!isValid) break;
 
                                     var fileName = iterator.Current as string;
                                     if (fileName != null)
                                     {
-                                        LogDebug("About to commence processing file - FilePath: '{0}', FileName: '{1}'", m_Configuration.TargetPath, fileName);
+                                //        LogDebug("About to commence processing file - FilePath: '{0}', FileName: '{1}'", m_Configuration.TargetPath, fileName);
 
-                                        long fileSize = m_FileHelper.GetFileSize(m_Configuration.TargetPath, fileName);
-                                        if (fileSize > 0)
-                                        {
-                                            LogDebug("Started processing file - FileSize: '{0}'", fileName, fileSize);
+                                //        long fileSize = m_FileHelper.GetFileSize(m_Configuration.TargetPath, fileName);
+                                //        if (fileSize > 0)
+                                //        {
+                                //            LogDebug("Started processing file - FileSize: '{0}'", fileName, fileSize);
 
-                                            if (fileSize <= m_MaximumFileSizeInBytes)
-                                            {
-                                                LogDebug("File is within allowable size. FileSize: '{0}'", fileSize);
+                                //            if (fileSize <= m_MaximumFileSizeInBytes)
+                                //            {
 
-                                                using (var memoryStream = new MemoryStream())
-                                                {
-                                                    //int bytesRead = 0;
+                                //                LogDebug("File is within allowable size. FileSize: '{0}'", fileSize);
 
-                                                    //var filepath = Path.Combine(m_Configuration.TargetPath, fileName);
-                                                    //using (var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.None))
-                                                    //using (var stream = m_FileHelper.OpenStreamForRead(m_Configuration.TargetPath, fileName, m_BufferSize))
-                                                    //{
-                                                    //    int index = 1;
-                                                    //    int offset = 0;
-                                                    //    int bytesRead = 0;
+                                //                string filePath = m_FileHelper.BuildFilePath(m_Configuration.TargetPath, fileName);
+                                //                var buffer = File.ReadAllBytes(filePath);
 
-                                                    //    while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) > 0)
-                                                    //    {
-                                                    //        LogDebug("Reading filestream. Loop: {0}, BytesRead: {1}, Position: {2}", index, bytesRead, stream.Position);
-                                                    //        memoryStream.Write(buffer, 0, bytesRead);
+                                //                LogDebug("Publishing memory stream contents. Size: {0}", buffer.Length);
+                                //                m_Publisher.Publish(ref buffer);
 
-                                                    //        index++;
-                                                    //    }
-                                                    //}
-
-                                                    using (var stream = m_FileHelper.OpenStreamForRead(m_Configuration.TargetPath, fileName, m_BufferSize))
-                                                    {
-                                                        int index = 1;
-                                                        int offset = 0;
-                                                        int bytesRead = 0;
-
-                                                        while (offset < fileSize)
-                                                        {
-                                                            LogDebug("Seeking position in filestream. Position: {0}", offset);
-
-                                                            stream.Seek(offset, SeekOrigin.Begin);
-                                                            bytesRead = stream.Read(buffer, 0, buffer.Length);
-                                                            offset += bytesRead;
-
-                                                            LogDebug("Reading filestream. Loop: {0}, BytesRead: {1}, Position: {2}", index, bytesRead, stream.Position);
-                                                            memoryStream.Write(buffer, 0, bytesRead);
-
-                                                            index++;
-                                                        }
-                                                    }
-
-                                                    LogDebug("Publishing memory stream contents. Size: {0}", memoryStream.Length);
-                                                    m_Publisher.Publish(memoryStream);
-                                                }
-
-                                                try
-                                                {
-                                                    m_FileHelper.MoveFile(m_Configuration.TargetPath, fileName, m_Configuration.ArchivePath, m_Configuration.ArchiveFileExtension);
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    LogDebug("Exception detected trying to move file '{0}'. Attempting to delete file.", fileName);
-                                                    m_FileHelper.DeleteFile(m_Configuration.TargetPath, fileName);
-                                                    LogDebug("File deleted. FileName: '{0}'.", fileName);
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            // Delete the file.
-                                            m_FileHelper.MoveFile(m_Configuration.TargetPath, fileName, m_Configuration.ArchivePath, m_Configuration.ArchiveFileExtension);
-                                            //m_FileHelper.DeleteFile(m_Configuration.TargetPath, fileName);
-                                        }
+                                //                try
+                                //                {
+                                //                    m_FileHelper.MoveFile(m_Configuration.TargetPath, fileName, m_Configuration.ArchivePath, m_Configuration.ArchiveFileExtension);
+                                //                }
+                                //                catch (Exception ex)
+                                //                {
+                                //                    LogDebug("Exception detected trying to move file '{0}'. Attempting to delete file.", fileName);
+                                //                    m_FileHelper.DeleteFile(m_Configuration.TargetPath, fileName);
+                                //                    LogDebug("File deleted. FileName: '{0}'.", fileName);
+                                //                }
+                                //            }
+                                //        }
+                                //        else
+                                //        {
+                                //            // Delete the file.
+                                //            m_FileHelper.MoveFile(m_Configuration.TargetPath, fileName, m_Configuration.ArchivePath, m_Configuration.ArchiveFileExtension);
+                                //            //m_FileHelper.DeleteFile(m_Configuration.TargetPath, fileName);
+                                //        }
 
                                     }
+
+                                    m_FileHelper.Flush();
 
                                     LogDebug("Getting next filename from iterator.");
                                     isValid = iterator.MoveNext();
@@ -348,6 +321,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                             }
 
                         }
+
                     }
                 }
                 catch (Exception ex)
@@ -359,6 +333,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                     LogDebug("Processing completed.");
                     SignalWorkCompleted();
                     m_Led.Off();
+
+                    var free = Debug.GC(true);
+                    LogDebug("Memory free: {0} bytes.", free);
 
                     Interlocked.CompareExchange(ref m_Semaphore, 0, 1);
                 }

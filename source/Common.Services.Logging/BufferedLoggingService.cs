@@ -14,16 +14,22 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System.Threading;
+using Microsoft.SPOT;
+
 namespace Ignite.Framework.Micro.Common.Services.Logging
 {
     using System;
     using System.IO;
+    using System.Collections;
+    using System.Text;
 
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Contract.Logging;
     using Ignite.Framework.Micro.Common.Contract.Services;
     using Ignite.Framework.Micro.Common.Contract.FileManagement;
     using Ignite.Framework.Micro.Common.Services.Data;
+    using Ignite.Framework.Micro.Common.Logging;
 
     /// <summary>
     /// Captures logging requests and buffers them before writing them to disk.
@@ -32,8 +38,62 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
     /// The batch size determines how many entries are buffered before being written
     /// to disk.
     /// </remarks>
-    public class BufferedLoggingService : BufferedDataService
+    public class BufferedLoggingService : ThreadedService
     {
+        protected readonly IFileHelper m_FileHelper;
+        private readonly string m_WorkingFilePath;
+        private readonly string m_TargetFilePath;
+        private readonly string m_TargetFileExtension;
+        private readonly string m_WorkingFileExtension;
+        private readonly LogContainer m_LogEntries;
+        private int m_BufferSize;
+        private int m_BatchSize;
+
+        /// <summary>
+        /// Path where working data files will be written to.
+        /// </summary>
+        protected string WorkingPath
+        {
+            get { return m_WorkingFilePath; }
+        }
+
+        /// <summary>
+        /// Path where completed data files will be written to.
+        /// </summary>
+        protected string TargetPath
+        {
+            get { return m_TargetFilePath; }
+        }
+
+        /// <summary>
+        /// Indicates the size of the buffer to use when writing data.
+        /// </summary>
+        public int BufferSizeInBytes
+        {
+            get
+            {
+                return m_BufferSize;
+            }
+            set
+            {
+                m_BufferSize = value;                
+            }
+        }
+
+        /// <summary>
+        /// The number of log entries to cache in memory before persisting the entries.
+        /// </summary>
+        public int BatchSize
+        {
+            get
+            {
+                return m_BatchSize;
+            }
+            set
+            {
+                 m_BatchSize = value;
+            }
+        }
 
         /// <summary>
         /// Initialises an instance of the <see cref="BufferedLoggingService"/> class. 
@@ -44,9 +104,21 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
         /// <param name="configuration">
         /// Configuration details for buffered data persistence. 
         /// </param>
-        public BufferedLoggingService(IFileHelper fileHelper, BufferedConfiguration configuration) : base(fileHelper, configuration)
+        public BufferedLoggingService(LogContainer container, ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration) : base(logger, typeof(BufferedLoggingService))
         {
-            ServiceName = "BufferedLoggingService";
+            logger.ShouldNotBeNull();
+            fileHelper.ShouldNotBeNull();
+            configuration.ShouldNotBeNull();
+
+            m_LogEntries = container;
+            m_BatchSize = 2;
+            m_BufferSize = 512;
+
+            m_FileHelper = fileHelper;
+            m_WorkingFilePath = configuration.WorkingPath;
+            m_TargetFilePath = configuration.TargetPath;
+            m_TargetFileExtension = configuration.TargetFileExtension;
+            m_WorkingFileExtension = configuration.WorkingFileExtension;
         }
 
         /// <summary>
@@ -61,7 +133,7 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
             {
             }
 
- 	        base.Dispose(isDisposing);
+            base.Dispose(isDisposing);
         }
 
         /// <summary>
@@ -77,45 +149,113 @@ namespace Ignite.Framework.Micro.Common.Services.Logging
         {
             logEntry.ShouldNotBeNull();
 
-            this.AddDataItem(logEntry);
+            var count = m_LogEntries.AddLogEntry(logEntry);
+            if (count >= m_BatchSize)
+            {
+                SignalWorkToBeDone();
+            }
         }
 
         /// <summary>
-        /// Persists log messages to a file.
+        /// Checks for messages to process.
         /// </summary>
-        /// <param name="dataItems">
-        /// A collection of log messages to persist.
-        /// </param>
-        protected override void WriteData(object[] dataItems)
+        /// <param name="signalled"></param>
+        public override void CheckIfWorkExists(bool hasWork)
         {
-            using (var stream = this.GetFileStream(WorkingPath, TargetPath))
+            if (m_LogEntries.Count >= m_BatchSize)
             {
-                using (var writer = new StreamWriter(stream))
+                SignalWorkToBeDone();
+            }
+        }
+
+        /// <summary>
+        /// See <see cref="ThreadedService.DoWork"/> for more details.
+        /// </summary>
+        /// <remarks>
+        /// Main processing logic for when work is detected. Looks for messages and if there are any, dequeues them
+        /// and writes them to the file system.
+        /// <para></para>
+        /// There is a possibility that the messages in the memory queue are lost if the process is restarted before
+        /// the messages are dequeued and persisted. That trade-off can be mitigated by reudcing the value of the 
+        /// BatchSize property. It also means a corresponding increase in latency when processing incoming messages 
+        /// in order to persist the messages to the underlying filesystem.
+        /// <para></para>
+        /// Given the environment is a memory constrained one, at this point 
+        /// the trade-off is deemed acceptible for the current requirements of how the framework will be used.
+        /// </remarks>
+        protected override void DoWork()
+        {
+            var messages = new ArrayList();
+
+            LogDebug("Started processing.");
+
+            try
+            {
+                // Lock only long enough dequeue items from the queue.
+                for (var index = 0; index < m_BatchSize; index++)
                 {
-                    writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-                    writer.WriteLine("<LogEntries>");
-
-                    foreach (var item in dataItems)
+                    var logEntry = m_LogEntries.GetNextEntry();
+                    if (logEntry != null)
                     {
-                        var dataItem = item as LogEntry;
-                        if (dataItem != null)
-                        {
-                            writer.WriteLine("<LogEntry>");
-
-                            writer.WriteLine("<LogEntryId>");
-                            writer.WriteLine(dataItem.LogEntryId);
-                            writer.WriteLine("</LogEntryId>");
-
-                            writer.WriteLine("</LogEntry>");
-
-                            writer.Flush();
-                        }
+                        messages.Add(logEntry);
                     }
+                }
 
-                    writer.WriteLine("</LogEntries>");
-                    writer.Flush();
+                // Sends the logged messages.
+                if (messages.Count > 0)
+                {
+                    LogMessagesToConsole(messages);
                 }
             }
+            finally
+            {
+                SignalWorkCompleted();
+                LogDebug("Processing completed.");
+            }
+        }
+
+        /// <summary>
+        /// See <see cref="ThreadedService.OnOpening"/> for more details.
+        /// </summary>
+        /// <remarks>
+        /// Creates the required directories if they do not already exist.
+        /// </remarks>
+        protected override void OnOpening()
+        {
+            m_FileHelper.CreateDirectory(m_WorkingFilePath);
+            m_FileHelper.CreateDirectory(m_TargetFilePath);
+        }
+
+        /// <summary>
+        /// See <see cref="ThreadedService.OnClosing"/> for more details.
+        /// </summary>
+        protected override void OnClosing()
+        {
+        }
+
+        /// <summary>
+        /// Logs messages to the console window.
+        /// </summary>
+        /// <param name="dataItems"></param>
+        protected virtual void LogMessagesToConsole(ArrayList dataItems)
+        {
+            var formatter = new NLogFormatter();
+            foreach (var item in dataItems)
+            {
+                var dataItem = item as LogEntry;
+                if (dataItem != null)
+                {
+                    formatter.Log(dataItem);
+                }
+            }
+        }
+
+        /// <summary>
+        /// See <see cref="ThreadedService.IsServiceActive"/> for more details.
+        /// </summary>
+        public override bool IsServiceActive
+        {
+            get { return true; }
         }
     }
 }

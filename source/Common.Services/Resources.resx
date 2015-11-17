@@ -160,6 +160,6 @@
     <value>Stopping hosts. {0}.</value>
   </data>
   <data name="TimeoutEventOccurred" xml:space="preserve">
-    <value>Waited for event - no event detected. ServiceId: {0}, ServiceName: {1}.</value>
+    <value>Waited for event - no event detected. ServiceId: {0}.</value>
   </data>
 </root>
