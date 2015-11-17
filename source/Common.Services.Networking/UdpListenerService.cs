@@ -16,9 +16,12 @@
 
 namespace Ignite.Framework.Micro.Common.Services.Networking
 {
+    using System;
+
     using Ignite.Framework.Micro.Common.Assertions;
     using Ignite.Framework.Micro.Common.Networking;
     using Ignite.Framework.Micro.Common.Services;
+    using Ignite.Framework.Micro.Common.Contract.Logging;
 
     /// <summary>
     /// Listens for UDP broadcasts via a <see cref="UdpSocket"/> instance and captures any incoming messages. 
@@ -40,6 +43,19 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         }
 
         /// <summary>
+        /// Initialises an instance of the <see cref="UdpListenerService"/> class.
+        /// </summary>
+        /// <param name="socket">
+        /// The socket instance to use for listening to Owl electricity monitoring broadcasts.
+        /// </param>
+        /// <param name="logger"></param>
+        public UdpListenerService(ILogger logger, UdpSocket socket) : base(logger, typeof(UdpListenerService))
+        {
+            socket.ShouldNotBeNull();
+            m_Socket = socket;
+        }
+
+        /// <summary>
         /// See <see cref="ThreadedService.CheckIfWorkExists"/> for more details.
         /// </summary>
         /// <param name="hasWork">
@@ -47,10 +63,13 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         /// </param>
         public override void CheckIfWorkExists(bool hasWork = false)
         {
+            LogDebug("Checking for incoming data on UDP socket.");
+
             var workExists = m_Socket.CheckForIncomingData();
             if (workExists)
             {
-                this.SignalWorkToBeDone();
+                LogDebug("Incoming data detected on UDP socket.");
+                SignalWorkToBeDone();
             }
         }
 
@@ -67,8 +86,21 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         /// </remarks>
         protected override void DoWork()
         {
-            m_Socket.ListenForMessage();
-            this.SignalWorkCompleted();
+            LogDebug("Commencing processing.");
+
+            try
+            {
+                m_Socket.ProcessMessage();
+            }
+            catch (Exception ex)
+            {
+                LogError("Exception occurred while processing UDP data.", ex);
+            }
+            finally
+            {
+                SignalWorkCompleted();
+                LogDebug("Processing complete.");
+            }
         }
 
         /// <summary>
@@ -76,6 +108,7 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         /// </summary>
         protected override void OnOpening()
         {
+            base.OnOpening();
             m_Socket.Open();
         }
 
@@ -85,6 +118,7 @@ namespace Ignite.Framework.Micro.Common.Services.Networking
         protected override void OnClosing()
         {
             m_Socket.Close();
+            base.OnClosing();
         }
 
         /// <summary>
