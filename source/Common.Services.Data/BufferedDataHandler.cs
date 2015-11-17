@@ -27,11 +27,11 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     /// </summary>
     public class BufferedDataHandler : IMessageHandler
     {
-        private readonly BufferedDataCaptureService m_Service;
+        private readonly BufferedDataService m_Service;
         /// <summary>
         /// The service to capture the data messages.
         /// </summary>
-        protected BufferedDataCaptureService Service
+        protected BufferedDataService Service
         {
             get {  return m_Service;}
         }
@@ -40,7 +40,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// Initialises an instance  of the <see cref="BufferedDataHandler"/> class.
         /// </summary>
         /// <param name="service"></param>
-        public BufferedDataHandler(BufferedDataCaptureService service)
+        public BufferedDataHandler(BufferedDataService service)
         {
             service.ShouldNotBeNull();
 
@@ -53,24 +53,13 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="message">
         /// The raw message to be processed.
         /// </param>
-        public void HandleMessage(byte[] message)
-        {
-          ProcessMessage(message);
-        }
-
-        /// <summary>
-        /// Converts incoming data 
-        /// </summary>
-        /// <param name="message">
-        /// The raw message to be sent.
-        /// </param>
-        protected virtual void ProcessMessage(byte[] message)
+        public void HandleMessage(ref byte[] message)
         {
             var dataItem = new DataItem();
             dataItem.CaptureTimestamp = DateTime.UtcNow;
             dataItem.Payload = message;
 
-            Service.AddDataEntry(dataItem);
+            Service.AddDataItem(dataItem);
         }
     }
 }

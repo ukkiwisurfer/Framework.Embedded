@@ -14,6 +14,11 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using Ignite.Framework.Micro.Common.Core;
+using Ignite.Framework.Micro.Common.Data;
+using Ignite.Framework.Micro.Common.Logging;
+using Microsoft.SPOT;
+
 namespace Ignite.Framework.Micro.Common.Services.Data
 {
     using System;
@@ -32,24 +37,17 @@ namespace Ignite.Framework.Micro.Common.Services.Data
     /// The batch size determines how many are packets are buffered before 
     /// being written to disk.
     /// </remarks>
-    public abstract class BufferedDataService : ThreadedService, IBufferConfiguration, IBatchConfiguration
+    public class BufferedDataService : ThreadedService, IBufferConfiguration, IBatchConfiguration
     {
-        private readonly IFileHelper m_FileHelper;
+        protected readonly IFileHelper m_FileHelper;
         private readonly string m_WorkingFilePath;
         private readonly string m_TargetFilePath;
         private readonly string m_TargetFileExtension;
         private readonly string m_WorkingFileExtension;
+        private readonly string m_IPAddress;
         private int m_BatchSize;
         private int m_BufferSize;
-
         private readonly object m_SyncLock;
-        /// <summary>
-        /// Synchronisation object to use for shared access resources.
-        /// </summary>
-        protected object SyncLock
-        {
-            get { return m_SyncLock; }
-        }
 
         private readonly Queue m_MessageQueue;
         /// <summary>
@@ -121,32 +119,6 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <summary>
         /// Initialises an instance of the <see cref="BufferedDataService"/> class. 
         /// </summary>
-        /// <param name="configuration">
-        /// Configuration details for buffered data persistence. 
-        /// </param>
-        /// <param name="fileHelper">
-        /// Helper for working with files.
-        /// </param>
-        protected BufferedDataService(IFileHelper fileHelper, BufferedConfiguration configuration) : base(typeof(BufferedDataService))
-        {
-            fileHelper.ShouldNotBeNull();
-            configuration.ShouldNotBeNull();
-
-            m_MessageQueue = new Queue();
-            m_SyncLock = new object();
-            m_BatchSize = 2;
-            m_BufferSize = 1024;
-
-            m_FileHelper = fileHelper;
-            m_WorkingFilePath = configuration.WorkingPath;
-            m_TargetFilePath = configuration.TargetPath;
-            m_TargetFileExtension = configuration.TargetFileExtension;
-            m_WorkingFileExtension = configuration.WorkingFileExtension;
-        }
-
-        /// <summary>
-        /// Initialises an instance of the <see cref="BufferedDataService"/> class. 
-        /// </summary>
         /// <param name="logger">
         /// Logging provider.
         /// </param>
@@ -156,8 +128,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="configuration">
         /// Configuration parameters for persisting data (buffered data). 
         /// </param>
-        protected BufferedDataService(ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration) : base(logger, typeof(BufferedDataService))
+        public BufferedDataService(ILogger logger, IFileHelper fileHelper, BufferedConfiguration configuration) : base(logger, typeof(BufferedDataService))
         {
+            logger.ShouldNotBeNull();
             fileHelper.ShouldNotBeNull();
             configuration.ShouldNotBeNull();
 
@@ -166,6 +139,7 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             m_BatchSize = 2;
             m_BufferSize = 1024;
 
+            m_IPAddress = "192.168.1.105";
             m_FileHelper = fileHelper;
             m_WorkingFilePath = configuration.WorkingPath;
             m_TargetFilePath = configuration.TargetPath;
@@ -189,81 +163,6 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         }
 
         /// <summary>
-        /// Opens new file stream
-        /// </summary>
-        /// <param name="filePath">
-        /// The fully qualified path where the files are to be written to. 
-        /// </param>
-        /// <param name="fileName">
-        /// The name of the file to open or create.
-        /// </param>
-        /// <returns>
-        /// A stream representing the opened file.
-        /// </returns>
-        protected virtual Stream OpenStream(string filePath, string fileName)
-        {
-            var stream = this.m_FileHelper.OpenStreamForWrite(filePath, fileName);
-            if (stream == null)
-            {
-                // Stream failed to be allocated.
-                LogDebug("Failed to allocate file stream");
-            }
-
-            return stream;
-        }
-
-        /// <summary>
-        /// Returns the stream used to write logging entries to.
-        /// </summary>
-        /// <param name="sourceFilePath">
-        /// The file path where the source file is located.
-        /// </param>
-        /// <param name="targetFilePath">
-        /// The file path to where the completed file will be persisted.
-        /// </param>
-        /// <param name="fileName">
-        /// The name of the file.
-        /// </param>
-        /// <remarks>
-        /// Expects source files to be in an separate directory with a different extension.
-        /// In order for files to be processed, they must be renamed and moved to the target
-        /// directory.
-        /// <para></para>
-        /// If the new file doesn't exist we have just crossed a transition boundary.
-        /// <para></para>
-        /// This indicates that the file can now safely be processed. This supports
-        /// the scenario where a raw file can be amended multiple times - in which case
-        /// we do not want the transfer service to process the file (as we might
-        /// be potentially writing to it at the same time).
-        /// </remarks>
-        /// <returns>
-        /// A stream writer used to write logging entries to.
-        /// </returns>
-        protected Stream GetFileStream(string sourceFilePath, string targetFilePath, string fileName = null)
-        {
-            Stream fileStream = null;
-
-            string generatedFileName = fileName ?? this.m_FileHelper.GenerateFileName(DateTime.Now, m_WorkingFileExtension);
-            string pathAndfileName = this.m_FileHelper.BuildFilePath(sourceFilePath, generatedFileName);
-
-            try
-            {
-                if (!File.Exists(pathAndfileName))
-                {
-                    this.m_FileHelper.RenameAllFilesMatchingExtension(sourceFilePath, targetFilePath, m_WorkingFileExtension, m_TargetFileExtension);
-                }
-
-                fileStream = this.m_FileHelper.OpenStreamForWrite(sourceFilePath, generatedFileName);
-                fileStream.Seek(0, SeekOrigin.End);
-            }
-            catch (Exception ex)
-            {                
-            }
-
-            return fileStream;
-        }
-
-        /// <summary>
         /// See <see cref="ThreadedService.DoWork"/> for more details.
         /// </summary>
         /// <remarks>
@@ -280,29 +179,47 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// </remarks>
         protected override void DoWork()
         {
-            var messages = new object[0];
+            var messages = new ArrayList();
+
+            LogDebug("Started processing.");
+
+            var logger = new ConsoleLogger();
+            logger.LogFreeMemory();
 
             try
             {
-                // Lock only long enough to dequeue a single item from the queue and signal that there us work to be done.
+                // Find out how many items are in the queue.
+                int messageCount = 0;
                 lock (m_SyncLock)
                 {
-                    if (m_MessageQueue.Count > 0)
+                    messageCount = m_MessageQueue.Count;
+                }
+
+                // Only dequeue if the batch size has been reached.
+                if (messageCount >= m_BatchSize)
+                {
+                    for (var index = 0; index < m_BatchSize; index++)
                     {
-                        messages = m_MessageQueue.ToArray();
-                        m_MessageQueue.Clear();
+                        lock (m_SyncLock)
+                        {
+                            messages.Add(m_MessageQueue.Dequeue());
+                        }
                     }
                 }
 
                 // Sends the logged messages.
-                if (messages.Length > 0)
+                if (messages.Count > 0)
                 {
-                    this.WriteData(messages);
+                    WriteData(messages);
                 }
+
+                logger.LogFreeMemory();
             }
             finally
             {
                 this.SignalWorkCompleted();
+                LogDebug("Processing completed.");
+
             }
         }
 
@@ -317,29 +234,79 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// <param name="dataItem">
         /// The data item to add.
         /// </param>
-        protected void AddDataItem(object dataItem)
+        public void AddDataItem(DataItem dataItem)
         {
             dataItem.ShouldNotBeNull();
 
-            lock (SyncLock)
+            try
             {
-                MessageQueue.Enqueue(dataItem);
+                int messageCount = 0;
+                lock (m_SyncLock)
+                {
+                    MessageQueue.Enqueue(dataItem);
+                    messageCount = MessageQueue.Count;
+                }
 
-                if (MessageQueue.Count >= BatchSize)
+                if (messageCount >= BatchSize)
                 {
                     this.SignalWorkToBeDone();
                 }
             }
+            catch (Exception ex)
+            {
+                LogError("Exception detected adding data item. Stacktrace: {0}", ex, ex.StackTrace);
+            }
         }
 
         /// <summary>
-        /// Provides a stub method to override to support the persistence of messages
-        /// to disk.
+        /// Provides a method to override to support the persistence of messages to disk.
         /// </summary>
+        /// <remarks>
+        /// Expects source files to be in an separate directory with a different extension.
+        /// In order for files to be processed, they must be renamed and moved to the target
+        /// directory.
+        /// </remarks>
         /// <param name="dataItems">
-        /// A collection of data items 
+        /// The collection of items 
         /// </param>
-        protected abstract void WriteData(object[] dataItems);
+        protected virtual void WriteData(ArrayList dataItems)
+        {
+            LogDebug("{0} data items to be written.", dataItems.Count);
+
+            foreach (var item in dataItems)
+            {
+                var dataItem = item as DataItem;
+                if (dataItem != null)
+                {
+                    try
+                    {
+                        string generatedFileName = m_FileHelper.GenerateFileName(DateTime.Now,  m_WorkingFileExtension);
+
+                        using (var stream = m_FileHelper.OpenStreamForWrite(m_WorkingFilePath, generatedFileName, 0))
+                        {
+                            if (stream != null)
+                            {
+                                using (var builder = new DataStreamBuilder(stream))
+                                {
+                                    builder.SetMetadata(m_IPAddress, dataItem.CaptureTimestamp);
+                                    builder.SetPayload(dataItem.Payload);
+                                }
+                            }
+                        }
+
+                        m_FileHelper.Flush();
+
+                        LogDebug("File created. FilePath: '{0}', Filename: '{1}'", m_WorkingFilePath,  generatedFileName);
+                        m_FileHelper.MoveFile(m_WorkingFilePath, generatedFileName, m_TargetFilePath,  m_TargetFileExtension);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError("Exception raised while writing data items. Stacktrace: {0}.", ex, ex.StackTrace);
+                    }
+                }
+
+            }
+        }
 
         /// <summary>
         /// See <see cref="ThreadedService.OnOpening"/> for more details.
@@ -349,15 +316,10 @@ namespace Ignite.Framework.Micro.Common.Services.Data
         /// </remarks>
         protected override void OnOpening()
         {
+            base.OnOpening();
+
             m_FileHelper.CreateDirectory(m_WorkingFilePath);
             m_FileHelper.CreateDirectory(m_TargetFilePath);                
-        }
-
-        /// <summary>
-        /// See <see cref="ThreadedService.OnClosing"/> for more details.
-        /// </summary>
-        protected override void OnClosing()
-        {
         }
 
         /// <summary>

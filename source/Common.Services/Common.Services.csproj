@@ -32,8 +32,6 @@
     <Compile Include="..\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Data\ArchiveDataService.cs" />
-    <Compile Include="Data\BufferedDataService.cs" />
     <Compile Include="Data\DataTransferService.cs" />
     <Compile Include="ServiceEntry.cs" />
     <Compile Include="IResourceLoader.cs" />
@@ -48,6 +46,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.SPOT.Graphics" />
     <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="System.IO" />
   </ItemGroup>

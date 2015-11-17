@@ -14,12 +14,12 @@
 //   limitations under the License. 
 //----------------------------------------------------------------------------- 
 
+using System.Threading;
 using Ignite.Framework.Micro.Common.Assertions;
 using Ignite.Framework.Micro.Common.Contract.FileManagement;
 using Ignite.Framework.Micro.Common.Contract.Logging;
 using Ignite.Framework.Micro.Common.Contract.Services;
 using Ignite.Framework.Micro.Common.Core.Extensions;
-using Microsoft.SPOT;
 
 namespace Ignite.Framework.Micro.Common.Services.Data
 {
@@ -131,11 +131,14 @@ namespace Ignite.Framework.Micro.Common.Services.Data
                         {
                             m_Logger.Debug("Deleting {0} of {1} files.", fileIndex+1, fileCount);
 
-                            long fileSize = m_FileHelper.GetFileSize(m_Configuration.TargetPath, fileName);
-                            if (fileSize >= 0)
+                            long fileSize = m_FileHelper.GetFileSize(m_Configuration.ArchivePath, fileName);
+                            if (fileSize > 0)
                             {
-                                m_Logger.Debug("Deleting file. ArchivePath: '{0}', Filename: '{1}'",  m_Configuration.ArchivePath, fileName);
                                 m_FileHelper.DeleteFile(m_Configuration.ArchivePath, fileName);
+                            }
+                            else
+                            {
+                                m_FileHelper.DeleteFile(m_Configuration.ArchivePath, fileName);                                
                             }
                         }
 
@@ -145,24 +148,9 @@ namespace Ignite.Framework.Micro.Common.Services.Data
             }
             finally
             {
-                m_Logger.Debug("Finished processing.");                
+                this.SignalWorkCompleted();
+                m_Logger.Debug("Finished processing.");    
             }
-        }
-
-        /// <summary>
-        /// On attempting to open the service, initialises any managed resources.
-        /// </summary>
-        protected override void OnOpening()
-        {
-           
-        }
-
-        /// <summary>
-        /// On attempting to close the service cleans up any managed resources.
-        /// </summary>
-        protected override void OnClosing()
-        {
-            
         }
 
         /// <summary>
